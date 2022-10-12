@@ -79,19 +79,27 @@
     };
   };
 
-  # Enable sway
-  # must be enabled here (home-manager alone does not do the proper plumbing)
-  programs.sway.enable = true;
+  security.rtkit.enable = true;
+  services.dbus.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
   # Enable XDG portal for Wayland
   xdg.portal = {
     enable = true;
     wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+    ];
   };
   # Start sway automatically
   environment.loginShellInit = ''
     [[ "$(tty)" == /dev/tty1 ]] && sway
   '';
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

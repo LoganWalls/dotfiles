@@ -20,6 +20,7 @@
 
     # Add stuff for your user as you see fit:
     packages = with pkgs; [
+      rsync # sync files
       kitty # terminal
       wofi # launcher
       wl-clipboard # enable copy/paste on wayland
@@ -49,7 +50,7 @@
         ublock-origin
       ];
       profiles.logan = {
-	name = "Logan";
+        name = "Logan";
         settings = {
           "browser.startup.homepage" = "https://start.duckduckgo.com";
           "identity.fxaccounts.enabled" = false;
@@ -68,21 +69,22 @@
   # Enable Sway
   wayland.windowManager.sway = {
     enable = true;
+    swaynag.enable = true;
     wrapperFeatures.gtk = true;
     config = {
-      startup = [
-        # https://github.com/NixOS/nixpkgs/issues/119445
-        {command = "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK";}
-        {command = "for_window [class=\"Firefox\"] fullscreen enable";}
-        {command = "firefox --kiosk https://google.com";}
-      ];
+      modifier = "Mod4";
       terminal = "kitty";
       menu = "wofi --show run";
+
+      startup = [
+        {command = "for_window [class=\"Firefox\"] fullscreen enable";}
+        {command = "firefox";}
+      ];
       # Display device configuration
       output = {
         eDP-1 = {
           # Set HIDP scale (pixel integer scaling)
-          scale = "3";
+          scale = "2";
         };
       };
     };
