@@ -47,20 +47,60 @@
       enable = true;
       package = pkgs.firefox-wayland;
       extensions = with addons; [
+        multi-account-containers
         ublock-origin
+        skip-redirect
       ];
       profiles.logan = {
         name = "Logan";
         settings = {
           "browser.startup.homepage" = "https://start.duckduckgo.com";
+
+          # Disable Firefox accounts
           "identity.fxaccounts.enabled" = false;
-          "privacy.trackingprotection.enabled" = true;
+
+          # Enable HTTPS-Only Mode
           "dom.security.https_only_mode" = true;
+          "dom.security.https_only_mode_ever_enabled" = true;
+
+          # Privacy
+          "privacy.donottrackheader.enabled" = true;
+          "privacy.trackingprotection.enabled" = true;
+          "privacy.trackingprotection.socialtracking.enabled" = true;
+          "privacy.partition.network_state.ocsp_cache" = true;
+
+          # Disable telemetry
+          "browser.newtabpage.activity-stream.feeds.telemetry" = false;
+          "browser.newtabpage.activity-stream.telemetry" = false;
+          "browser.ping-centre.telemetry" = false;
+          "toolkit.telemetry.archive.enabled" = false;
+          "toolkit.telemetry.bhrPing.enabled" = false;
+          "toolkit.telemetry.enabled" = false;
+          "toolkit.telemetry.firstShutdownPing.enabled" = false;
+          "toolkit.telemetry.hybridContent.enabled" = false;
+          "toolkit.telemetry.newProfilePing.enabled" = false;
+          "toolkit.telemetry.reportingpolicy.firstRun" = false;
+          "toolkit.telemetry.shutdownPingSender.enabled" = false;
+          "toolkit.telemetry.unified" = false;
+          "toolkit.telemetry.updatePing.enabled" = false;
+          "experiments.activeExperiment" = false;
+          "experiments.enabled" = false;
+          "experiments.supported" = false;
+          "network.allow-experiments" = false;
+
           # "signon.rememberSignons" = false;
           "browser.topsites.blockedSponsors" = ''["amazon"]'';
           "browser.shell.checkDefaultBrowser" = false;
           "browser.shell.defaultBrowserCheckCount" = 1;
           "browser.disableResetPrompt" = true;
+
+          # Disable Pocket
+          "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
+          "extensions.pocket.enabled" = false;
+          "extensions.pocket.api" = "";
+          "extensions.pocket.oAuthConsumerKey" = "";
+          "extensions.pocket.showHome" = false;
+          "extensions.pocket.site" = "";
         };
       };
     };
@@ -77,8 +117,8 @@
       menu = "wofi --show run";
 
       startup = [
-        {command = "for_window [class=\"Firefox\"] fullscreen enable";}
-        {command = "firefox";}
+        # Launch Firefox in full screen mode on start page.
+        {command = "firefox --kiosk https://start.duckduckgo.com";}
       ];
       # Display device configuration
       output = {
