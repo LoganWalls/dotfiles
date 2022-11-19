@@ -73,7 +73,7 @@
         modules =
           (builtins.attrValues nixosModules)
           ++ [
-            ./nixos/orpheus/configuration.nix
+            ./host/orpheus/configuration.nix
           ];
       };
     };
