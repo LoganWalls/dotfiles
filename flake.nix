@@ -1,5 +1,5 @@
 {
-  description = "You new nix config";
+  description = "My personal nix configurations";
 
   inputs = {
     # Nixpkgs
@@ -10,10 +10,18 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Darwin
+    darwin.url = "github:lnl7/nix-darwin/master";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Nix user repository
     nur.url = "github:nix-community/NUR";
-    # Shameless plug: looking for a way to nixify your themes and make
-    # everything match nicely? Try nix-colors!
-    # nix-colors.url = "github:misterio77/nix-colors";
+
+    # SFMono font with NerdFont and Ligatures
+    sf-mono-liga = {
+      url = "github:shaunsingh/SFMono-Nerd-Font-Ligaturized";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -41,6 +49,8 @@
     # Reusable home-manager modules you might want to export
     # These are usually stuff you would upstream into home-manager
     homeManagerModules = import ./modules/home-manager;
+    # Reusable darwin modules
+    darwinModules = import ./modules/darwin;
 
     # Devshell for bootstrapping
     # Acessible through 'nix develop' or 'nix-shell' (legacy)
@@ -78,7 +88,29 @@
       };
     };
 
+    darwinConfigurations = {
+      makoto = inputs.darwin.lib.darwinSystem {
+        pkgs = legacyPackages.aarch64-darwin;
+        specialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        modules =
+          (builtins.attrValues darwinModules)
+          ++ [
+            ./host/makoto/configuration.nix
+            # TODO: use home mangager as module
+          ];
+      };
+    };
+
     homeConfigurations = {
+      "logan@makoto" = home-manager.lib.homeManagerConfiguration {
+        pkgs = legacyPackages.aarch64-darwin;
+        extraSpecialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        modules =
+          (builtins.attrValues homeManagerModules)
+          ++ [
+            ./home-manager/logan/makoto.nix
+          ];
+      };
       "logan@orpheus" = home-manager.lib.homeManagerConfiguration {
         pkgs = legacyPackages.x86_64-linux;
         extraSpecialArgs = {inherit inputs;}; # Pass flake inputs to our config
