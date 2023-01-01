@@ -1,7 +1,11 @@
 final: prev: let
   pkgs = final;
-  inherit (pkgs) fetchpatch callPackage;
-  # icon = ../programs/emacs/macos-icon.png;
+  inherit (pkgs) fetchpatch fetchurl callPackage;
+  # icon = ../programs/emacs/macos-uuicon.png;
+  icon = fetchurl {
+    url = "https://github.com/d12frosted/homebrew-emacs-plus/raw/6d4b8346773907e42efacbcf5aac0b27b79cc3b9/icons/memeplex-slim.icns";
+    sha256 = "0g025b4a4c47dp46zkc7rf3wgkk8b9bf8glisz7dsms3zzwyckcl";
+  };
 in {
   my-emacs = pkgs.emacsWithPackagesFromUsePackage rec {
     # Your Emacs config file. Org mode babel files are also
@@ -26,7 +30,7 @@ in {
     package =
       if pkgs.stdenv.isDarwin
       then
-        pkgs.emacsGit.overrideAttrs (old: {
+        pkgs.emacsPgtk.overrideAttrs (old: {
           patches =
             (old.patches or [])
             ++ [
@@ -51,18 +55,13 @@ in {
                 sha256 = "14ndp2fqqc95s70fwhpxq58y8qqj4gzvvffp77snm2xk76c1bvnn";
               })
             ];
-          configureFlags =
-            (old.configureFlags or [])
-            ++ [
-              "LDFLAGS=-headerpad_max_install_names"
-            ];
-          # buildInputs = old.buildInputs ++ [pkgs.fileicon];
-          # postFixup =
-          #   old.postFixup
-          #   + ''
-          #     fileicon set -q "$out/bin/emacs" ${icon}
-          #     fileicon set -q "$out/bin/emacsclient" ${icon}
-          #   '';
+
+          # Replace the app icon
+          postFixup =
+            old.postFixup
+            + ''
+              cp ${icon} "$out/Applications/Emacs.app/Contents/Resources/Emacs.icns"
+            '';
         })
       else pkgs.emacsPgtk;
 

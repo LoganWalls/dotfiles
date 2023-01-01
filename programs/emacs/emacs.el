@@ -11,6 +11,15 @@
   (gcmh-mode 1)
 )
 
+; Basic UI
+(setq inhibit-startup-screen t)
+(setq use-dialog-box nil) ; no GUI dialogs
+(scroll-bar-mode -1) ; no scoll bar
+(tool-bar-mode -1) ; no tool bar
+(tooltip-mode -1) ; no tooltips 
+(set-fringe-mode 10) ; add padding
+(menu-bar-mode 1) ; use menu bar (required to make yabai work)
+(setq visual-bell t) ; no beeping
 ; Remove OS window decoration 
 (add-to-list 'default-frame-alist '(undecorated-round . t))
 ; Set background transparency:
@@ -33,7 +42,6 @@
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 )
 
-
 ; General config
 (global-auto-revert-mode 1) ; auto update buffers when file changes on disk
 (setq history-length 40) ; Save the last 40 mini-buffer commands
@@ -49,15 +57,6 @@
        (t
         'grep)))
 
-; Basic UI
-(setq inhibit-startup-screen t)
-(setq use-dialog-box nil) ; no GUI dialogs
-(scroll-bar-mode -1) ; no scoll bar
-(tool-bar-mode -1) ; no tool bar
-(tooltip-mode -1) ; no tooltips 
-(set-fringe-mode 10) ; add padding
-(menu-bar-mode 1) ; use menu bar (required to make yabai work)
-(setq visual-bell t) ; no beeping
 
 ; Smooth scrolling
 (pixel-scroll-precision-mode t) 
@@ -137,7 +136,7 @@
   (lambda-themes-set-italic-keywords t)
   (lambda-themes-set-variable-pitch t) 
   :config
-  (load-theme 'lambda-dark))
+  (load-theme 'lambda-dark t))
 
 
 ; Mode line
@@ -157,7 +156,7 @@
   (lambda-line-gui-rw-symbol  " ") 
   (lambda-line-space-top +.50)  ;; padding on top and bottom of line
   (lambda-line-space-bottom -.50)
-  (lambda-line-symbol-position 0.1) ;; adjust the vertical placement of symbol
+  (lambda-line-symbol-position -0.05) ;; adjust the vertical placement of symbol
   :config
   ;; activate lambda-line 
   (lambda-line-mode) 
@@ -351,7 +350,8 @@
 ;;   (evil-snipe-override-mode 1))
 
 (use-package which-key
-  :init((which-key-mode)))
+  :init
+  (which-key-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ; Completion
@@ -638,18 +638,16 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-
 ; Notes
 (use-package denote
+  :custom
+  (denote-directory (expand-file-name "~/cyberbrain/notes/"))
+  (denote-known-keywords '("project"))
+  (denote-infer-keywords t)
+  (denote-sort-keywords t)
+  (denote-date-prompt-use-org-read-date t)
+  (denote-backlinks-show-context t)
   :config
-  (setq 
-    denote-directory (expand-file-name "~/cyberbrain/notes/")
-    denote-known-keywords '("project")
-    denote-infer-keywords t
-    denote-sort-keywords t
-    denote-date-prompt-use-org-read-date t
-    denote-backlinks-show-context t)
-  (require 'denote-dired)
   (add-hook 'dired-mode-hook #'denote-dired-mode))
 
 

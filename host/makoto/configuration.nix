@@ -69,11 +69,6 @@
 
   services = {
     nix-daemon.enable = true; # Auto upgrade nix package and the daemon service.
-    # emacs = {
-    #   enable = true;
-    #   package = pkgs.my-emacs; # Emacs with my packages and config, see /overlay/emacs.nix
-    #   # defaultEditor = true;
-    # };
     skhd = {
       enable = true; # Hotkey daemon
       skhdConfig = ''
@@ -83,6 +78,7 @@
 
         # open a terminal
         alt - return : /Applications/kitty.app/Contents/MacOS/kitty --single-instance -d ~
+        shift + alt - return : emacsclient -c -a ${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs
 
         # focus window
         alt - h : yabai -m window --focus west
@@ -139,13 +135,12 @@
         window_gap = 20;
       };
       extraConfig = ''
-        yabai -m rule --add label='emacs' app='emacs' manage=on
         yabai -m rule --add app='System Settings' manage=off
         yabai -m rule --add app='Calendar' manage=off
       '';
     };
 
-    # managed manually for now
+    # Commented because managed manually for now
     # homebrew = {
     #   enable = true;
     #   casks = ["blender" "chromium" "docker" "gimp" "inkscape" "spotify" "qlmarkdown"];

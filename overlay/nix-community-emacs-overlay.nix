@@ -1,5 +1,5 @@
 (import (builtins.fetchGit {
   url = "https://github.com/nix-community/emacs-overlay.git";
   ref = "master";
-  rev = "7f50dbe28566a45d5cb6de04d4ea09a7184a5f9e";
+  rev = "3c1fbbbe250bde48a947099ae61534f018290ff4";
 }))

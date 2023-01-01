@@ -15,12 +15,6 @@ trivialBuild rec {
     hash = "sha256-L+ZaBAmHJf6DFY1bdfynFs/ufiEIWeBRMa+WBs3+DEA=";
   };
 
-  # propagatedUserEnvPkgs = [
-  #   all-the-icons
-  # ];
-  #
-  # buildInputs = propagatedUserEnvPkgs;
-
   meta = with lib; {
     homepage = "https://github.com/Lambda-Emacs/lambda-themes";
     description = "A set of four light and dark themes for Emacs.";
