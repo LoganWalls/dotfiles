@@ -12,6 +12,7 @@
 )
 
 ; Basic UI
+(setq confirm-kill-emacs 'yes-or-no-p) ; pevent accidentally quitting the GUI
 (setq inhibit-startup-screen t)
 (setq use-dialog-box nil) ; no GUI dialogs
 (scroll-bar-mode -1) ; no scoll bar

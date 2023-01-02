@@ -69,6 +69,13 @@
 
   services = {
     nix-daemon.enable = true; # Auto upgrade nix package and the daemon service.
+    emacs = {
+      enable = true;
+      package = pkgs.my-emacs;
+      # NOTE: This path is relative to pkgs.my-emacs/bin
+      # see: https://github.com/LnL7/nix-darwin/blob/a6b23918a72c891b2f8c683061193b8dd84550e4/modules/services/emacs.nix#L48
+      exec = "../Applications/Emacs.app/Contents/MacOS/Emacs";
+    };
     skhd = {
       enable = true; # Hotkey daemon
       skhdConfig = ''
@@ -78,7 +85,7 @@
 
         # open a terminal
         alt - return : /Applications/kitty.app/Contents/MacOS/kitty --single-instance -d ~
-        shift + alt - return : emacsclient -c -a ${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs
+        shift + alt - return : emacsclient -c
 
         # focus window
         alt - h : yabai -m window --focus west
@@ -112,6 +119,7 @@
         alt - e : yabai -m window --toggle split
       '';
     };
+
     yabai = {
       enable = true; # Tiling window manager
       package = pkgs.yabai;

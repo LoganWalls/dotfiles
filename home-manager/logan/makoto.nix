@@ -144,7 +144,7 @@
 
   home.sessionVariables = {
     EDITOR = "nvim";
-    # EDITOR = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
+    # EDITOR = "emacsclient -c";
     TMUX_THEME = "tokyonight-night";
     REFERENCE_BIB = "$HOME/Library/Mobile Documents/com~apple~CloudDocs/Knowledge/references.bib";
     DOTFILES = "$HOME/.dotfiles/";
@@ -171,7 +171,7 @@
       gdots = "git --git-dir=$DOTFILES --work-tree=$HOME";
       cat = "bat";
       emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
-      e = "emacs";
+      e = "emacsclient -c";
       fda = "fd -IH";
       ls = "exa --icons";
       l = "ls";
