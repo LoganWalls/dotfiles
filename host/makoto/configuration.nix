@@ -46,9 +46,12 @@
     fontDir.enable = true;
     fonts = with pkgs; [
       meslo-lgs-nf # reccomended font for p10k
+      apple-fonts
       sf-mono-liga
+      crimson-pro
       iosevka-comfy.comfy
-      nerdfonts # lots of code-oriented fonts
+      fira-go
+      (nerdfonts.override {fonts = ["FiraCode" "JetBrainsMono" "Overpass"];})
     ];
   };
 

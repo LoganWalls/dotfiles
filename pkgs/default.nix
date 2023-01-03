@@ -29,8 +29,11 @@ in {
       makeWrapper
       ;
   };
-  sf-mono-liga = pkgs.callPackage ./sf-mono-liga.nix {
+  sf-mono-liga = pkgs.callPackage ./fonts/sf-mono-liga.nix {
     inherit (inputs) sf-mono-liga;
     inherit (pkgs) stdenvNoCC;
+  };
+  apple-fonts = pkgs.callPackage ./fonts/apple-fonts.nix {
+    inherit (pkgs) lib stdenv fetchurl unzip p7zip;
   };
 }
