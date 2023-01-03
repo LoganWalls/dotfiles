@@ -42,6 +42,16 @@
     };
   };
 
+  fonts = {
+    fontDir.enable = true;
+    fonts = with pkgs; [
+      meslo-lgs-nf # reccomended font for p10k
+      sf-mono-liga
+      iosevka-comfy.comfy
+      nerdfonts # lots of code-oriented fonts
+    ];
+  };
+
   # Make sure an editor is always available
   environment.systemPackages = [pkgs.vim];
 
@@ -75,6 +85,9 @@
       # NOTE: This path is relative to pkgs.my-emacs/bin
       # see: https://github.com/LnL7/nix-darwin/blob/a6b23918a72c891b2f8c683061193b8dd84550e4/modules/services/emacs.nix#L48
       exec = "../Applications/Emacs.app/Contents/MacOS/Emacs";
+      # Add the bin path for the active nix profile so that Emacs
+      # can find all of the software installed by home-manager
+      additionalPath = ["/Users/logan/.nix-profile/bin"];
     };
     skhd = {
       enable = true; # Hotkey daemon

@@ -57,12 +57,6 @@
     xsv # work with (c/t)sv files
     imagemagick # work with images
 
-    ### Fonts
-    meslo-lgs-nf # reccomended font for p10k
-    sf-mono-liga
-    iosevka-comfy.comfy
-    nerdfonts # lots of code-oriented fonts
-
     ##### Language-specific
 
     ### Shell
@@ -99,12 +93,15 @@
     nodePackages.typescript-language-server
     nodePackages.prettier # formatter
 
+    ### Tex
+    tectonic # latex engine
+    texlab # language server for tex
+    my-texlive # packages, utils, and classes
+
     ### Prose / writing
     papis # reference manager
-    texlab # write / compile .tex documents
     vale # "linter" for English
     zathura # PDF viewer
-    zk # note manager
     zola # static-site generator for .md files
   ];
 

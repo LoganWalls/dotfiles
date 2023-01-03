@@ -1,7 +1,6 @@
 final: prev: let
   pkgs = final;
   inherit (pkgs) fetchpatch fetchurl callPackage;
-  # icon = ../programs/emacs/macos-uuicon.png;
   icon = fetchurl {
     url = "https://github.com/d12frosted/homebrew-emacs-plus/raw/6d4b8346773907e42efacbcf5aac0b27b79cc3b9/icons/memeplex-slim.icns";
     sha256 = "0g025b4a4c47dp46zkc7rf3wgkk8b9bf8glisz7dsms3zzwyckcl";

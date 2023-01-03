@@ -26,6 +26,7 @@ in
   inputs.nixpkgs.lib.composeManyExtensions [
     additions
     modifications
+    (import ./texlive.nix)
     (import ./nix-community-emacs-overlay.nix)
     (import ./emacs.nix)
     (import ./python.nix)

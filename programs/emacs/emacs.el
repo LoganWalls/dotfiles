@@ -144,6 +144,7 @@
 (use-package lambda-line
   ;; :straight (:type git :host github :repo "lambda-emacs/lambda-line") 
   :custom
+  (require 'all-the-icons)
   ;; (lambda-line-icon-time t) ;; requires ClockFace font (see below)
   ;; (lambda-line-clockface-update-fontset "ClockFaceRect") ;; set clock icon
   (lambda-line-position 'bottom) ;; Set position of status-line 
@@ -157,7 +158,6 @@
   (lambda-line-gui-rw-symbol  " ") 
   (lambda-line-space-top +.50)  ;; padding on top and bottom of line
   (lambda-line-space-bottom -.50)
-  (lambda-line-symbol-position -0.05) ;; adjust the vertical placement of symbol
   :config
   ;; activate lambda-line 
   (lambda-line-mode) 
@@ -177,6 +177,7 @@
   :after avy
   :init 
   (require 'avy)
+  (require 'view)
   (defun nt-insert-at-cursor ()
     (interactive)
     (if meow--temp-normal
@@ -314,8 +315,8 @@
    '("/" . meow-visit))
   ; Scrolling
   (meow-normal-define-key
-   '("M-[" . meow-page-up)  
-   '("M-]" . meow-page-down)))
+   '("M-[" . 'View-scroll-half-page-backward)  
+   '("M-]" . 'View-scroll-half-page-forward)))
   :config 
   (meow-setup)
   (meow-global-mode 1)
@@ -367,8 +368,7 @@
   ;; (setq vertico-resize t)
 
   ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  (setq vertico-cycle t)
-)
+  (setq vertico-cycle t))
 (use-package emacs
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
@@ -603,6 +603,7 @@
   (auto-fill-mode 0)
   (visual-line-mode 1))
 
+
 (use-package org
   :hook (org-mode . my/org-mode-setup)
   :config
@@ -612,32 +613,224 @@
   (require 'org-indent)
 
   ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
   (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-    ;; Replace list hyphen with dot
+  ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
   (dolist (face '((org-level-1 . 1.2)
                   (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Avenir Next" :weight 'regular :height (cdr face))))
+                  (org-level-3 . 1.07)
+                  (org-level-4 . 1.05)
+                  (org-level-5 . 1.03)
+                  (org-level-6 . 1)
+                  (org-level-7 . 1)
+                  (org-level-8 . 1)))
+    (set-face-attribute (car face) nil :font "Avenir Next" :weight 'regular :height (cdr face)))
 
-(use-package org-bullets
+  ; Use tectonic instead of latex
+  ;; (setq org-preview-latex-process-alist
+  ;;   '((dvipng 
+  ;;      :programs ("tectonic" "dvipng")
+  ;;      :description "dvi > png"
+  ;;      :message "you need to install the programs: tectonic and dvipng."
+  ;;      :image-input-type "xdv"
+  ;;      :image-output-type "png"
+  ;;      :image-size-adjust (1.0 . 1.0)
+  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
+  ;;      :image-converter ("dvipng -D %D -T tight -o %O %f")
+  ;;      :transparent-image-converter ("dvipng -D %D -T tight -bg Transparent -o %O %f"))
+  ;;    (dvisvgm
+  ;;      :programs ("tectonic" "dvisvgm")
+  ;;      :description "dvi > svg"
+  ;;      :message "you need to install the programs: tectonic and dvisvgm."
+  ;;      :image-input-type "xdv" 
+  ;;      :image-output-type "svg" 
+  ;;      :image-size-adjust (1.7 . 1.5)
+  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
+  ;;      :image-converter ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O"))
+  ;;    (imagemagick
+  ;;      :programs ("tectonic" "convert")
+  ;;      :description "pdf > png" 
+  ;;      :message "you need to install the programs: tectonic and imagemagick." 
+  ;;      :image-input-type "pdf" 
+  ;;      :image-output-type "png" 
+  ;;      :image-size-adjust (1.0 . 1.0)
+  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
+  ;;      :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O"))))
+
+  (setq-default org-latex-pdf-process '("tectonic -Z shell-escape --outdir=%o %f"))
+  ;; (setq-default org-preview-latex-default-process 'dvisvgm)
+
+  
+  ; Remove some redundant packages
+  ; (see https://github.com/shaunsingh/nyoom.emacs/blob/f8d8b81fd503ff0ea6a68541d75f0b654a10c1b3/config.org#adjust-default-packages)
+  ;; (setq org-latex-default-packages-alist
+  ;;       '(("AUTO" "inputenc" t ("pdflatex"))
+  ;;         ("T1" "fontenc" t ("pdflatex"))
+  ;;         ("" "fontspec" t)
+  ;;         ("" "xcolor" nil)
+  ;;
+  ;;         ("" "hyperref" nil)
+  ;;         ("" "firamath-otf" t)
+  ;;         "\\setmonofont{Liga SFMono Nerd Font}"
+  ;;         "\\setmainfont{Avenir Next}"))
+
+  ; Prettier latex fragments 
+  ; (stolen from https://tecosaur.github.io/emacs-config/config.html#latex-fragments)
+  (require 'org-src)
+  (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t)))
+  (setq org-highlight-latex-and-related '(native script entities))
+  (setq org-format-latex-header "
+      \\documentclass{article}
+      \\usepackage[usenames]{xcolor}
+
+      \\usepackage[T1]{fontenc}
+
+      \\usepackage{booktabs}
+
+      \\pagestyle{empty}             % do not remove
+      % The settings below are copied from fullpage.sty
+      \\setlength{\\textwidth}{\\paperwidth}
+      \\addtolength{\\textwidth}{-3cm}
+      \\setlength{\\oddsidemargin}{1.5cm}
+      \\addtolength{\\oddsidemargin}{-2.54cm}
+      \\setlength{\\evensidemargin}{\\oddsidemargin}
+      \\setlength{\\textheight}{\\paperheight}
+      \\addtolength{\\textheight}{-\\headheight}
+      \\addtolength{\\textheight}{-\\headsep}
+      \\addtolength{\\textheight}{-\\footskip}
+      \\addtolength{\\textheight}{-3cm}
+      \\setlength{\\topmargin}{1.5cm}
+      \\addtolength{\\topmargin}{-2.54cm}
+      % my custom stuff
+      \\usepackage[nofont,plaindd]{bmc-maths}
+      \\usepackage{arev}
+      ")
+    (setq org-format-latex-options
+          (plist-put org-format-latex-options :background "Transparent")))
+
+; Automatically show latex previews when the cursor is not inside the latex block
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
+
+; Pretty tags / dates / progress bars. Config taken from nyoom emacs:
+; https://github.com/shaunsingh/nyoom.emacs/blob/main/config.org#svg-tag-mode
+(use-package svg-tag-mode
+  :hook (org-mode . svg-tag-mode) 
+  :config
+  (defconst date-re "[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}")
+  (defconst time-re "[0-9]\\{2\\}:[0-9]\\{2\\}")
+  (defconst day-re "[A-Za-z]\\{3\\}")
+  (defconst day-time-re (format "\\(%s\\)? ?\\(%s\\)?" day-re time-re))
+
+  (defun svg-progress-percent (value)
+    (svg-image (svg-lib-concat
+                (svg-lib-progress-bar (/ (string-to-number value) 100.0)
+                                  nil :margin 0 :stroke 2 :radius 3 :padding 2 :width 11)
+                (svg-lib-tag (concat value "%")
+                             nil :stroke 0 :margin 0)) :ascent 'center))
+
+  (defun svg-progress-count (value)
+    (let* ((seq (mapcar #'string-to-number (split-string value "/")))
+           (count (float (car seq)))
+           (total (float (cadr seq))))
+    (svg-image (svg-lib-concat
+                (svg-lib-progress-bar (/ count total) nil
+                                      :margin 0 :stroke 2 :radius 3 :padding 2 :width 11)
+                (svg-lib-tag value nil
+                             :stroke 0 :margin 0)) :ascent 'center)))
+
+  (setq svg-tag-tags
+        `(
+          ;; Org tags
+          (":\\([A-Za-z0-9]+\\)" . ((lambda (tag) (svg-tag-make tag))))
+          (":\\([A-Za-z0-9]+[ \-]\\)" . ((lambda (tag) tag)))
+
+          ;; Task priority
+          ("\\[#[A-Z]\\]" . ( (lambda (tag)
+                                (svg-tag-make tag :face 'org-priority
+                                              :beg 2 :end -1 :margin 0))))
+
+          ;; Progress
+          ("\\(\\[[0-9]\\{1,3\\}%\\]\\)" . ((lambda (tag)
+                                              (svg-progress-percent (substring tag 1 -2)))))
+          ("\\(\\[[0-9]+/[0-9]+\\]\\)" . ((lambda (tag)
+                                            (svg-progress-count (substring tag 1 -1)))))
+
+          ;; TODO / DONE
+          ("TODO" . ((lambda (tag) (svg-tag-make "TODO" :face 'org-todo :inverse t :margin 0))))
+          ("DONE" . ((lambda (tag) (svg-tag-make "DONE" :face 'org-done :margin 0))))
+
+
+          ;; Citation of the form [cite:@Knuth:1984]
+          ("\\(\\[cite:@[A-Za-z]+:\\)" . ((lambda (tag)
+                                            (svg-tag-make tag
+                                                          :inverse t
+                                                          :beg 7 :end -1
+                                                          :crop-right t))))
+          ("\\[cite:@[A-Za-z]+:\\([0-9]+\\]\\)" . ((lambda (tag)
+                                                  (svg-tag-make tag
+                                                                :end -1
+                                                                :crop-left t))))
+
+
+          ;; Active date (with or without day name, with or without time)
+          (,(format "\\(<%s>\\)" date-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :end -1 :margin 0))))
+          (,(format "\\(<%s \\)%s>" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0))))
+          (,(format "<%s \\(%s>\\)" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0))))
+
+          ;; Inactive date  (with or without day name, with or without time)
+           (,(format "\\(\\[%s\\]\\)" date-re) .
+            ((lambda (tag)
+               (svg-tag-make tag :beg 1 :end -1 :margin 0 :face 'org-date))))
+           (,(format "\\(\\[%s \\)%s\\]" date-re day-time-re) .
+            ((lambda (tag)
+               (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0 :face 'org-date))))
+           (,(format "\\[%s \\(%s\\]\\)" date-re day-time-re) .
+            ((lambda (tag)
+               (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0 :face 'org-date)))))))
+
+(use-package org-modern
   :after org
-  :hook (org-mode . org-bullets-mode)
+  :hook
+  ((org-mode . org-modern-mode)
+   (org-agenda-finalize . org-modern-agenda))
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-modern-block-fringe t)
+  (org-modern-block-name t)
+  (org-modern-checkbox t)
+  (org-modern-footnote t)
+  (org-modern-hide-stars 'leading)
+  (org-modern-horizontal-rule t)
+  (org-modern-internal-target t)
+  (org-modern-keyword t)
+  (org-modern-radio-target t)
+  (org-modern-table t)
+  (org-modern-table-vertical 1)
+  (org-modern-table-horizontal 1)
+  (org-modern-star '("◉" "○" "◈" "◇" "✳"))
+
+  ; These are handled by svg-tag-mode instead
+  (org-modern-label-border nil)
+  (org-modern-priority nil)
+  (org-modern-progress nil)
+  (org-modern-statistics nil)
+  (org-modern-tag nil)
+  (org-modern-timestamp nil)
+  (org-modern-todo nil))
 
 ; Notes
 (use-package denote
