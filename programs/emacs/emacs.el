@@ -23,8 +23,10 @@
 (setq visual-bell t) ; no beeping
 ; Remove OS window decoration 
 (add-to-list 'default-frame-alist '(undecorated-round . t))
-; Set background transparency:
-(add-to-list 'default-frame-alist '(alpha . (90 . 90)))
+; Set background transparency
+; TODO: this new feature should work, but doesn't (at least on macOS)
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
+(add-to-list 'default-frame-alist '(alpha . (95 . 95)))
 
 ; Keep things tidy
 (use-package no-littering
@@ -64,84 +66,141 @@
 (setq pixel-scroll-precision-interpolate-page t)
 (setq pixel-scroll-precision-use-momentum t)
 
+; Add window margins on the left and right
+; I'd like to have top / bottom too, but there's
+; no simple way to do it in emacs right now
+(setq-default left-margin-width 1 right-margin-width 1)
+(set-window-buffer nil (current-buffer))
+
+; Dired
+; Use GNU ls on macOS
+(when (string= system-type "darwin")
+  (setq dired-use-ls-dired t
+        insert-directory-program "gls"
+        dired-listing-switches "-aBhl --group-directories-first"))
+
+; Add colors and icons (stolen from: https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/dired/config.el)
+; FIXME or replace with dirvish (dirvish also handles gnu ls)
+;; (use-package diredfl
+;;   :hook (dired-mode . diredfl-mode))
+;; (use-package all-the-icons-dired
+;;   :hook (dired-mode . all-the-icons-dired-mode)
+;;   :config
+;;   ;; HACK Fixes #1929: icons break file renaming in Emacs 27+, because the icon
+;;   ;;      is considered part of the filename, so we disable icons while we're in
+;;   ;;      wdired-mode.
+;;   (defvar +wdired-icons-enabled -1)
+;;
+;;   ;; display icons with colors
+;;   (setq all-the-icons-dired-monochrome nil)
+;;
+;;   (defadvice +dired-disable-icons-in-wdired-mode-a (&rest _)
+;;     :before #'wdired-change-to-wdired-mode
+;;     (setq-local +wdired-icons-enabled (if all-the-icons-dired-mode 1 -1))
+;;     (when all-the-icons-dired-mode
+;;       (all-the-icons-dired-mode -1)))
+;;
+;;   (defadvice +dired-restore-icons-after-wdired-mode-a (&rest _)
+;;     :after #'wdired-change-to-dired-mode
+;;     (all-the-icons-dired-mode +wdired-icons-enabled)))
+
 ; Font
-(set-face-attribute 'default nil :font "Liga SFMono Nerd Font" :height 180)
+(custom-theme-set-faces
+ 'user
+ '(variable-pitch ((t (:family "SF Pro" :height 180))))
+ '(default ((t (:family "Liga SFMono Nerd Font" :height 180))))
+ '(fixed-pitch ((t (:family "Liga SFMono Nerd Font" :height 180)))))
+
+
 (use-package ligature
   :config
   ;; Enable all Cascadia and Fira Code ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode
-                        '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
-                          ;; =:= =!=
-                          ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
-                          ;; ;; ;;;
-                          (";" (rx (+ ";")))
-                          ;; && &&&
-                          ("&" (rx (+ "&")))
-                          ;; !! !!! !. !: !!. != !== !~
-                          ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
-                          ;; ?? ??? ?:  ?=  ?.
-                          ("?" (rx (or ":" "=" "\." (+ "?"))))
-                          ;; %% %%%
-                          ("%" (rx (+ "%")))
-                          ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
-                          ;; |->>-||-<<-| |- |== ||=||
-                          ;; |==>>==<<==<=>==//==/=!==:===>
-                          ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
-                                          "-" "=" ))))
-                          ;; \\ \\\ \/
-                          ("\\" (rx (or "/" (+ "\\"))))
-                          ;; ++ +++ ++++ +>
-                          ("+" (rx (or ">" (+ "+"))))
-                          ;; :: ::: :::: :> :< := :// ::=
-                          (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
-                          ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
-                          ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
-                                          "="))))
-                          ;; .. ... .... .= .- .? ..= ..<
-                          ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
-                          ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
-                          ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
-                          ;; *> */ *)  ** *** ****
-                          ("*" (rx (or ">" "/" ")" (+ "*"))))
-                          ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
-                          ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
-                          ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
-                          ;; << <<< <<<<
-                          ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
-                                          "-"  "/" "|" "="))))
-                          ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
-                          ;; >> >>> >>>>
-                          (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
-                          ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
-                          ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
-                                       (+ "#"))))
-                          ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
-                          ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
-                          ;; __ ___ ____ _|_ __|____|_
-                          ("_" (rx (+ (or "_" "|"))))
-                          ;; Fira code: 0xFF 0x12
-                          ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
-                          ;; Fira code:
-                          "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
-                          ;; The few not covered by the regexps.
-                          "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
+  ;; (ligature-set-ligatures 'prog-mode
+  ;;                       '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
+  ;;                         ;; =:= =!=
+  ;;                         ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
+  ;;                         ;; ;; ;;;
+  ;;                         (";" (rx (+ ";")))
+  ;;                         ;; && &&&
+  ;;                         ("&" (rx (+ "&")))
+  ;;                         ;; !! !!! !. !: !!. != !== !~
+  ;;                         ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
+  ;;                         ;; ?? ??? ?:  ?=  ?.
+  ;;                         ("?" (rx (or ":" "=" "\." (+ "?"))))
+  ;;                         ;; %% %%%
+  ;;                         ("%" (rx (+ "%")))
+  ;;                         ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
+  ;;                         ;; |->>-||-<<-| |- |== ||=||
+  ;;                         ;; |==>>==<<==<=>==//==/=!==:===>
+  ;;                         ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
+  ;;                                         "-" "=" ))))
+  ;;                         ;; \\ \\\ \/
+  ;;                         ("\\" (rx (or "/" (+ "\\"))))
+  ;;                         ;; ++ +++ ++++ +>
+  ;;                         ("+" (rx (or ">" (+ "+"))))
+  ;;                         ;; :: ::: :::: :> :< := :// ::=
+  ;;                         (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
+  ;;                         ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
+  ;;                         ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
+  ;;                                         "="))))
+  ;;                         ;; .. ... .... .= .- .? ..= ..<
+  ;;                         ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
+  ;;                         ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
+  ;;                         ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
+  ;;                         ;; *> */ *)  ** *** ****
+  ;;                         ("*" (rx (or ">" "/" ")" (+ "*"))))
+  ;;                         ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
+  ;;                         ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
+  ;;                         ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
+  ;;                         ;; << <<< <<<<
+  ;;                         ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
+  ;;                                         "-"  "/" "|" "="))))
+  ;;                         ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
+  ;;                         ;; >> >>> >>>>
+  ;;                         (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
+  ;;                         ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
+  ;;                         ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
+  ;;                                      (+ "#"))))
+  ;;                         ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
+  ;;                         ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
+  ;;                         ;; __ ___ ____ _|_ __|____|_
+  ;;                         ("_" (rx (+ (or "_" "|"))))
+  ;;                         ;; Fira code: 0xFF 0x12
+  ;;                         ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
+  ;;                         ;; Fira code:
+  ;;                         "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
+  ;;                         ;; The few not covered by the regexps.
+  ;;                         "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
   ;; Enables ligature checks globally in all buffers.
   (global-ligature-mode t))
 
-; Theme
-;; (setq modus-themes-fringes nil)
-;; (load-theme 'modus-vivendi)
-(use-package lambda-themes
-  :custom
-  (lambda-themes-set-italic-comments t)
-  (lambda-themes-set-italic-keywords t)
-  (lambda-themes-set-variable-pitch t) 
+; Display page-breaks as horizontal rules
+(use-package page-break-lines
   :config
-  (load-theme 'lambda-dark t))
+  (page-break-lines-mode))
 
+
+; Theme
+(use-package doom-themes
+  :after lambda-line
+  :config
+  (load-theme 'doom-tokyo-night t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+;; (use-package lambda-themes
+;;   :custom
+;;   (lambda-themes-set-italic-comments t)
+;;   (lambda-themes-set-italic-keywords t)
+;;   (lambda-themes-set-variable-pitch t) 
+;;   :config
+;;   (load-theme 'lambda-dark t))
 
 ; Mode line
 (use-package lambda-line
+  :after doom-themes
   ;; :straight (:type git :host github :repo "lambda-emacs/lambda-line") 
   :custom
   (require 'all-the-icons)
@@ -159,7 +218,11 @@
   (lambda-line-space-top +.50)  ;; padding on top and bottom of line
   (lambda-line-space-bottom -.50)
   :config
-  ;; activate lambda-line 
+  ; Use theme colors
+  (set-face-attribute 'lambda-line-active-status-RW nil :foreground (doom-color 'green))
+  (set-face-attribute 'lambda-line-active-status-MD nil :foreground (doom-color 'red))
+  (set-face-attribute 'lambda-line-active-status-RO nil :foreground (doom-color 'yellow))
+  (set-face-attribute 'lambda-line-visual-bell nil :inherit 'doom-themes-visual-bell)
   (lambda-line-mode) 
   ;; set divider line in footer
   (when (eq lambda-line-position 'top)
@@ -168,6 +231,10 @@
 
 ; Modal editing
 (use-package avy)
+(use-package multiple-cursors)
+(use-package which-key
+  :init
+  (which-key-mode))
 
 ; Meow
 (defmacro nt--call-negative (form)
@@ -202,11 +269,6 @@
                                (block . 10)
                                (find . 10)
                                (till . 10)) 
-      meow-selection-command-fallback '((meow-change . meow-change-char)
-                                       (meow-kill . meow-delete)
-                                       (meow-cancel-selection . keyboard-quit)
-                                       (meow-pop-selection . meow-pop-grab)
-                                       (meow-beacon-change . meow-beacon-change-char))
       ; Use characters themselves to describe pairs
       meow-char-thing-table '((?\( . round)
                               (?\) . round)
@@ -221,7 +283,29 @@
                               (?p . paragraph)
                               (?l . line)
                               (?f . defun)
-                              (?s . sentence)))
+                              (?s . sentence))
+      meow-selection-command-fallback '((meow-change . meow-change-char)
+                                        (meow-kill . meow-backward-delete)
+                                        (meow-cancel-selection . keyboard-quit)
+                                        (meow-pop-selection . meow-pop-grab)
+                                        (meow-beacon-change . meow-beacon-change-char)))
+
+    ;; (setq meow-goto-keymap (make-keymap))
+    ;; (meow-define-state goto
+    ;;   "meow state for interacting with smartparens"
+    ;;   :lighter " [GOTO]"
+    ;;   :keymap meow-goto-keymap)
+    ;;
+    ;; ;; meow-define-state creates the variable
+    ;; ;; (setq meow-cursor-type-paren 'hollow)
+    ;;
+    ;; (meow-define-keys 'goto
+    ;;   '("<escape>" . meow-normal-mode)
+    ;;   '("g" . meow-goto-line)
+    ;;   '("l" . move-end-of-line)
+    ;;   '("h" . move-beginning-of-line)
+    ;;   '("s" . beginning-of-line-text))
+
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
      '("k" . meow-prev)
@@ -260,13 +344,15 @@
      '("." . meow-bounds-of-thing)
      '("[" . meow-beginning-of-thing)
      '("]" . meow-end-of-thing)
+     '("{" . backward-paragraph)
+     '("}" . forward-paragraph)
      '("a" . meow-append)
      '("A" . meow-open-below)
      '("b" . meow-back-word)
      '("B" . meow-back-symbol)
      '("c" . meow-change)
      '("d" . meow-kill)
-     '("D" . meow-backward-delete)
+     '("D" . meow-C-k)
      '("e" . meow-mark-word)
      '("E" . meow-mark-symbol)
      '("g" . meow-goto-line)
@@ -283,9 +369,10 @@
      '("L" . meow-right-expand)
      '("m" . meow-join)
      '("n" . meow-search)
-     '("o" . meow-open-below)
-     '("O" . meow-open-above)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
      '("p" . meow-yank)
+     '("P" . meow-replace)
      '("q" . meow-cancel-selection)
      '("Q" . meow-quit)
      '("r" . meow-replace)
@@ -301,8 +388,6 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
-     '("}" . meow-block)
-     '("{" . meow-to-block)
      '("<escape>" . meow-cancel-selection))
   ; Find
   (meow-normal-define-key
@@ -315,8 +400,16 @@
    '("/" . meow-visit))
   ; Scrolling
   (meow-normal-define-key
-   '("M-[" . 'View-scroll-half-page-backward)  
-   '("M-]" . 'View-scroll-half-page-forward)))
+   '("M-[" . View-scroll-half-page-backward)  
+   '("M-]" . View-scroll-half-page-forward)))
+
+  ; Mode line
+  ;; ((normal . " 🞄")
+  ;;  (motion . " ➜")
+  ;;  (keypad . " ")
+  ;;  (insert . " ")
+  ;;  (beacon . " ⇶"))
+
   :config 
   (meow-setup)
   (meow-global-mode 1)
@@ -329,11 +422,10 @@
 ;; 	(setq
 ;;       evil-want-integration t
 ;;       evil-want-keybinding nil ; Required for evil-collection
-;; 	    evil-undo-system 'undo-redo ; Use native redo
-;; 	    evil-want-C-u-scroll t
-;; 	    evil-want-C-d-scroll t
-;;       evil-want-Y-yank-to-eol t
-;; 	)
+;; 	     evil-undo-system 'undo-redo ; Use native redo
+;; 	     evil-want-C-u-scroll t
+;; 	     evil-want-C-d-scroll t
+;;       evil-want-Y-yank-to-eol t)
 ;;   :config
 ;; 	(evil-mode 1))
 ;; (use-package evil-collection
@@ -345,15 +437,7 @@
 ;;   (evil-define-key nil evil-motion-state-map
 ;;   "s" 'avy-goto-word-1-below
 ;;   "S" 'avy-goto-word-1-above))
-;; (use-package evil-snipe
-;;   :after evil
-;;   :config
-;;   (evil-snipe-mode 1)
-;;   (evil-snipe-override-mode 1))
 
-(use-package which-key
-  :init
-  (which-key-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ; Completion
@@ -606,9 +690,16 @@
 
 (use-package org
   :hook (org-mode . my/org-mode-setup)
+  :custom
+    (org-ellipsis " ▾")
+    (org-hide-emphasis-markers t)
+    (org-pretty-entities t)
+    (org-log-done 'time)
+    (org-list-allow-alphabetical t)
+    (org-catch-invisible-edits 'smart)
+    (org-startup-with-latex-preview t)
+    (org-preview-latex-default-process 'dvisvgm)
   :config
-  (setq org-ellipsis " ▾"
-        org-hide-emphasis-markers nil)
   ;; Make sure org-indent face is available
   (require 'org-indent)
 
@@ -617,76 +708,41 @@
   (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+
+  ;; Make headings bigger
+  (custom-theme-set-faces
+    'user
+    '(variable-pitch ((t (:family "SF Pro" :height 180))))
+    '(outline-1 ((t (:weight extra-bold :height 1.25))))
+    '(outline-2 ((t (:weight bold :height 1.15))))
+    '(outline-3 ((t (:weight bold :height 1.12))))
+    '(outline-4 ((t (:weight semi-bold :height 1.09))))
+    '(outline-5 ((t (:weight semi-bold :height 1.06))))
+    '(outline-6 ((t (:weight semi-bold :height 1.03))))
+    '(outline-8 ((t (:weight semi-bold))))
+    '(outline-9 ((t (:weight semi-bold))))
+    '(org-document-title ((t (:height 1.2)))))
+
   ;; Replace list hyphen with dot
   (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.07)
-                  (org-level-4 . 1.05)
-                  (org-level-5 . 1.03)
-                  (org-level-6 . 1)
-                  (org-level-7 . 1)
-                  (org-level-8 . 1)))
-    (set-face-attribute (car face) nil :font "Avenir Next" :weight 'regular :height (cdr face)))
+                        '(("^ *\\([-]\\) "
+                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-  ; Use tectonic instead of latex
-  ;; (setq org-preview-latex-process-alist
-  ;;   '((dvipng 
-  ;;      :programs ("tectonic" "dvipng")
-  ;;      :description "dvi > png"
-  ;;      :message "you need to install the programs: tectonic and dvipng."
-  ;;      :image-input-type "xdv"
-  ;;      :image-output-type "png"
-  ;;      :image-size-adjust (1.0 . 1.0)
-  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
-  ;;      :image-converter ("dvipng -D %D -T tight -o %O %f")
-  ;;      :transparent-image-converter ("dvipng -D %D -T tight -bg Transparent -o %O %f"))
-  ;;    (dvisvgm
-  ;;      :programs ("tectonic" "dvisvgm")
-  ;;      :description "dvi > svg"
-  ;;      :message "you need to install the programs: tectonic and dvisvgm."
-  ;;      :image-input-type "xdv" 
-  ;;      :image-output-type "svg" 
-  ;;      :image-size-adjust (1.7 . 1.5)
-  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
-  ;;      :image-converter ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O"))
-  ;;    (imagemagick
-  ;;      :programs ("tectonic" "convert")
-  ;;      :description "pdf > png" 
-  ;;      :message "you need to install the programs: tectonic and imagemagick." 
-  ;;      :image-input-type "pdf" 
-  ;;      :image-output-type "png" 
-  ;;      :image-size-adjust (1.0 . 1.0)
-  ;;      :latex-compiler ("tectonic -X compile %f -Z shell-escape --outfmt xdv --outdir %o")
-  ;;      :image-converter ("convert -density %D -trim -antialias %f -quality 100 %O"))))
-
-  (setq-default org-latex-pdf-process '("tectonic -Z shell-escape --outdir=%o %f"))
-  ;; (setq-default org-preview-latex-default-process 'dvisvgm)
-
+  ; Make latex previews similar in size to the body text
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.8))
+  ; Use svg for latex previews
   
-  ; Remove some redundant packages
-  ; (see https://github.com/shaunsingh/nyoom.emacs/blob/f8d8b81fd503ff0ea6a68541d75f0b654a10c1b3/config.org#adjust-default-packages)
-  ;; (setq org-latex-default-packages-alist
-  ;;       '(("AUTO" "inputenc" t ("pdflatex"))
-  ;;         ("T1" "fontenc" t ("pdflatex"))
-  ;;         ("" "fontspec" t)
-  ;;         ("" "xcolor" nil)
-  ;;
-  ;;         ("" "hyperref" nil)
-  ;;         ("" "firamath-otf" t)
-  ;;         "\\setmonofont{Liga SFMono Nerd Font}"
-  ;;         "\\setmainfont{Avenir Next}"))
+  ; Use tectonic instead of pdflatex
+  (setq-default org-latex-pdf-process '("tectonic -Z shell-escape --outdir=%o %f"))
 
   ; Prettier latex fragments 
   ; (stolen from https://tecosaur.github.io/emacs-config/config.html#latex-fragments)
-  (require 'org-src)
-  (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t)))
-  (setq org-highlight-latex-and-related '(native script entities))
+  ;; (require 'org-src)
+  ;; (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t)))
+  ;; (setq org-highlight-latex-and-related '(native script entities))
   (setq org-format-latex-header "
       \\documentclass{article}
       \\usepackage[usenames]{xcolor}
@@ -719,6 +775,10 @@
 ; Automatically show latex previews when the cursor is not inside the latex block
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode))
+
+; Same for bold / italics / special characters
+(use-package org-appear
+  :hook (org-mode . org-appear-mode))
 
 ; Pretty tags / dates / progress bars. Config taken from nyoom emacs:
 ; https://github.com/shaunsingh/nyoom.emacs/blob/main/config.org#svg-tag-mode
@@ -810,18 +870,15 @@
    (org-agenda-finalize . org-modern-agenda))
   :custom
   (org-modern-block-fringe t)
-  (org-modern-block-name t)
-  (org-modern-checkbox t)
-  (org-modern-footnote t)
+  ;; (org-modern-footnote t)
   (org-modern-hide-stars 'leading)
   (org-modern-horizontal-rule t)
-  (org-modern-internal-target t)
+  ;; (org-modern-internal-target t)
   (org-modern-keyword t)
-  (org-modern-radio-target t)
+  ;; (org-modern-radio-target t)
   (org-modern-table t)
   (org-modern-table-vertical 1)
   (org-modern-table-horizontal 1)
-  (org-modern-star '("◉" "○" "◈" "◇" "✳"))
 
   ; These are handled by svg-tag-mode instead
   (org-modern-label-border nil)
@@ -845,8 +902,28 @@
   (add-hook 'dired-mode-hook #'denote-dired-mode))
 
 
+; Dashboard
+(use-package dashboard
+  :custom
+  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")) "Open dashboard when using emacsclient -c")
+  (dashboard-banner-logo-title "Let's get started.")
+  (dashboard-startup-banner (concat user-emacs-directory "resources/bulbasaur.png"))
+  (dashboard-center-content t)
+  (dashboard-set-init-info t "Show number of packages and startup time")
+  :config
+  ;; (setq dashboard-image-banner-max-height (/ (window-pixel-height) 4))
+  (setq dashboard-image-banner-max-height 252)
+  (dashboard-setup-startup-hook))
+
+
 ; Enhanced rust support
 (use-package rustic
   :init
   (setq rustic-lsp-client 'eglot)
 )
+
+; Cooking recipe support for org
+(use-package org-chef
+  :commands (org-chef-insert-recipe org-chef-get-recipe-from-url))
+
+
