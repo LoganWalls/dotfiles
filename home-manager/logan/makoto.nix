@@ -33,6 +33,7 @@
     ### Shell tools
     age # encryption
     bat # modern cat
+    coreutils-prefixed # for compat with emacs
     exa # modern ls
     delta # modern diff
     fd # modern find
@@ -116,10 +117,16 @@
       br = "branch";
       wip = "commit -m 'WIP'";
     };
+    attributes = [
+      "*.org   diff=org"
+    ];
     delta.enable = true;
     extraConfig = {
       url = {"git@github.com:" = {insteadOf = "https://github.com/";};};
       init.defaultBranch = "main";
+      diff.org = {
+        xfuncname = "^(\\*+ +.*)$";
+      };
     };
   };
   programs.direnv = {
