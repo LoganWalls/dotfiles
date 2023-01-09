@@ -24,7 +24,6 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    fileicon
     alacritty # Terminal emulator
 
     ### Editors
@@ -211,11 +210,6 @@
         src = pkgs.zsh-history-substring-search;
         file = "share/zsh-history-substring-search/zsh-history-substring-search.zsh";
       }
-      # {
-      #   name = "zsh-forgit";
-      #   src = pkgs.zsh-forgit;
-      #   file = "share/zsh-forgit/forgit.plugin.zsh";
-      # }
     ];
   };
 }
