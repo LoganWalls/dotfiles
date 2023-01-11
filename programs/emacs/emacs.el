@@ -8,8 +8,46 @@
 (use-package gcmh
   :demand ; load immediately
   :config
-  (gcmh-mode 1)
-)
+  (gcmh-mode 1))
+
+
+;;; Some helpful macros stolen from Doom Emacs.
+(defmacro defadvice! (symbol arglist &optional docstring &rest body)
+  "Define an advice called SYMBOL and add it to PLACES.
+ARGLIST is as in `defun'. WHERE is a keyword as passed to `advice-add', and
+PLACE is the function to which to add the advice, like in `advice-add'.
+DOCSTRING and BODY are as in `defun'.
+\(fn SYMBOL ARGLIST &optional DOCSTRING &rest [WHERE PLACES...] BODY\)"
+  (declare (doc-string 3) (indent defun))
+  (unless (stringp docstring)
+    (push docstring body)
+    (setq docstring nil))
+  (let (where-alist)
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(progn
+       (defun ,symbol ,arglist ,docstring ,@body)
+       (dolist (targets (list ,@(nreverse where-alist)))
+         (dolist (target (cdr targets))
+           (advice-add target (car targets) #',symbol))))))
+
+(defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
+  "Undefine an advice called SYMBOL.
+This has the same signature as `defadvice!' an exists as an easy undefiner when
+testing advice (when combined with `rotate-text').
+\(fn SYMBOL ARGLIST &optional DOCSTRING &rest [WHERE PLACES...] BODY\)"
+  (declare (doc-string 3) (indent defun))
+  (let (where-alist)
+    (unless (stringp docstring)
+      (push docstring body))
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(dolist (targets (list ,@(nreverse where-alist)))
+       (dolist (target (cdr targets))
+         (advice-remove target #',symbol)))))
+
 
 ; Basic UI
 (setq confirm-kill-emacs 'yes-or-no-p) ; pevent accidentally quitting the GUI
@@ -182,7 +220,6 @@
 
 ; Theme
 (use-package doom-themes
-  :after lambda-line
   :config
   (load-theme 'doom-tokyo-night t)
   ;; Enable flashing mode-line on errors
@@ -222,7 +259,7 @@
   (set-face-attribute 'lambda-line-active-status-RW nil :foreground (doom-color 'green))
   (set-face-attribute 'lambda-line-active-status-MD nil :foreground (doom-color 'red))
   (set-face-attribute 'lambda-line-active-status-RO nil :foreground (doom-color 'yellow))
-  (set-face-attribute 'lambda-line-visual-bell nil :inherit 'doom-themes-visual-bell)
+  (set-face-attribute 'lambda-line-visual-bell nil :background 'unspecified :inherit 'doom-themes-visual-bell)
   (lambda-line-mode) 
   ;; set divider line in footer
   (when (eq lambda-line-position 'top)
@@ -285,7 +322,7 @@
                               (?f . defun)
                               (?s . sentence))
       meow-selection-command-fallback '((meow-change . meow-change-char)
-                                        (meow-kill . meow-backward-delete)
+                                        (meow-kill . meow-delete)
                                         (meow-cancel-selection . keyboard-quit)
                                         (meow-pop-selection . meow-pop-grab)
                                         (meow-beacon-change . meow-beacon-change-char)))
@@ -778,6 +815,11 @@
 
 ; Same for bold / italics / special characters
 (use-package org-appear
+  :custom
+  (org-hide-emphasis-markers t)
+  (org-appear-autolinks t)
+  (org-appear-autosubmarkers t)
+  (org-appear-inside-latex t)
   :hook (org-mode . org-appear-mode))
 
 ; Pretty tags / dates / progress bars. Config taken from nyoom emacs:
@@ -907,7 +949,7 @@
   :custom
   (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")) "Open dashboard when using emacsclient -c")
   (dashboard-banner-logo-title "Let's get started.")
-  (dashboard-startup-banner (concat user-emacs-directory "resources/bulbasaur.png"))
+  (dashboard-startup-banner (concat user-emacs-directory "custom/bulbasaur.png"))
   (dashboard-center-content t)
   (dashboard-set-init-info t "Show number of packages and startup time")
   :config
@@ -926,4 +968,269 @@
 (use-package org-chef
   :commands (org-chef-insert-recipe org-chef-get-recipe-from-url))
 
+; HTML Exports
+; Stolen from https://tecosaur.github.io/emacs-config/config.html#html-export
+(define-minor-mode org-fancy-html-export-mode
+  "Toggle my fabulous org export tweaks. While this mode itself does a little bit,
+the vast majority of the change in behaviour comes from switch statements in:
+ - `org-html-template-fancier'
+ - `org-html--build-meta-info-extended'
+ - `org-html-src-block-collapsable'
+ - `org-html-block-collapsable'
+ - `org-html-table-wrapped'
+ - `org-html--format-toc-headline-colapseable'
+ - `org-html--toc-text-stripped-leaves'
+ - `org-export-html-headline-anchor'"
+  :global t
+  :init-value t
+  (if org-fancy-html-export-mode
+      (setq org-html-style-default org-html-style-fancy
+            org-html-meta-tags #'org-html-meta-tags-fancy
+            org-html-checkbox-type 'html-span)
+    (setq org-html-style-default org-html-style-plain
+          org-html-meta-tags #'org-html-meta-tags-default
+          org-html-checkbox-type 'html)))
+(with-eval-after-load 'ox-html
 
+; Nice CSS
+(setq org-html-style-plain org-html-style-default
+      org-html-htmlize-output-type 'css
+      org-html-doctype "html5"
+      org-html-html5-fancy t)
+(defun org-html-reload-fancy-style ()
+  (interactive)
+  (setq org-html-style-fancy
+        (concat (f-read-text (expand-file-name "custom/org-export/html/header.html" user-emacs-directory))
+                "<script>\n"
+                (f-read-text (expand-file-name "custom/org-export/html/main.js" user-emacs-directory))
+                "</script>\n<style>\n"
+                (f-read-text (expand-file-name "custom/org-export/html/main.min.css" user-emacs-directory))
+                "</style>"))
+  (when org-fancy-html-export-mode
+    (setq org-html-style-default org-html-style-fancy)))
+(org-html-reload-fancy-style)
+
+; Collapsable blocks
+(defvar org-html-export-collapsed nil)
+(eval '(cl-pushnew '(:collapsed "COLLAPSED" "collapsed" org-html-export-collapsed t)
+                   (org-export-backend-options (org-export-get-backend 'html))))
+(add-to-list 'org-default-properties "EXPORT_COLLAPSED")
+
+; Nicer code blocks with clipboard copy button
+(defadvice! org-html-src-block-collapsable (orig-fn src-block contents info)
+  "Wrap the usual <pre> block in a <details>"
+  :around #'org-html-src-block
+  (if (or (not org-fancy-html-export-mode) (bound-and-true-p org-msg-export-in-progress))
+      (funcall orig-fn src-block contents info)
+    (let* ((properties (cadr src-block))
+           (lang (mode-name-to-lang-name
+                  (plist-get properties :language)))
+           (name (plist-get properties :name))
+           (ref (org-export-get-reference src-block info))
+           (collapsed-p (member (or (org-export-read-attribute :attr_html src-block :collapsed)
+                                    (plist-get info :collapsed))
+                                '("y" "yes" "t" t "true" "all"))))
+      (format
+       "<details id='%s' class='code'%s><summary%s>%s</summary>
+<div class='gutter'>
+<a href='#%s'>#</a>
+<button title='Copy to clipboard' onclick='copyPreToClipbord(this)'>⎘</button>\
+</div>
+%s
+</details>"
+       ref
+       (if collapsed-p "" " open")
+       (if name " class='named'" "")
+       (concat
+        (when name (concat "<span class=\"name\">" name "</span>"))
+        "<span class=\"lang\">" lang "</span>")
+       ref
+       (if name
+           (replace-regexp-in-string (format "<pre\\( class=\"[^\"]+\"\\)? id=\"%s\">" ref) "<pre\\1>"
+                                     (funcall orig-fn src-block contents info))
+         (funcall orig-fn src-block contents info))))))
+
+(defun mode-name-to-lang-name (mode)
+  (or (cadr (assoc mode
+                   '(("asymptote" "Asymptote")
+                     ("awk" "Awk")
+                     ("C" "C")
+                     ("clojure" "Clojure")
+                     ("css" "CSS")
+                     ("D" "D")
+                     ("ditaa" "ditaa")
+                     ("dot" "Graphviz")
+                     ("calc" "Emacs Calc")
+                     ("emacs-lisp" "Emacs Lisp")
+                     ("fortran" "Fortran")
+                     ("gnuplot" "gnuplot")
+                     ("haskell" "Haskell")
+                     ("hledger" "hledger")
+                     ("java" "Java")
+                     ("js" "Javascript")
+                     ("latex" "LaTeX")
+                     ("ledger" "Ledger")
+                     ("lisp" "Lisp")
+                     ("lilypond" "Lilypond")
+                     ("lua" "Lua")
+                     ("matlab" "MATLAB")
+                     ("mscgen" "Mscgen")
+                     ("ocaml" "Objective Caml")
+                     ("octave" "Octave")
+                     ("org" "Org mode")
+                     ("oz" "OZ")
+                     ("plantuml" "Plantuml")
+                     ("processing" "Processing.js")
+                     ("python" "Python")
+                     ("R" "R")
+                     ("ruby" "Ruby")
+                     ("sass" "Sass")
+                     ("scheme" "Scheme")
+                     ("screen" "Gnu Screen")
+                     ("sed" "Sed")
+                     ("sh" "shell")
+                     ("sql" "SQL")
+                     ("sqlite" "SQLite")
+                     ("forth" "Forth")
+                     ("io" "IO")
+                     ("J" "J")
+                     ("makefile" "Makefile")
+                     ("maxima" "Maxima")
+                     ("perl" "Perl")
+                     ("picolisp" "Pico Lisp")
+                     ("scala" "Scala")
+                     ("shell" "Shell Script")
+                     ("ebnf2ps" "ebfn2ps")
+                     ("cpp" "C++")
+                     ("abc" "ABC")
+                     ("coq" "Coq")
+                     ("groovy" "Groovy")
+                     ("bash" "bash")
+                     ("csh" "csh")
+                     ("ash" "ash")
+                     ("dash" "dash")
+                     ("ksh" "ksh")
+                     ("mksh" "mksh")
+                     ("posh" "posh")
+                     ("ada" "Ada")
+                     ("asm" "Assembler")
+                     ("caml" "Caml")
+                     ("delphi" "Delphi")
+                     ("html" "HTML")
+                     ("idl" "IDL")
+                     ("mercury" "Mercury")
+                     ("metapost" "MetaPost")
+                     ("modula-2" "Modula-2")
+                     ("pascal" "Pascal")
+                     ("ps" "PostScript")
+                     ("prolog" "Prolog")
+                     ("simula" "Simula")
+                     ("tcl" "tcl")
+                     ("tex" "LaTeX")
+                     ("plain-tex" "TeX")
+                     ("verilog" "Verilog")
+                     ("vhdl" "VHDL")
+                     ("xml" "XML")
+                     ("nxml" "XML")
+                     ("conf" "Configuration File"))))
+      mode))
+(defun org-html-block-collapsable (orig-fn block contents info)
+  "Wrap the usual block in a <details>"
+  (if (or (not org-fancy-html-export-mode) (bound-and-true-p org-msg-export-in-progress))
+      (funcall orig-fn block contents info)
+    (let ((ref (org-export-get-reference block info))
+          (type (pcase (car block)
+                  ('property-drawer "Properties")))
+          (collapsed-default (pcase (car block)
+                               ('property-drawer t)
+                               (_ nil)))
+          (collapsed-value (org-export-read-attribute :attr_html block :collapsed))
+          (collapsed-p (or (member (org-export-read-attribute :attr_html block :collapsed)
+                                   '("y" "yes" "t" t "true"))
+                           (member (plist-get info :collapsed) '("all")))))
+      (format
+       "<details id='%s' class='code'%s>
+<summary%s>%s</summary>
+<div class='gutter'>\
+<a href='#%s'>#</a>
+<button title='Copy to clipboard' onclick='copyPreToClipbord(this)'>⎘</button>\
+</div>
+%s\n
+</details>"
+       ref
+       (if (or collapsed-p collapsed-default) "" " open")
+       (if type " class='named'" "")
+       (if type (format "<span class='type'>%s</span>" type) "")
+       ref
+       (funcall orig-fn block contents info)))))
+
+(advice-add 'org-html-example-block   :around #'org-html-block-collapsable)
+(advice-add 'org-html-fixed-width     :around #'org-html-block-collapsable)
+(advice-add 'org-html-property-drawer :around #'org-html-block-collapsable)
+
+; Add additional code styling to htmlize export
+(autoload #'highlight-numbers--turn-on "highlight-numbers")
+(add-hook 'htmlize-before-hook #'highlight-numbers--turn-on)
+
+; Hide table overflows
+(defadvice! org-html-table-wrapped (orig-fn table contents info)
+  "Wrap the usual <table> in a <div>"
+  :around #'org-html-table
+  (if (or (not org-fancy-html-export-mode) (bound-and-true-p org-msg-export-in-progress))
+      (funcall orig-fn table contents info)
+    (let* ((name (plist-get (cadr table) :name))
+           (ref (org-export-get-reference table info)))
+      (format "<div id='%s' class='table'>
+<div class='gutter'><a href='#%s'>#</a></div>
+<div class='tabular'>
+%s
+</div>\
+</div>"
+              ref ref
+              (if name
+                  (replace-regexp-in-string (format "<table id=\"%s\"" ref) "<table"
+                                            (funcall orig-fn table contents info))
+                (funcall orig-fn table contents info))))))
+
+; Collapsable Table of Contents
+(defadvice! org-html--format-toc-headline-colapseable (orig-fn headline info)
+  "Add a label and checkbox to `org-html--format-toc-headline's usual output,
+to allow the TOC to be a collapseable tree."
+  :around #'org-html--format-toc-headline
+  (if (or (not org-fancy-html-export-mode) (bound-and-true-p org-msg-export-in-progress))
+      (funcall orig-fn headline info)
+    (let ((id (or (org-element-property :CUSTOM_ID headline)
+                  (org-export-get-reference headline info))))
+      (format "<input type='checkbox' id='toc--%s'/><label for='toc--%s'>%s</label>"
+              id id (funcall orig-fn headline info)))))
+(defadvice! org-html--toc-text-stripped-leaves (orig-fn toc-entries)
+  "Remove label"
+  :around #'org-html--toc-text
+  (if (or (not org-fancy-html-export-mode) (bound-and-true-p org-msg-export-in-progress))
+      (funcall orig-fn toc-entries)
+    (replace-regexp-in-string "<input [^>]+><label [^>]+>\\(.+?\\)</label></li>" "\\1</li>"
+                              (funcall orig-fn toc-entries))))
+
+; Make verbatim different than code
+(setq org-html-text-markup-alist
+      '((bold . "<b>%s</b>")
+        (code . "<code>%s</code>")
+        (italic . "<i>%s</i>")
+        (strike-through . "<del>%s</del>")
+        (underline . "<span class=\"underline\">%s</span>")
+        (verbatim . "<kbd>%s</kbd>")))
+
+; Add anchors for each heading
+(defun org-export-html-headline-anchor (text backend info)
+  (when (and (org-export-derived-backend-p backend 'html)
+             (not (org-export-derived-backend-p backend 're-reveal))
+             org-fancy-html-export-mode)
+    (unless (bound-and-true-p org-msg-export-in-progress)
+      (replace-regexp-in-string
+       "<h\\([0-9]\\) id=\"\\([a-z0-9-]+\\)\">\\(.*[^ ]\\)<\\/h[0-9]>" ; this is quite restrictive, but due to `org-reference-contraction' I can do this
+       "<h\\1 id=\"\\2\">\\3<a aria-hidden=\"true\" href=\"#\\2\">#</a> </h\\1>"
+       text))))
+(add-to-list 'org-export-filter-headline-functions
+             'org-export-html-headline-anchor)
+;;;;;; End HTML Export Config ;;;;;;
+)
