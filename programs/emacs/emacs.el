@@ -51,6 +51,7 @@ testing advice (when combined with `rotate-text').
 
 ; Basic UI
 (setq confirm-kill-emacs 'yes-or-no-p) ; pevent accidentally quitting the GUI
+(setq use-short-answers t) ; respond y / n
 (setq inhibit-startup-screen t)
 (setq use-dialog-box nil) ; no GUI dialogs
 (scroll-bar-mode -1) ; no scoll bar
@@ -59,6 +60,8 @@ testing advice (when combined with `rotate-text').
 (set-fringe-mode 10) ; add padding
 (menu-bar-mode 1) ; use menu bar (required to make yabai work)
 (setq visual-bell t) ; no beeping
+
+
 ; Remove OS window decoration 
 (add-to-list 'default-frame-alist '(undecorated-round . t))
 ; Set background transparency
@@ -105,118 +108,30 @@ testing advice (when combined with `rotate-text').
 (setq pixel-scroll-precision-use-momentum t)
 
 ; Add window margins on the left and right
-; I'd like to have top / bottom too, but there's
-; no simple way to do it in emacs right now
 (setq-default left-margin-width 1 right-margin-width 1)
 (set-window-buffer nil (current-buffer))
+; Add window margins (top / bottom)
+; TODO: this is not working
+(use-package topspace
+  :custom
+  (topspace-center-position 1)
+  :config
+  (global-topspace-mode 1))
+
 
 ; Dired
 ; Use GNU ls on macOS
+; NOTE: can remove this if using dirvish
 (when (string= system-type "darwin")
   (setq dired-use-ls-dired t
         insert-directory-program "gls"
         dired-listing-switches "-aBhl --group-directories-first"))
 
-; Add colors and icons (stolen from: https://github.com/doomemacs/doomemacs/blob/master/modules/emacs/dired/config.el)
-; FIXME or replace with dirvish (dirvish also handles gnu ls)
-;; (use-package diredfl
-;;   :hook (dired-mode . diredfl-mode))
-;; (use-package all-the-icons-dired
-;;   :hook (dired-mode . all-the-icons-dired-mode)
-;;   :config
-;;   ;; HACK Fixes #1929: icons break file renaming in Emacs 27+, because the icon
-;;   ;;      is considered part of the filename, so we disable icons while we're in
-;;   ;;      wdired-mode.
-;;   (defvar +wdired-icons-enabled -1)
-;;
-;;   ;; display icons with colors
-;;   (setq all-the-icons-dired-monochrome nil)
-;;
-;;   (defadvice +dired-disable-icons-in-wdired-mode-a (&rest _)
-;;     :before #'wdired-change-to-wdired-mode
-;;     (setq-local +wdired-icons-enabled (if all-the-icons-dired-mode 1 -1))
-;;     (when all-the-icons-dired-mode
-;;       (all-the-icons-dired-mode -1)))
-;;
-;;   (defadvice +dired-restore-icons-after-wdired-mode-a (&rest _)
-;;     :after #'wdired-change-to-dired-mode
-;;     (all-the-icons-dired-mode +wdired-icons-enabled)))
-
-; Font
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "SF Pro" :height 180))))
- '(default ((t (:family "Liga SFMono Nerd Font" :height 180))))
- '(fixed-pitch ((t (:family "Liga SFMono Nerd Font" :height 180)))))
-
-
-(use-package ligature
-  :config
-  ;; Enable all Cascadia and Fira Code ligatures in programming modes
-  ;; (ligature-set-ligatures 'prog-mode
-  ;;                       '(;; == === ==== => =| =>>=>=|=>==>> ==< =/=//=// =~
-  ;;                         ;; =:= =!=
-  ;;                         ("=" (rx (+ (or ">" "<" "|" "/" "~" ":" "!" "="))))
-  ;;                         ;; ;; ;;;
-  ;;                         (";" (rx (+ ";")))
-  ;;                         ;; && &&&
-  ;;                         ("&" (rx (+ "&")))
-  ;;                         ;; !! !!! !. !: !!. != !== !~
-  ;;                         ("!" (rx (+ (or "=" "!" "\." ":" "~"))))
-  ;;                         ;; ?? ??? ?:  ?=  ?.
-  ;;                         ("?" (rx (or ":" "=" "\." (+ "?"))))
-  ;;                         ;; %% %%%
-  ;;                         ("%" (rx (+ "%")))
-  ;;                         ;; |> ||> |||> ||||> |] |} || ||| |-> ||-||
-  ;;                         ;; |->>-||-<<-| |- |== ||=||
-  ;;                         ;; |==>>==<<==<=>==//==/=!==:===>
-  ;;                         ("|" (rx (+ (or ">" "<" "|" "/" ":" "!" "}" "\]"
-  ;;                                         "-" "=" ))))
-  ;;                         ;; \\ \\\ \/
-  ;;                         ("\\" (rx (or "/" (+ "\\"))))
-  ;;                         ;; ++ +++ ++++ +>
-  ;;                         ("+" (rx (or ">" (+ "+"))))
-  ;;                         ;; :: ::: :::: :> :< := :// ::=
-  ;;                         (":" (rx (or ">" "<" "=" "//" ":=" (+ ":"))))
-  ;;                         ;; // /// //// /\ /* /> /===:===!=//===>>==>==/
-  ;;                         ("/" (rx (+ (or ">"  "<" "|" "/" "\\" "\*" ":" "!"
-  ;;                                         "="))))
-  ;;                         ;; .. ... .... .= .- .? ..= ..<
-  ;;                         ("\." (rx (or "=" "-" "\?" "\.=" "\.<" (+ "\."))))
-  ;;                         ;; -- --- ---- -~ -> ->> -| -|->-->>->--<<-|
-  ;;                         ("-" (rx (+ (or ">" "<" "|" "~" "-"))))
-  ;;                         ;; *> */ *)  ** *** ****
-  ;;                         ("*" (rx (or ">" "/" ")" (+ "*"))))
-  ;;                         ;; <> <!-- <|> <: <~ <~> <~~ <+ <* <$ </  <+> <*>
-  ;;                         ;; <$> </> <|  <||  <||| <|||| <- <-| <-<<-|-> <->>
-  ;;                         ;; <<-> <= <=> <<==<<==>=|=>==/==//=!==:=>
-  ;;                         ;; << <<< <<<<
-  ;;                         ("<" (rx (+ (or "\+" "\*" "\$" "<" ">" ":" "~"  "!"
-  ;;                                         "-"  "/" "|" "="))))
-  ;;                         ;; >: >- >>- >--|-> >>-|-> >= >== >>== >=|=:=>>
-  ;;                         ;; >> >>> >>>>
-  ;;                         (">" (rx (+ (or ">" "<" "|" "/" ":" "=" "-"))))
-  ;;                         ;; #: #= #! #( #? #[ #{ #_ #_( ## ### #####
-  ;;                         ("#" (rx (or ":" "=" "!" "(" "\?" "\[" "{" "_(" "_"
-  ;;                                      (+ "#"))))
-  ;;                         ;; ~~ ~~~ ~=  ~-  ~@ ~> ~~>
-  ;;                         ("~" (rx (or ">" "=" "-" "@" "~>" (+ "~"))))
-  ;;                         ;; __ ___ ____ _|_ __|____|_
-  ;;                         ("_" (rx (+ (or "_" "|"))))
-  ;;                         ;; Fira code: 0xFF 0x12
-  ;;                         ("0" (rx (and "x" (+ (in "A-F" "a-f" "0-9")))))
-  ;;                         ;; Fira code:
-  ;;                         "Fl"  "Tl"  "fi"  "fj"  "fl"  "ft"
-  ;;                         ;; The few not covered by the regexps.
-  ;;                         "{|"  "[|"  "]#"  "(*"  "}#"  "$>"  "^="))
-  ;; Enables ligature checks globally in all buffers.
-  (global-ligature-mode t))
 
 ; Display page-breaks as horizontal rules
 (use-package page-break-lines
   :config
   (page-break-lines-mode))
-
 
 ; Theme
 (use-package doom-themes
@@ -225,15 +140,14 @@ testing advice (when combined with `rotate-text').
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
-
-;; (use-package lambda-themes
-;;   :custom
-;;   (lambda-themes-set-italic-comments t)
-;;   (lambda-themes-set-italic-keywords t)
-;;   (lambda-themes-set-variable-pitch t) 
-;;   :config
-;;   (load-theme 'lambda-dark t))
+  (doom-themes-org-config)
+  ; Font
+  (custom-theme-set-faces ; more minimal colors
+    'user
+    '(variable-pitch ((t (:family "SF Pro" :height 180))))
+    '(default ((t (:family "Liga SFMono Nerd Font" :height 180))))
+    '(fixed-pitch ((t (:family "Liga SFMono Nerd Font" :height 180))))
+    '(link ((t (:background nil))))))
 
 ; Mode line
 (use-package lambda-line
@@ -268,7 +182,6 @@ testing advice (when combined with `rotate-text').
 
 ; Modal editing
 (use-package avy)
-(use-package multiple-cursors)
 (use-package which-key
   :init
   (which-key-mode))
@@ -329,7 +242,7 @@ testing advice (when combined with `rotate-text').
 
     ;; (setq meow-goto-keymap (make-keymap))
     ;; (meow-define-state goto
-    ;;   "meow state for interacting with smartparens"
+    ;;   "meow state for emulation goto functionality in helix"
     ;;   :lighter " [GOTO]"
     ;;   :keymap meow-goto-keymap)
     ;;
@@ -717,60 +630,11 @@ testing advice (when combined with `rotate-text').
   (embark-collect-mode . consult-preview-at-point-mode))
 
 
-;; Org-Mode
-(defun my/org-mode-setup ()
-  (org-indent-mode)
-  (variable-pitch-mode 1)
-  (auto-fill-mode 0)
-  (visual-line-mode 1))
-
-
-(use-package org
-  :hook (org-mode . my/org-mode-setup)
-  :custom
-    (org-ellipsis " ▾")
-    (org-hide-emphasis-markers t)
-    (org-pretty-entities t)
-    (org-log-done 'time)
-    (org-list-allow-alphabetical t)
-    (org-catch-invisible-edits 'smart)
-    (org-startup-with-latex-preview t)
-    (org-preview-latex-default-process 'dvisvgm)
-  :config
-  ;; Make sure org-indent face is available
-  (require 'org-indent)
-
-  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
-
-  ;; Make headings bigger
-  (custom-theme-set-faces
-    'user
-    '(variable-pitch ((t (:family "SF Pro" :height 180))))
-    '(outline-1 ((t (:weight extra-bold :height 1.25))))
-    '(outline-2 ((t (:weight bold :height 1.15))))
-    '(outline-3 ((t (:weight bold :height 1.12))))
-    '(outline-4 ((t (:weight semi-bold :height 1.09))))
-    '(outline-5 ((t (:weight semi-bold :height 1.06))))
-    '(outline-6 ((t (:weight semi-bold :height 1.03))))
-    '(outline-8 ((t (:weight semi-bold))))
-    '(outline-9 ((t (:weight semi-bold))))
-    '(org-document-title ((t (:height 1.2)))))
-
-  ;; Replace list hyphen with dot
-  (font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(defun my/latex-preview-setup()
+  (require 'org)
 
   ; Make latex previews similar in size to the body text
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.8))
-  ; Use svg for latex previews
   
   ; Use tectonic instead of pdflatex
   (setq-default org-latex-pdf-process '("tectonic -Z shell-escape --outdir=%o %f"))
@@ -809,7 +673,112 @@ testing advice (when combined with `rotate-text').
     (setq org-format-latex-options
           (plist-put org-format-latex-options :background "Transparent")))
 
+; Make wrapped lines indent
+; TODO: make this only apply to already-indented items like lists
+; using adaptive-wrap-extra-indent > 0 works for list items, but also
+; indents lines in regular sentences. But when using 
+; adaptive-wrap-extra-indent = 0, the list items are not quite indented enough
+; Maybe look at this for alternative solution?
+; https://github.com/jrblevin/markdown-mode/issues/388#issuecomment-621238814
+(use-package adaptive-wrap
+  :custom
+  (adaptive-wrap-extra-indent 0)
+  :hook (markdown-mode . adaptive-wrap-prefix-mode))
+
+(defun my/markdown-mode-setup()
+  (buffer-face-set :inherit 'variable-pitch)
+  (setq line-spacing 0.5)
+  (setq fill-column 60) ; how many characters before a line should wrap
+  (visual-line-mode t))
+(use-package markdown-mode
+  :hook (markdown-mode . my/markdown-mode-setup)
+  :custom
+    (markdown-command '("pandoc" "--from=commonmark_x" "--to=html" "--standalone" "--katex"))
+    (markdown-header-scaling t "Use different sizes for headings")
+    (markdown-header-scaling-values '(1.4 1.3 1.2 1.1 1.0 1.0))
+    (markdown-list-item-bullets '("•" "◦"))
+    (markdown-enable-math t)
+    (markdown-enable-html t)
+    (markdown-hide-markup t)
+  :config
+  (custom-theme-set-faces ; more minimal styling
+  'user
+  '(markdown-markup-face ((t (:foreground unspecified :inherit 'font-lock-comment-face))))
+  '(markdown-bold-face ((t (:foreground unspecified :weight bold :inherit 'default))))
+  '(markdown-header-face ((t (:foreground unspecified :weight bold :inherit 'default))))
+  '(markdown-math-face ((t (:foreground unspecified :inherit 'default))))
+  '(markdown-link-face ((t (:foreground unspecified :inherit 'link))))
+  '(markdown-list-face ((t (:foreground unspecified :inherit 'font-lock-comment-face))))
+  '(markdown-code-face ((t (:foreground unspecified :inherit 'default))))
+  '(markdown-metadata-key-face ((t (:foreground unspecified :inherit 'font-lock-comment-face))))
+  '(markdown-html-tag-name-face ((t (:foreground unspecified :inherit 'font-lock-comment-face))))
+  '(markdown-metadata-value-face ((t (:foreground unspecified :inherit 'default))))
+  '(markdown-gfm-checkbox-face ((t (:inherit 'font-lock-keyword-face)))))
+  (my/latex-preview-setup))
+
+;; Wrap lines at fill-column in visual line mode
+(use-package visual-fill-column
+ :hook (visual-line-mode . visual-fill-column-mode)
+ :custom (visual-fill-column-center-text t))
+
 ; Automatically show latex previews when the cursor is not inside the latex block
+;; (use-package texfrag
+;;   :custom (texfrag-preview-buffer-at-start t)
+;;   :hook (markdown-mode . texfrag-mode))
+
+;; Org-Mode
+(defun my/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1))
+
+(use-package org
+  :hook (org-mode . my/org-mode-setup)
+  :custom
+    (org-ellipsis " ▾")
+    (org-hide-emphasis-markers t)
+    (org-pretty-entities t)
+    (org-log-done 'time)
+    (org-list-allow-alphabetical t)
+    (org-catch-invisible-edits 'smart)
+    (org-startup-with-latex-preview t)
+    (org-preview-latex-default-process 'dvisvgm "Use svg for latex previews")
+  :config
+  ;; Make sure org-indent face is available
+  (require 'org-indent)
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+
+  ;; Make headings bigger
+  (custom-theme-set-faces
+    'user
+    '(variable-pitch ((t (:family "SF Pro" :height 180))))
+    '(outline-1 ((t (:weight extra-bold :height 1.25))))
+    '(outline-2 ((t (:weight bold :height 1.15))))
+    '(outline-3 ((t (:weight bold :height 1.12))))
+    '(outline-4 ((t (:weight semi-bold :height 1.09))))
+    '(outline-5 ((t (:weight semi-bold :height 1.06))))
+    '(outline-6 ((t (:weight semi-bold :height 1.03))))
+    '(outline-8 ((t (:weight semi-bold))))
+    '(outline-9 ((t (:weight semi-bold))))
+    '(org-document-title ((t (:height 1.2)))))
+
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (my/latex-preview-setup))
+
+
+; Preview inline math fragments, but only when cursor is not inside them
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode))
 
@@ -947,22 +916,22 @@ testing advice (when combined with `rotate-text').
 ; Dashboard
 (use-package dashboard
   :custom
-  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")) "Open dashboard when using emacsclient -c")
+  (initial-buffer-choice (lambda ()
+                           (get-buffer-create "*dashboard*")
+                           (setq dashboard-image-banner-max-height (/ (window-pixel-height) 3))
+                           (dashboard-refresh-buffer)) "Open dashboard when using emacsclient -c")
   (dashboard-banner-logo-title "Let's get started.")
-  (dashboard-startup-banner (concat user-emacs-directory "custom/bulbasaur.png"))
+  (dashboard-startup-banner (concat user-emacs-directory "custom/espurr.png"))
   (dashboard-center-content t)
   (dashboard-set-init-info t "Show number of packages and startup time")
   :config
-  ;; (setq dashboard-image-banner-max-height (/ (window-pixel-height) 4))
-  (setq dashboard-image-banner-max-height 252)
   (dashboard-setup-startup-hook))
 
 
 ; Enhanced rust support
 (use-package rustic
   :init
-  (setq rustic-lsp-client 'eglot)
-)
+  (setq rustic-lsp-client 'eglot))
 
 ; Cooking recipe support for org
 (use-package org-chef
