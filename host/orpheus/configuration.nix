@@ -48,10 +48,6 @@
 
   networking = {
     hostName = "orpheus";
-    wireless = {
-      enable = true;
-      networks.ImaginaryCatWiFi.pskRaw = "7e962f26ee16f28125fca0550725f9c98498fd8f9538d00bad1eae63cb80cc28";
-    };
   };
 
   # This setups a SSH server. Very important if you're setting up a headless system.
