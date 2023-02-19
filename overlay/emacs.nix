@@ -32,28 +32,30 @@ in {
         pkgs.emacsPgtk.overrideAttrs (old: {
           patches =
             (old.patches or [])
-            ++ [
+            ++ (let
+              emacs-plus-commit-hash = "6d4b8346773907e42efacbcf5aac0b27b79cc3b9";
+            in [
               # Fix OS window role so that yabai can pick up emacs
               (fetchpatch {
-                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/emacs-28/fix-window-role.patch";
-                sha256 = "0c41rgpi19vr9ai740g09lka3nkjk48ppqyqdnncjrkfgvm2710z";
+                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/${emacs-plus-commit-hash}/patches/emacs-28/fix-window-role.patch";
+                sha256 = "sha256-+z/KfsBm1lvZTZNiMbxzXQGRTjkCFO4QPlEK35upjsE=";
               })
               # Use poll instead of select to get file descriptors
               (fetchpatch {
-                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/emacs-29/poll.patch";
-                sha256 = "0j26n6yma4n5wh4klikza6bjnzrmz6zihgcsdx36pn3vbfnaqbh5";
+                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/${emacs-plus-commit-hash}/patches/emacs-29/poll.patch";
+                sha256 = "sha256-jN9MlD8/ZrnLuP2/HUXXEVVd6A+aRZNYFdZF8ReJGfY=";
               })
               # Enable rounded window with no decoration
               (fetchpatch {
-                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/emacs-29/round-undecorated-frame.patch";
-                sha256 = "111i0r3ahs0f52z15aaa3chlq7ardqnzpwp8r57kfsmnmg6c2nhf";
+                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/${emacs-plus-commit-hash}/patches/emacs-29/round-undecorated-frame.patch";
+                sha256 = "sha256-qPenMhtRGtL9a0BvGnPF4G1+2AJ1Qylgn/lUM8J2CVI=";
               })
               # Make emacs aware of OS-level light/dark mode
               (fetchpatch {
-                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/master/patches/emacs-28/system-appearance.patch";
-                sha256 = "14ndp2fqqc95s70fwhpxq58y8qqj4gzvvffp77snm2xk76c1bvnn";
+                url = "https://raw.githubusercontent.com/d12frosted/homebrew-emacs-plus/${emacs-plus-commit-hash}/patches/emacs-28/system-appearance.patch";
+                sha256 = "sha256-oM6fXdXCWVcBnNrzXmF0ZMdp8j0pzkLE66WteeCutv8=";
               })
-            ];
+            ]);
 
           # Replace the app icon
           postFixup =
