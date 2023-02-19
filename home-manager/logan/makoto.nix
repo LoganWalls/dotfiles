@@ -82,7 +82,7 @@
     nodePackages.pyright # language server
 
     ### Lua
-    stylua # code formatting
+    lua-language-server
 
     ### Docker
     nodePackages.dockerfile-language-server-nodejs
