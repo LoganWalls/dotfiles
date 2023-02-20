@@ -69,6 +69,7 @@
       dashboard-in-overlay = false; # Don't show dashboard as a space
       show-recents = false; # Don't show recently used apps
       mru-spaces = false; # Don't rearrange based on recent use
+      mineffect = "scale"; # Use a quicker minimization effect
     };
     finder = {
       AppleShowAllExtensions = true; # Show all file extensions
