@@ -23,11 +23,12 @@
       rsync # sync files
       kitty # terminal
       wofi # launcher
+      pavucontrol # audio control
       wl-clipboard # enable copy/paste on wayland
     ];
 
     sessionVariables = {
-      MOZ_ENABLE_WAYLAND = true;
+      MOZ_ENABLE_WAYLAND = "1";
       QT_QPA_PLATFORM = "wayland";
     };
   };
@@ -46,15 +47,23 @@
     in {
       enable = true;
       package = pkgs.firefox-wayland;
-      extensions = with addons; [
-        multi-account-containers
-        ublock-origin
-        skip-redirect
-      ];
       profiles.logan = {
         name = "Logan";
+        extensions = with addons; [
+          multi-account-containers
+          ublock-origin
+          skip-redirect
+        ];
         settings = {
-          "browser.startup.homepage" = "https://start.duckduckgo.com";
+          "browser.startup.homepage" = "file:///home/logan/orpheus-start-page/index.html";
+          "ui.systemUsesDarkTheme" = true;
+
+          # Force hardware acceleration
+          "gfx.webrender.all" = true;
+          "media.ffmpeg.vaapi.enabled" = true;
+
+          # Make UIs larger
+          "font.size.systemFontScale" = 150;
 
           # Disable Firefox accounts
           "identity.fxaccounts.enabled" = false;
@@ -111,14 +120,18 @@
     enable = true;
     swaynag.enable = true;
     wrapperFeatures.gtk = true;
+    extraConfig = ''
+      for_window [app_id="firefox"] fullscreen enable
+    '';
     config = {
-      modifier = "Mod4";
       terminal = "kitty";
       menu = "wofi --show run";
 
       startup = [
+        # Wait a moment for the network to connect
+        {command = "sleep 1";}
         # Launch Firefox in full screen mode on start page.
-        {command = "firefox --kiosk https://start.duckduckgo.com";}
+        {command = "firefox";}
       ];
       # Display device configuration
       output = {

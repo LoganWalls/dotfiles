@@ -20,6 +20,12 @@
   hardware.opengl = {
     enable = true;
     driSupport = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # LIBVA_DRIVER_NAME=iHD
+      vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+      vaapiVdpau
+      libvdpau-va-gl
+    ];
   };
   nix = {
     # This will add each flake input as a registry
@@ -54,10 +60,12 @@
   # Feel free to remove if you don't need it.
   services.openssh = {
     enable = true;
-    # Forbid root login through SSH.
-    permitRootLogin = "no";
-    # Use keys only. Remove if you want to SSH using password (not recommended)
-    passwordAuthentication = false;
+    settings = {
+      # Forbid root login through SSH.
+      PermitRootLogin = "no";
+      # Use keys only. Remove if you want to SSH using password (not recommended)
+      PasswordAuthentication = false;
+    };
   };
 
   services.getty.autologinUser = "logan";
@@ -75,7 +83,8 @@
     };
   };
 
-  security.polkit.enable = true;
+  # Manage audio
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -88,6 +97,10 @@
     enable = true;
     wlr.enable = true;
   };
+
+  # Required for sway
+  security.polkit.enable = true;
+
   # Start sway automatically
   environment.loginShellInit = ''
     [[ "$(tty)" == /dev/tty1 ]] && sway
