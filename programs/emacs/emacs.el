@@ -186,207 +186,28 @@ testing advice (when combined with `rotate-text').
   :init
   (which-key-mode))
 
-; Meow
-(defmacro nt--call-negative (form)
-  `(let ((current-prefix-arg -1))
-     (call-interactively ,form)))
-(use-package meow
-  :after avy
-  :init 
-  (require 'avy)
-  (require 'view)
-  (defun nt-insert-at-cursor ()
-    (interactive)
-    (if meow--temp-normal
-        (progn
-          (message "Quit temporary normal mode")
-          (meow--switch-state 'motion))
-      (meow--cancel-selection)
-      (meow--switch-state 'insert)))
-  (defun nt-negative-find ()
-    (interactive)
-    (nt--call-negative 'meow-find))
-  (defun nt-negative-till ()
-    (interactive)
-    (nt--call-negative 'meow-till))
-  (defun meow-setup ()
-    (setq 
-      meow-cheatsheet-layout meow-cheatsheet-layout-qwerty
-      ; Disable numeric hints
-      meow-expand-hint-remove-delay 2.0  ; Show hints for longer
-      meow-expand-hint-counts '((word . 0) ; No hints when moving by words
-                               (line . 10)
-                               (block . 10)
-                               (find . 10)
-                               (till . 10)) 
-      ; Use characters themselves to describe pairs
-      meow-char-thing-table '((?\( . round)
-                              (?\) . round)
-                              (?\[ . square)
-                              (?\] . square)
-                              (?\{ . curly)
-                              (?\} . curly)
-                              (?\' . string)
-                              (?e . symbol)
-                              (?w . window)
-                              (?b . buffer)
-                              (?p . paragraph)
-                              (?l . line)
-                              (?f . defun)
-                              (?s . sentence))
-      meow-selection-command-fallback '((meow-change . meow-change-char)
-                                        (meow-kill . meow-delete)
-                                        (meow-cancel-selection . keyboard-quit)
-                                        (meow-pop-selection . meow-pop-grab)
-                                        (meow-beacon-change . meow-beacon-change-char)))
-
-    ;; (setq meow-goto-keymap (make-keymap))
-    ;; (meow-define-state goto
-    ;;   "meow state for emulation goto functionality in helix"
-    ;;   :lighter " [GOTO]"
-    ;;   :keymap meow-goto-keymap)
-    ;;
-    ;; ;; meow-define-state creates the variable
-    ;; ;; (setq meow-cursor-type-paren 'hollow)
-    ;;
-    ;; (meow-define-keys 'goto
-    ;;   '("<escape>" . meow-normal-mode)
-    ;;   '("g" . meow-goto-line)
-    ;;   '("l" . move-end-of-line)
-    ;;   '("h" . move-beginning-of-line)
-    ;;   '("s" . beginning-of-line-text))
-
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("{" . backward-paragraph)
-     '("}" . forward-paragraph)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-kill)
-     '("D" . meow-C-k)
-     '("e" . meow-mark-word)
-     '("E" . meow-mark-symbol)
-     '("g" . meow-goto-line)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("P" . meow-replace)
-     '("q" . meow-cancel-selection)
-     '("Q" . meow-quit)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("u" . meow-undo)
-     '("U" . undo-redo)
-     '("v" . meow-visit)
-     '("w" . meow-next-word)
-     '("W" . meow-next-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("<escape>" . meow-cancel-selection))
-  ; Find
-  (meow-normal-define-key
-   '("f" . meow-find)
-   '("F" . nt-negative-find)
-   '("s" . avy-goto-word-1-below)
-   '("S" . avy-goto-word-1-above)
-   '("t" . meow-till)
-   '("T" . nt-negative-till)
-   '("/" . meow-visit))
-  ; Scrolling
-  (meow-normal-define-key
-   '("M-[" . View-scroll-half-page-backward)  
-   '("M-]" . View-scroll-half-page-forward)))
-
-  ; Mode line
-  ;; ((normal . " 🞄")
-  ;;  (motion . " ➜")
-  ;;  (keypad . " ")
-  ;;  (insert . " ")
-  ;;  (beacon . " ⇶"))
-
-  :config 
-  (meow-setup)
-  (meow-global-mode 1)
-)
-
 ; Evil
-;; (use-package goto-chg)
-;; (use-package evil
-;;   :init
-;; 	(setq
-;;       evil-want-integration t
-;;       evil-want-keybinding nil ; Required for evil-collection
-;; 	     evil-undo-system 'undo-redo ; Use native redo
-;; 	     evil-want-C-u-scroll t
-;; 	     evil-want-C-d-scroll t
-;;       evil-want-Y-yank-to-eol t)
-;;   :config
-;; 	(evil-mode 1))
-;; (use-package evil-collection
-;;   :after (evil avy)
-;;   :custom (evil-collection-setup-minibuffer t)
-;;   :config
-;;   (require 'avy)
-;;   (evil-collection-init)
-;;   (evil-define-key nil evil-motion-state-map
-;;   "s" 'avy-goto-word-1-below
-;;   "S" 'avy-goto-word-1-above))
+(use-package goto-chg)
+(use-package evil
+  :init
+	(setq
+      evil-want-integration t
+      evil-want-keybinding nil ; Required for evil-collection
+	     evil-undo-system 'undo-redo ; Use native redo
+	     evil-want-C-u-scroll t
+	     evil-want-C-d-scroll t
+      evil-want-Y-yank-to-eol t)
+  :config
+	(evil-mode 1))
+(use-package evil-collection
+  :after (evil avy)
+  :custom (evil-collection-setup-minibuffer t)
+  :config
+  (require 'avy)
+  (evil-collection-init)
+  (evil-define-key nil evil-motion-state-map
+  "s" 'avy-goto-word-1-below
+  "S" 'avy-goto-word-1-above))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;
