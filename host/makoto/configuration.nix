@@ -46,6 +46,7 @@
     fonts = with pkgs; [
       meslo-lgs-nf # reccomended font for p10k
       apple-fonts
+      noto-fonts-emoji
       sf-mono-liga
       crimson-pro
       iosevka-comfy.comfy
