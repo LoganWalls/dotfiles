@@ -74,11 +74,10 @@
 
     ### Python
     poetry # environment management (poetry2nix)
-    python39 # base interpreter
-    python39Packages.black # code formatting
-    python39Packages.isort # import sorting
-    python39Packages.flake8 # linting
-    python39Packages.ipython # nice interpreter
+    python310 # base interpreter
+    python310Packages.black # code formatting
+    ruff # linting and isort replacer
+    python310Packages.ipython # nice interpreter
     nodePackages.pyright # language server
 
     ### Lua
