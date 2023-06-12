@@ -1,9 +1,8 @@
-{
-  config,
-  lib,
-  stdenv,
-  pkgs,
-  ...
+{ config
+, lib
+, stdenv
+, pkgs
+, ...
 }: {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -110,7 +109,7 @@
     enable = true;
     userEmail = "2934282+LoganWalls@users.noreply.github.com";
     userName = "Logan Walls";
-    ignores = ["*~" ".DS_Store"];
+    ignores = [ "*~" ".DS_Store" ];
     aliases = {
       cm = "commit";
       co = "checkout";
@@ -123,7 +122,7 @@
     ];
     delta.enable = true;
     extraConfig = {
-      url = {"git@github.com:" = {insteadOf = "https://github.com/";};};
+      url = { "git@github.com:" = { insteadOf = "https://github.com/"; }; };
       init.defaultBranch = "main";
       diff.org = {
         xfuncname = "^(\\*+ +.*)$";
