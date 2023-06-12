@@ -24,7 +24,8 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    alacritty # Terminal emulator
+    ### GUI Apps
+    wezterm
 
     ### Editors
     my-emacs # GUI goodness (see ../../overlay/emacs.nix)
@@ -185,8 +186,8 @@
       vim = "nvim";
       vimdiff = "nvim -d";
 
-      icat = "kitty +kitten icat";
-      isvg = "rsvg-convert | icat";
+      icat = "wezterm imgcat";
+      isvg = "rsvg-convert | wezterm imgcat";
 
       grep = "ugrep --sort -G -U -Y -. -Dread -dread";
       egrep = "ugrep --sort -E -U -Y -. -Dread -dread";
