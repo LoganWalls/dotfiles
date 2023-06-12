@@ -203,6 +203,7 @@
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
       eval "$(_PAPIS_COMPLETE=source_zsh papis)"  # completions for papis
+      source $HOME/.cargo/env # add impure-ly installed rust toolchain
     '';
     plugins = with pkgs; [
       {
