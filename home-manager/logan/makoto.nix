@@ -43,7 +43,7 @@
     just # command runner
     ugrep # faster grep with backward-compatible interface
     tealdeer # tldr for manpages
-    neofetch # display system info
+    macchina # more performant neofetch alternative
     mosh # nice ssh sessions
     zoxide # jump to frequently used directories
     direnv # perform env setup when entering a directory
