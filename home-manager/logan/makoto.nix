@@ -97,6 +97,8 @@
     texlab # language server for tex
     my-texlive # packages, utils, and classes
 
+    ### Other
+    buf-language-server # protobuf
     ### Prose / writing
     papis # reference manager
     vale # "linter" for English
