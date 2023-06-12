@@ -93,50 +93,7 @@
       # can find all of the software installed by home-manager
       additionalPath = [ "/Users/logan/.nix-profile/bin" ];
     };
-    skhd = {
-      enable = true; # Hotkey daemon
-      skhdConfig = ''
-        .blacklist [
-            "terminal"
-        ]
-
-        # open a terminal
-        alt - return : /Applications/kitty.app/Contents/MacOS/kitty --single-instance -d ~
-        shift + alt - return : emacsclient -c
-
-        # focus window
-        alt - h : yabai -m window --focus west
-        alt - j : yabai -m window --focus south
-        alt - k : yabai -m window --focus north
-        alt - l : yabai -m window --focus east
-
-        # swap window
-        shift + alt - h : yabai -m window --swap west
-        shift + alt - j : yabai -m window --swap south
-        shift + alt - k : yabai -m window --swap north
-        shift + alt - l : yabai -m window --swap east
-
-        # increase region size
-        shift + alt - a : yabai -m window --resize left:-100:0
-        shift + alt - w : yabai -m window --resize top:0:-100
-        shift + alt - d : yabai -m window --resize right:100:0
-        shift + alt - s : yabai -m window --resize bottom:0:100
-
-        # decrease region size
-        shift + cmd - a : yabai -m window --resize left:100:0
-        shift + cmd - w : yabai -m window --resize top:0:100
-        shift + cmd - d : yabai -m window --resize right:-100:0
-        shift + cmd - s : yabai -m window --resize bottom:0:-100
-
-        # toggle window fullscreen
-        alt - f : yabai -m window --toggle zoom-fullscreen
-        shift + alt - f : yabai -m window --toggle native-fullscreen
-
-        # toggle whether window splits vertically or horizontally with parent
-        alt - e : yabai -m window --toggle split
-      '';
-    };
-
+    skhd.enable = true; # Hotkey daemon
     yabai = {
       enable = true; # Tiling window manager
       package = pkgs.yabai;
