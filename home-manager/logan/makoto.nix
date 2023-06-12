@@ -178,6 +178,7 @@
       emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
       e = "emacsclient -c";
       fda = "fd -IH";
+      gu = "gitui";
       ls = "exa --icons";
       l = "ls";
       ll = "exa --all --icons";
