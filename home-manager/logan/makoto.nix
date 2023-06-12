@@ -99,10 +99,11 @@
 
     ### Other
     buf-language-server # protobuf
+
     ### Prose / writing
     papis # reference manager
     vale # "linter" for English
-    zathura # PDF viewer
+    sioyek # PDF viewer
     zola # static-site generator for .md files
   ];
 
