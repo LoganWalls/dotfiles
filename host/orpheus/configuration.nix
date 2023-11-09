@@ -67,7 +67,7 @@
       PasswordAuthentication = false;
     };
   };
-
+  services.tailscale.enable = true;
   services.getty.autologinUser = "logan";
   users.users = {
     logan = {
