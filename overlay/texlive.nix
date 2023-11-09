@@ -7,6 +7,8 @@ in {
     inherit
       (texlive)
       scheme-basic
+      latexmk
+      xetex
       dvisvgm
       dvipng
       wrapfig
