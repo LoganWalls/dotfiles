@@ -1,5 +1,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
+(setq use-package-always-defer t)
 ; Use lexical-binding: https://www.gnu.org/software/emacs/manual/html_node/elisp/Using-Lexical-Binding.html
 (setq lexical-binding t)
 

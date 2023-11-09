@@ -1,10 +1,11 @@
 # This is your system's configuration file.
 # Use this to configure your system environment (it replaces /etc/nixos/configuration.nix)
-{ inputs
-, lib
-, config
-, pkgs
-, ...
+{
+  inputs,
+  lib,
+  config,
+  pkgs,
+  ...
 }: {
   imports = [
     # If you want to use modules from other flakes (such as nixos-hardware), use something like:
@@ -26,7 +27,7 @@
   nix = {
     # This will add each flake input as a registry
     # To make nix3 commands consistent with your flake
-    registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+    registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
 
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
@@ -51,12 +52,12 @@
       crimson-pro
       iosevka-comfy.comfy
       fira-go
-      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Overpass" "NerdFontsSymbolsOnly" ]; })
+      (nerdfonts.override {fonts = ["FiraCode" "JetBrainsMono" "Overpass" "NerdFontsSymbolsOnly"];})
     ];
   };
 
   # Make sure an editor is always available
-  environment.systemPackages = [ pkgs.vim ];
+  environment.systemPackages = [pkgs.vim];
 
   # Create /etc/zshrc that loads the nix-darwin environment.
   programs.zsh.enable = true;
@@ -83,16 +84,6 @@
 
   services = {
     nix-daemon.enable = true; # Auto upgrade nix package and the daemon service.
-    emacs = {
-      enable = true;
-      package = pkgs.my-emacs;
-      # NOTE: This path is relative to pkgs.my-emacs/bin
-      # see: https://github.com/LnL7/nix-darwin/blob/a6b23918a72c891b2f8c683061193b8dd84550e4/modules/services/emacs.nix#L48
-      exec = "../Applications/Emacs.app/Contents/MacOS/Emacs";
-      # Add the bin path for the active nix profile so that Emacs
-      # can find all of the software installed by home-manager
-      additionalPath = [ "/Users/logan/.nix-profile/bin" ];
-    };
     skhd.enable = true; # Hotkey daemon
     yabai = {
       enable = true; # Tiling window manager
@@ -121,12 +112,6 @@
         yabai -m rule --add app='Zoom' manage=off
       '';
     };
-
-    # Commented because managed manually for now
-    # homebrew = {
-    #   enable = true;
-    #   casks = ["blender" "chromium" "docker" "gimp" "inkscape" "spotify" "qlmarkdown"];
-    # };
   };
 
   # Used for backwards compatibility, please read the changelog before changing.
