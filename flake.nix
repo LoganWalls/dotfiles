@@ -17,6 +17,19 @@
     # Nix user repository
     nur.url = "github:nix-community/NUR";
 
+    # Typst
+    typst = {
+      url = "github:typst/typst";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    typst-lsp = {
+      url = "github:nvarner/typst-lsp";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        typst.follows = "typst";
+      };
+    };
+
     # SFMono font with NerdFont and Ligatures
     sf-mono-liga = {
       url = "github:shaunsingh/SFMono-Nerd-Font-Ligaturized";
@@ -80,6 +93,15 @@
             ./host/orpheus/configuration.nix
           ];
       };
+      sebastian = nixpkgs.lib.nixosSystem {
+        pkgs = legacyPackages.aarch64-linux;
+        specialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        modules =
+          (builtins.attrValues nixosModules)
+          ++ [
+            ./host/sebastian/configuration.nix
+          ];
+      };
     };
 
     darwinConfigurations = {
@@ -100,16 +122,35 @@
         nix.registry.nixpkgs.flake = nixpkgs; # Make CLI use the same nixpkgs commit as this config
       };
     in {
-      "logan@makoto" = home-manager.lib.homeManagerConfiguration {
+      "logan@makoto" = let
         pkgs = legacyPackages.aarch64-darwin;
-        extraSpecialArgs = {inherit inputs;}; # Pass flake inputs to our config
-        modules =
-          (builtins.attrValues homeManagerModules)
-          ++ [
-            useFlakeNixpkgs
-            ./home-manager/logan/makoto.nix
-          ];
-      };
+        typst = inputs.typst.packages.aarch64-darwin.default;
+        typst-lsp = inputs.typst-lsp.packages.aarch64-darwin.default.overrideAttrs (prev: {
+          buildInputs =
+            (prev.buildInputs or [])
+            ++ [
+              pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
+            ];
+          preBuild = ''
+            mkdir -p ../cargo-vendor-dir
+            cp -r ${inputs.typst-lsp.inputs.typst}/assets ../cargo-vendor-dir/assets
+            cp -r ${inputs.typst-lsp.inputs.typst-fmt}/README.md ../cargo-vendor-dir
+          '';
+        });
+      in
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit inputs typst-lsp;
+            typst-latest = typst;
+          }; # Pass flake inputs to our config
+          modules =
+            (builtins.attrValues homeManagerModules)
+            ++ [
+              useFlakeNixpkgs
+              ./home-manager/logan/makoto.nix
+            ];
+        };
       "logan@orpheus" = home-manager.lib.homeManagerConfiguration {
         pkgs = legacyPackages.x86_64-linux;
         extraSpecialArgs = {inherit inputs;}; # Pass flake inputs to our config

@@ -3,6 +3,8 @@
   lib,
   stdenv,
   pkgs,
+  typst-lsp,
+  typst-latest,
   ...
 }: {
   home = {
@@ -26,15 +28,18 @@
 
       ### Editors
       neovim # text editor
+      nodejs-slim # for AI code completion in neovim
 
       ### Shell tools
       age # encryption
       bat # modern cat
       btop # system activity monitor
+      broot # file browser
       coreutils-prefixed # for compat with emacs
       eza # modern ls
       delta # modern diff
       fd # modern find
+      flavours # base24 colorscheme management
       sd # modern sed
       ripgrep # modern grep
       just # command runner
@@ -47,7 +52,6 @@
       gitui # a nice git TUI
       xclip # work with the system clipboards
       zsh-history-substring-search # Search command history automatically
-      zsh-powerlevel10k # Shell theme
 
       ### File format-specific tools
       jq # work with json files
@@ -90,7 +94,11 @@
       ### Tex
       texlive.combined.scheme-full # tex distribution
       texlab # language server for tex
-      zathura # PDF viewer
+
+      ### Typst
+      typst-latest
+      typst-lsp
+      typstfmt
 
       ### Other
       buf-language-server # protobuf
@@ -139,6 +147,7 @@
       changeDirWidgetCommand = "fd --type d";
       fileWidgetCommand = "fd --type f";
     };
+    starship.enable = true;
     zoxide = {
       enable = true;
       enableZshIntegration = true;
@@ -188,16 +197,6 @@
         bindkey '^[[B' history-substring-search-down
       '';
       plugins = with pkgs; [
-        {
-          name = "powerlevel10k";
-          src = zsh-powerlevel10k;
-          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-        }
-        {
-          name = "powerlevel10k-config";
-          src = lib.cleanSource ../../programs/zsh/p10k;
-          file = ".p10k-minimal.zsh";
-        }
         {
           name = "zsh-history-substring-search";
           src = zsh-history-substring-search;

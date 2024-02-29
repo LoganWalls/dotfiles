@@ -39,6 +39,7 @@
       experimental-features = "nix-command flakes";
       auto-optimise-store = true;
       extra-platforms = "x86_64-darwin aarch64-darwin";
+      binary-caches-parallel-connections = 10;
     };
   };
 
@@ -89,28 +90,6 @@
       enable = true; # Tiling window manager
       package = pkgs.yabai;
       enableScriptingAddition = false;
-      config = {
-        focus_follows_mouse = "off";
-        mouse_follows_focus = "off";
-        window_placement = "second_child";
-        window_opacity = "off";
-        window_border = "off";
-        split_ratio = "0.50";
-        auto_balance = "off";
-        mouse_modifier = "fn";
-        mouse_action1 = "move";
-        mouse_action2 = "resize";
-        layout = "bsp";
-        top_padding = 20;
-        bottom_padding = 20;
-        left_padding = 20;
-        right_padding = 20;
-        window_gap = 20;
-      };
-      extraConfig = ''
-        yabai -m rule --add app='System Settings' manage=off
-        yabai -m rule --add app='Zoom' manage=off
-      '';
     };
   };
 
