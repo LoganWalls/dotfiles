@@ -23,7 +23,7 @@
       rsync # sync files
       kitty # terminal
       wofi # launcher
-      pavucontrol # audio control
+      # pavucontrol # audio control
       wl-clipboard # enable copy/paste on wayland
     ];
 
@@ -116,32 +116,32 @@
   };
 
   # Enable Sway
-  wayland.windowManager.sway = {
-    enable = true;
-    swaynag.enable = true;
-    wrapperFeatures.gtk = true;
-    extraConfig = ''
-      for_window [app_id="firefox"] fullscreen enable
-    '';
-    config = {
-      terminal = "kitty";
-      menu = "wofi --show run";
-
-      startup = [
-        # Wait a moment for the network to connect
-        {command = "sleep 1";}
-        # Launch Firefox in full screen mode on start page.
-        {command = "firefox";}
-      ];
-      # Display device configuration
-      output = {
-        eDP-1 = {
-          # Set HIDP scale (pixel integer scaling)
-          scale = "2";
-        };
-      };
-    };
-  };
+  # wayland.windowManager.sway = {
+  #   enable = true;
+  #   swaynag.enable = true;
+  #   wrapperFeatures.gtk = true;
+  #   extraConfig = ''
+  #     for_window [app_id="firefox"] fullscreen enable
+  #   '';
+  #   config = {
+  #     terminal = "kitty";
+  #     menu = "wofi --show run";
+  #
+  #     startup = [
+  #       # Wait a moment for the network to connect
+  #       {command = "sleep 1";}
+  #       # Launch Firefox in full screen mode on start page.
+  #       {command = "firefox";}
+  #     ];
+  #     # Display device configuration
+  #     output = {
+  #       eDP-1 = {
+  #         # Set HIDP scale (pixel integer scaling)
+  #         scale = "2";
+  #       };
+  #     };
+  #   };
+  # };
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
