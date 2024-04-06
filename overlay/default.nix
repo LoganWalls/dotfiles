@@ -19,7 +19,5 @@ in
   inputs.nixpkgs.lib.composeManyExtensions [
     additions
     modifications
-    (import ./texlive.nix)
     (import ./emacs.nix)
-    (import ./python.nix)
   ]
