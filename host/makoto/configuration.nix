@@ -5,6 +5,7 @@
   lib,
   config,
   pkgs,
+  yazi,
   ...
 }: {
   imports = [

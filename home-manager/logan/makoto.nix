@@ -3,10 +3,13 @@
   lib,
   stdenv,
   pkgs,
-  typst-lsp,
-  typst-latest,
+  impurePath,
+  basedpyright-ls,
+  yazi,
   ...
-}: {
+}: let
+  asSymlink = path: config.lib.file.mkOutOfStoreSymlink (impurePath path);
+in {
   home = {
     username = "logan";
     homeDirectory = "/Users/logan";
@@ -14,6 +17,15 @@
       EDITOR = "nvim";
       DOTFILES = "$HOME/.dotfiles/";
       NIX_PATH = "nixpkgs=flake:nixpkgs";
+    };
+
+    file.emacs-init = {
+      source = asSymlink ../../config/emacs/init.el;
+      target = ".config/emacs/init.el";
+    };
+    file.emacs-early-init = {
+      source = asSymlink ../../config/emacs/early-init.el;
+      target = ".config/emacs/early-init.el";
     };
 
     # This value determines the Home Manager release that your
@@ -27,14 +39,13 @@
       wezterm
 
       ### Editors
-      neovim # text editor
+      neovim
       nodejs-slim # for AI code completion in neovim
 
       ### Shell tools
       age # encryption
       bat # modern cat
       btop # system activity monitor
-      broot # file browser
       coreutils-prefixed # for compat with emacs
       eza # modern ls
       delta # modern diff
@@ -51,6 +62,7 @@
       direnv # perform env setup when entering a directory
       gitui # a nice git TUI
       xclip # work with the system clipboards
+      yazi # file manager
       zsh-history-substring-search # Search command history automatically
 
       ### File format-specific tools
@@ -65,7 +77,7 @@
       shfmt # formatter
 
       ### Nix
-      rnix-lsp # language server
+      nil # language server
       nix-direnv # nix intergration for direnv
       alejandra # black-inspired formatting
       statix # linter
@@ -76,11 +88,13 @@
       ### Python
       poetry # environment management (poetry2nix)
       (python311.withPackages (ps: with ps; [ipython])) # base interpreter
+      basedpyright-ls # improved fork of pyright
       nodePackages.pyright # language server for static type analysis
       ruff-lsp # language server for everything else
 
       ### Lua
       lua-language-server
+      stylua # formatter
 
       ### Docker
       nodePackages.dockerfile-language-server-nodejs
@@ -96,7 +110,7 @@
       texlab # language server for tex
 
       ### Typst
-      typst-latest
+      typst
       typst-lsp
       typstfmt
 
@@ -104,13 +118,19 @@
       buf-language-server # protobuf
 
       ### Prose / writing
-      ibm-plex # font TODO: move this to darwin config
       vale # "linter" for prose
+
+      ### Fonts: TODO: move to system config?
+      ibm-plex
     ];
   };
 
   programs = {
     home-manager.enable = true;
+    emacs = {
+      enable = true;
+      package = pkgs.my-emacs;
+    };
     git = {
       enable = true;
       lfs.enable = true;
@@ -148,6 +168,11 @@
       fileWidgetCommand = "fd --type f";
     };
     starship.enable = true;
+    yazi = {
+      enable = true;
+      enableZshIntegration = true;
+      package = yazi;
+    };
     zoxide = {
       enable = true;
       enableZshIntegration = true;
@@ -180,6 +205,9 @@
         vi = "nvim";
         vim = "nvim";
         vimdiff = "nvim -d";
+        yz = "yazi";
+
+        emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
 
         icat = "wezterm imgcat";
         isvg = "rsvg-convert | wezterm imgcat";

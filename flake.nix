@@ -17,18 +17,14 @@
     # Nix user repository
     nur.url = "github:nix-community/NUR";
 
-    # Typst
-    typst = {
-      url = "github:typst/typst";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    typst-lsp = {
-      url = "github:nvarner/typst-lsp";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        typst.follows = "typst";
-      };
-    };
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
+
+    basedpyright.url = "github:LoganWalls/basedpyright-nix";
+    basedpyright.inputs.nixpkgs.follows = "nixpkgs";
+
+    yazi.url = "github:sxyazi/yazi";
+    yazi.inputs.nixpkgs.follows = "nixpkgs";
 
     # SFMono font with NerdFont and Ligatures
     sf-mono-liga = {
@@ -38,22 +34,34 @@
   };
 
   outputs = {
+    self,
     nixpkgs,
     home-manager,
     ...
   } @ inputs: let
-    forAllSystems = nixpkgs.lib.genAttrs [
+    lib = nixpkgs.lib // home-manager.lib;
+    forAllSystems = lib.genAttrs [
       "aarch64-linux"
       "i686-linux"
       "x86_64-linux"
       "aarch64-darwin"
       "x86_64-darwin"
     ];
+    impurePathRoot = "/Users/logan/Projects/.dotfiles";
+    impurePath = path: let
+      rootStr = toString self;
+      pathStr = toString path;
+    in
+      assert lib.assertMsg
+      (lib.hasPrefix rootStr pathStr)
+      "${pathStr} does not start with ${rootStr}";
+        impurePathRoot + lib.removePrefix rootStr pathStr;
   in rec {
     # Your custom packages and modifications
     overlays = {
       default = import ./overlay {inherit inputs;};
       nur = inputs.nur.overlay;
+      emacs = inputs.emacs-overlay.overlay;
     };
 
     nixosModules = import ./modules/nixos;
@@ -86,7 +94,7 @@
     nixosConfigurations = {
       orpheus = nixpkgs.lib.nixosSystem {
         pkgs = legacyPackages.x86_64-linux;
-        specialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        specialArgs = {inherit inputs;};
         modules =
           (builtins.attrValues nixosModules)
           ++ [
@@ -95,7 +103,7 @@
       };
       sebastian = nixpkgs.lib.nixosSystem {
         pkgs = legacyPackages.aarch64-linux;
-        specialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        specialArgs = {inherit inputs;};
         modules =
           (builtins.attrValues nixosModules)
           ++ [
@@ -107,7 +115,7 @@
     darwinConfigurations = {
       makoto = inputs.darwin.lib.darwinSystem {
         pkgs = legacyPackages.aarch64-darwin;
-        specialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        specialArgs = {inherit inputs;};
         modules =
           (builtins.attrValues darwinModules)
           ++ [
@@ -124,26 +132,12 @@
     in {
       "logan@makoto" = let
         pkgs = legacyPackages.aarch64-darwin;
-        typst = inputs.typst.packages.aarch64-darwin.default;
-        typst-lsp = inputs.typst-lsp.packages.aarch64-darwin.default.overrideAttrs (prev: {
-          buildInputs =
-            (prev.buildInputs or [])
-            ++ [
-              pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
-            ];
-          preBuild = ''
-            mkdir -p ../cargo-vendor-dir
-            cp -r ${inputs.typst-lsp.inputs.typst}/assets ../cargo-vendor-dir/assets
-            cp -r ${inputs.typst-lsp.inputs.typst-fmt}/README.md ../cargo-vendor-dir
-          '';
-        });
+        basedpyright-ls = inputs.basedpyright.packages.aarch64-darwin.default;
+        yazi = inputs.yazi.packages.${pkgs.system}.default;
       in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = {
-            inherit inputs typst-lsp;
-            typst-latest = typst;
-          }; # Pass flake inputs to our config
+          extraSpecialArgs = {inherit inputs impurePath basedpyright-ls yazi;};
           modules =
             (builtins.attrValues homeManagerModules)
             ++ [
@@ -153,7 +147,7 @@
         };
       "logan@orpheus" = home-manager.lib.homeManagerConfiguration {
         pkgs = legacyPackages.x86_64-linux;
-        extraSpecialArgs = {inherit inputs;}; # Pass flake inputs to our config
+        extraSpecialArgs = {inherit inputs;};
         modules =
           (builtins.attrValues homeManagerModules)
           ++ [
