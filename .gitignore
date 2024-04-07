@@ -1,1 +1,6 @@
+.DS_Store
+config/direnv/
+config/git/
+config/github-copilot/
+config/nix/registry.json
 result/
