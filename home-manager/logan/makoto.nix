@@ -14,7 +14,6 @@ in {
     username = "logan";
     homeDirectory = "/Users/logan";
     sessionVariables = {
-      EDITOR = "nvim";
       DOTFILES = "$HOME/.dotfiles/";
       NIX_PATH = "nixpkgs=flake:nixpkgs";
     };
@@ -39,7 +38,6 @@ in {
       wezterm
 
       ### Editors
-      neovim
       nodejs-slim # for AI code completion in neovim
 
       ### Shell tools
@@ -202,9 +200,6 @@ in {
         ll = "exa --all --icons";
         lll = "exa --all --long --icons";
         tree = "exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'";
-        vi = "nvim";
-        vim = "nvim";
-        vimdiff = "nvim -d";
         yz = "yazi";
 
         emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";

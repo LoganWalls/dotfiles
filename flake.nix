@@ -14,8 +14,10 @@
     darwin.url = "github:lnl7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Nix user repository
     nur.url = "github:nix-community/NUR";
+
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -47,45 +49,30 @@
       "aarch64-darwin"
       "x86_64-darwin"
     ];
-    impurePathRoot = "/Users/logan/Projects/.dotfiles";
-    impurePath = path: let
-      rootStr = toString self;
-      pathStr = toString path;
-    in
-      assert lib.assertMsg
-      (lib.hasPrefix rootStr pathStr)
-      "${pathStr} does not start with ${rootStr}";
-        impurePathRoot + lib.removePrefix rootStr pathStr;
   in rec {
-    # Your custom packages and modifications
     overlays = {
       default = import ./overlay {inherit inputs;};
       nur = inputs.nur.overlay;
       emacs = inputs.emacs-overlay.overlay;
+      neovim = inputs.neovim-nightly-overlay.overlay;
     };
 
     nixosModules = import ./modules/nixos;
     homeManagerModules = import ./modules/home-manager;
     darwinModules = import ./modules/darwin;
 
-    # Devshell for bootstrapping
-    # Acessible through 'nix develop' or 'nix-shell' (legacy)
     devShells = forAllSystems (system: {
       default = legacyPackages.${system}.callPackage ./shell.nix {};
     });
 
-    # This instantiates nixpkgs for each system listed above
-    # Allowing you to add overlays and configure it (e.g. allowUnfree)
-    # Our configurations will use these instances
-    # Your flake will also let you access your package set through nix build, shell, run, etc.
     legacyPackages = forAllSystems (
       system:
         import inputs.nixpkgs {
           inherit system;
           overlays = builtins.attrValues overlays;
 
-          # NOTE: Using `nixpkgs.config` in your NixOS config won't work
-          # Instead, you should set nixpkgs configs here
+          # NOTE: Using `nixpkgs.config` in NixOS config won't work
+          # Instead, set nixpkgs configs here
           # (https://nixos.org/manual/nixpkgs/stable/#idm140737322551056)
           config.allowUnfree = true;
         }
@@ -120,7 +107,6 @@
           (builtins.attrValues darwinModules)
           ++ [
             ./host/makoto/configuration.nix
-            # TODO: use home mangager as module
           ];
       };
     };
@@ -134,10 +120,14 @@
         pkgs = legacyPackages.aarch64-darwin;
         basedpyright-ls = inputs.basedpyright.packages.aarch64-darwin.default;
         yazi = inputs.yazi.packages.${pkgs.system}.default;
+        mylib = pkgs.callPackage ./mylib.nix {inherit self;};
       in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = {inherit inputs impurePath basedpyright-ls yazi;};
+          extraSpecialArgs = {
+            inherit inputs basedpyright-ls yazi;
+            inherit (mylib) impurePath;
+          };
           modules =
             (builtins.attrValues homeManagerModules)
             ++ [
