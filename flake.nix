@@ -120,14 +120,10 @@
         pkgs = legacyPackages.aarch64-darwin;
         basedpyright-ls = inputs.basedpyright.packages.aarch64-darwin.default;
         yazi = inputs.yazi.packages.${pkgs.system}.default;
-        mylib = pkgs.callPackage ./mylib.nix {inherit self;};
       in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = {
-            inherit inputs basedpyright-ls yazi;
-            inherit (mylib) impurePath;
-          };
+          extraSpecialArgs = {inherit inputs basedpyright-ls yazi;};
           modules =
             (builtins.attrValues homeManagerModules)
             ++ [

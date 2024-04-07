@@ -1,0 +1,17 @@
+# Theme
+include catppuccin-latte
+
+# In dual page layout, put single pages on the left
+set first-page-column 1:1
+map D set "first-page-column 1:2"
+map <C-D> set "first-page-column 1:1"
+
+# Copy to clipboard
+set selection-clipboard clipboard
+
+# Fix scrolling speed
+set scroll-step 4
+set scroll-hstep 4
+
+# Latex support
+set synctex true

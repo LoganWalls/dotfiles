@@ -1,0 +1,23 @@
+{
+    "workspace.library": [
+        "/Users/logan/.config/nvim",
+        "/Users/logan/.local/share/nvim/lazy/lazy.nvim",
+        "/Users/logan/.local/share/nvim/lazy/cmp-nvim-lsp",
+        "/Users/logan/.local/share/nvim/lazy/nvim-lspconfig",
+        "/Users/logan/.local/share/nvim/lazy/tokyonight.nvim",
+        "/Users/logan/.local/share/nvim/lazy/tree-sitter-just",
+        "/Users/logan/.local/share/nvim/lazy/nvim-treesitter-context",
+        "/Users/logan/.local/share/nvim/lazy/playground",
+        "/Users/logan/.local/share/nvim/lazy/nvim-treesitter",
+        "/Users/logan/.local/share/nvim/lazy/which-key.nvim",
+        "/Users/logan/.local/share/nvim/lazy/friendly-snippets",
+        "/Users/logan/.local/share/nvim/lazy/LuaSnip",
+        "/nix/store/x6lzmq5midch2b8nsrx4f0a9mjsrnjd4-neovim-unwrapped-0.8.3/share/nvim/runtime",
+        "/nix/store/x6lzmq5midch2b8nsrx4f0a9mjsrnjd4-neovim-unwrapped-0.8.3/lib/nvim",
+        "/Users/logan/.local/share/nvim/lazy/cmp-nvim-lsp/after",
+        "/Users/logan/.local/share/nvim/lazy/playground/after",
+        "/Users/logan/.config/nvim/after",
+        "/Users/logan/.local/state/nvim/lazy/readme",
+        "${3rd}/luassert/library"
+    ]
+}

@@ -3,28 +3,16 @@
   lib,
   stdenv,
   pkgs,
-  impurePath,
   basedpyright-ls,
   yazi,
   ...
-}: let
-  asSymlink = path: config.lib.file.mkOutOfStoreSymlink (impurePath path);
-in {
+}: {
   home = {
     username = "logan";
     homeDirectory = "/Users/logan";
     sessionVariables = {
       DOTFILES = "$HOME/.dotfiles/";
       NIX_PATH = "nixpkgs=flake:nixpkgs";
-    };
-
-    file.emacs-init = {
-      source = asSymlink ../../config/emacs/init.el;
-      target = ".config/emacs/init.el";
-    };
-    file.emacs-early-init = {
-      source = asSymlink ../../config/emacs/early-init.el;
-      target = ".config/emacs/early-init.el";
     };
 
     # This value determines the Home Manager release that your
