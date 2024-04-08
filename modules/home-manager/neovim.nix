@@ -7,8 +7,9 @@
     vimdiffAlias = true;
 
     package = pkgs.neovim-nightly;
-    plugins = [pkgs.vimPlugins.nvim-treesitter.withAllGrammars];
     # TODO: move LSPs here
-    extraPackages = [];
+    extraPackages = [
+      pkgs.stdenv.cc.cc # C compiler for tree-sitter grammars
+    ];
   };
 }

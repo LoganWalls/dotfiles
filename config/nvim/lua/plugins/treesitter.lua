@@ -1,11 +1,35 @@
 local config = function()
-	-- require("nvim-treesitter.install").compilers = { "gcc-12", "gcc" }
+	require("nvim-treesitter.install").compilers = { "gcc-12", "gcc" }
 	require("nvim-treesitter.configs").setup({
-		-- ensure_installed = "all",
-		-- ignore_install = {
-		-- 	"smali",
-		-- 	"latex", -- using vimtex instead
-		-- },
+		auto_install = true,
+		ensure_installed = {
+			"bash",
+			"bibtex",
+			"c",
+			"css",
+			"csv",
+			"elixir",
+			"html",
+			"javascript",
+			"json",
+			"julia",
+			"lua",
+			"ocaml",
+			"python",
+			"query",
+			"r",
+			"rust",
+			"scss",
+			"scheme",
+			"sql",
+			"toml",
+			"tsx",
+			"typescript",
+			"typst",
+			"vim",
+			"vimdoc",
+			"yaml",
+		},
 		highlight = {
 			enable = true,
 		},
