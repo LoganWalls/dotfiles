@@ -13,10 +13,8 @@ local config = function()
 				prompt_position = "top",
 
 				-- For consistency with no-neck-pain
-				anchor = "E",
-				width = function()
-					return vim.api.nvim_win_get_width(0)
-				end,
+				anchor = "C",
+				width = 110,
 			},
 			results_title = false,
 			preview_title = false,
