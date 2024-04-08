@@ -53,6 +53,7 @@ local config = function()
 			live_grep = ivy(),
 			grep_string = ivy(),
 			help_tags = ivy(),
+			diagnostics = ivy(),
 		},
 		extensions = {
 			["ui-select"] = { themes.get_cursor() },
@@ -93,6 +94,13 @@ local config = function()
 	for _, hl in pairs(hl_groups) do
 		vim.api.nvim_set_hl(0, hl, { link = "TelescopeNormal" })
 	end
+
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "TelescopePreviewerLoaded",
+		callback = function()
+			vim.wo.number = true
+		end,
+	})
 end
 
 return {
