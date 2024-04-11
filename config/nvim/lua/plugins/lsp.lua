@@ -1,4 +1,3 @@
-local on_attach = require("lsp").on_attach
 local config = function()
 	local capabilities = require("cmp_nvim_lsp").default_capabilities()
 	local lspconfig = require("lspconfig")
@@ -19,23 +18,11 @@ local config = function()
 	for _, lsp in ipairs(servers) do
 		lspconfig[lsp].setup({
 			capabilities = capabilities,
-			on_attach = on_attach,
 		})
 	end
 
 	lspconfig.typst_lsp.setup({
 		capabilities = capabilities,
-		on_attach = function(client, bufnr)
-			-- Pin `main.typ` as the main file if it exists
-			-- local main_file = vim.fs.find("main.typ", { path = client.root_dir, type = "file" })[1]
-			-- if main_file ~= nil then
-			--   vim.lsp.buf.execute_command({
-			--     command = "typst-lsp.doPinMain",
-			--     arguments = { vim.uri_from_fname(main_file) }
-			--   })
-			-- end
-			return on_attach(client, bufnr)
-		end,
 	})
 
 	lspconfig.nil_ls.setup({
@@ -50,7 +37,6 @@ local config = function()
 
 	lspconfig.lexical.setup({
 		capabilities = capabilities,
-		on_attach = on_attach,
 		cmd = { "lexical" },
 	})
 
@@ -59,19 +45,16 @@ local config = function()
 		on_attach = function(client, bufnr)
 			-- Disable hover in favor of Pyright
 			client.server_capabilities.hoverProvider = false
-			return on_attach(client, bufnr)
 		end,
 	})
 
 	lspconfig.tsserver.setup({
 		capabilities = capabilities,
-		on_attach = on_attach,
 		root_dir = lspconfig.util.root_pattern("package.json"),
 	})
 
 	lspconfig.lua_ls.setup({
 		capabilities = capabilities,
-		on_attach = on_attach,
 		settings = {
 			Lua = {
 				runtime = {
@@ -109,7 +92,6 @@ local null_ls_config = function()
 	local null_ls = require("null-ls")
 
 	null_ls.setup({
-		on_attach = on_attach,
 		sources = {
 			--shell
 			null_ls.builtins.diagnostics.shellcheck,

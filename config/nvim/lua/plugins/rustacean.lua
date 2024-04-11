@@ -32,7 +32,6 @@ end
 
 vim.g.rustaceanvim = {
 	server = {
-		on_attach = require("lsp").on_attach,
 		cmd = { "rust-analyzer" },
 		standalone = true,
 		settings = {
