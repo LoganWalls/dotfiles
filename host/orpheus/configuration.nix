@@ -101,9 +101,9 @@
   };
 
   services.xserver.enable = true;
-  services.xserver.displayManager.sddm.enable = true;
   services.xserver.desktopManager.plasma5.enable = true;
-  services.xserver.displayManager.defaultSession = "plasmawayland";
+  services.displayManager.sddm.enable = true;
+  services.displayManager.defaultSession = "plasmawayland";
   programs.kdeconnect.enable = true;
 
   # This value determines the NixOS release from which the default
