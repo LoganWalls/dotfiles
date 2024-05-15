@@ -101,6 +101,21 @@ local config = function()
 			vim.wo.number = true
 		end,
 	})
+
+	vim.keymap.set("i", "<C-x><C-f>", function()
+		require("telescope.builtin").find_files({
+			attach_mappings = function(_, map)
+				local function insert_path(prompt_bufnr)
+					local entry = require("telescope.actions.state").get_selected_entry()
+					actions.close(prompt_bufnr)
+					vim.api.nvim_put({ entry.path }, "", true, true)
+				end
+				map("n", "<cr>", insert_path)
+				map("i", "<cr>", insert_path)
+				return true
+			end,
+		})
+	end, { silent = true, desc = "Fuzzy complete file" })
 end
 
 return {

@@ -72,11 +72,14 @@
       cmake
 
       ### Python
-      poetry # environment management (poetry2nix)
+      # poetry # environment management (poetry2nix)
       (python311.withPackages (ps: with ps; [ipython])) # base interpreter
       basedpyright-ls # improved fork of pyright
       nodePackages.pyright # language server for static type analysis
       ruff-lsp # language server for everything else
+
+      ### TOML
+      taplo
 
       ### Lua
       lua-language-server
@@ -97,8 +100,9 @@
 
       ### Typst
       typst
-      typst-lsp
+      tinymist # language server
       typstfmt
+      sioyek # pdf viewer
 
       ### Other
       buf-language-server # protobuf
@@ -113,10 +117,10 @@
 
   programs = {
     home-manager.enable = true;
-    emacs = {
-      enable = true;
-      package = pkgs.my-emacs;
-    };
+    # emacs = {
+    #   enable = true;
+    #   package = pkgs.my-emacs;
+    # };
     git = {
       enable = true;
       lfs.enable = true;
@@ -166,7 +170,7 @@
     zsh = {
       enable = true;
       enableCompletion = true;
-      enableAutosuggestions = true;
+      autosuggestion.enable = true;
       syntaxHighlighting.enable = true;
       autocd = true;
       defaultKeymap = "emacs";
@@ -190,7 +194,7 @@
         tree = "exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'";
         yz = "yazi";
 
-        emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
+        # emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
 
         icat = "wezterm imgcat";
         isvg = "rsvg-convert | wezterm imgcat";

@@ -4,15 +4,17 @@ local config = function()
 
 	-- Enable some language servers with the additional completion capabilities offered by nvim-cmp
 	local servers = {
+		"bufls",
+		"cssls",
+		"dockerls",
+		"eslint",
+		"html",
 		"jsonls",
 		"julials",
-		"dockerls",
-		"html",
-		"cssls",
-		"eslint",
-		"bufls",
-		"pyright",
 		"ocamllsp",
+		"pyright",
+		"taplo",
+		"tinymist",
 		"uiua",
 	}
 	for _, lsp in ipairs(servers) do
@@ -20,10 +22,6 @@ local config = function()
 			capabilities = capabilities,
 		})
 	end
-
-	lspconfig.typst_lsp.setup({
-		capabilities = capabilities,
-	})
 
 	lspconfig.nil_ls.setup({
 		settings = {
@@ -86,6 +84,20 @@ local config = function()
 		opts.border = opts.border or "rounded"
 		return orig_util_open_floating_preview(contents, syntax, opts, ...)
 	end
+
+	-- Keymaps
+	vim.keymap.set("n", "<leader>ls", function()
+		require("grimoire-ls").start()
+	end)
+	vim.keymap.set("n", "<leader>lr", function()
+		require("grimoire-ls").restart()
+	end)
+	vim.keymap.set("n", "<leader>ll", function()
+		vim.cmd("LspLog")
+	end)
+	vim.keymap.set("n", "<leader>li", function()
+		vim.cmd("LspInfo")
+	end)
 end
 
 local null_ls_config = function()
