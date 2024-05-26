@@ -54,7 +54,7 @@
       default = import ./overlay {inherit inputs;};
       nur = inputs.nur.overlay;
       emacs = inputs.emacs-overlay.overlay;
-      neovim = inputs.neovim-nightly-overlay.overlay;
+      neovim = inputs.neovim-nightly-overlay.overlays.default;
     };
 
     nixosModules = import ./modules/nixos;

@@ -6,7 +6,7 @@
     vimAlias = true;
     vimdiffAlias = true;
 
-    package = pkgs.neovim-nightly;
+    package = pkgs.neovim;
     # TODO: move LSPs here
     extraPackages = [
       pkgs.stdenv.cc.cc # C compiler for tree-sitter grammars
