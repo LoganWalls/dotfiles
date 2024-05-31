@@ -45,12 +45,12 @@ local config = function()
 			}),
 			["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
 			["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
-			["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
 			["<C-y>"] = cmp.config.disable, -- Remove the default `<C-y>` mapping.
 			["<C-e>"] = cmp.mapping({
 				i = cmp.mapping.abort(),
 				c = cmp.mapping.close(),
 			}),
+			["<C-space>"] = cmp.config.disable,
 			-- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
 			["<CR>"] = cmp.mapping({
 				i = cmp.mapping.confirm({ select = true }),
@@ -58,10 +58,12 @@ local config = function()
 			}),
 		},
 		formatting = {
-			format = function(_, vim_item)
+			format = function(entry, vim_item)
 				vim_item.kind = kind_icons[vim_item.kind]
+				if entry.source.name == "nvim_lsp" and entry.source.source.client.name == "grimoire-ls" then
+					vim_item.kind = kind_icons["Copilot"]
+				end
 				-- Uncomment to see which sources provide each completion (useful for debugging)
-				-- vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind)
 				-- vim_item.menu = entry.source.name
 				return vim_item
 			end,
@@ -73,6 +75,7 @@ local config = function()
 			{ name = "copilot" },
 			{ name = "nvim_lsp" },
 			{ name = "nvim_lsp_signature_help" },
+			{ name = "luasnip" },
 			{
 				name = "treesitter",
 				entry_filter = function(entry)
@@ -87,7 +90,6 @@ local config = function()
 			},
 			{ name = "path" },
 			{ name = "nvim_lua" },
-			{ name = "luasnip" },
 			{ name = "omni" },
 			{ name = "spell" },
 		},
@@ -101,6 +103,35 @@ local config = function()
 			}),
 		},
 	})
+
+	-- Manual completion for AI
+	vim.keymap.set("i", "<C-space>", function()
+		require("grimoire-ls").enable_completion(true)
+		cmp.complete({
+			config = {
+				sources = {
+					{
+						name = "nvim_lsp",
+						entry_filter = function(entry)
+							return entry.source.source.client.name == "grimoire-ls"
+						end,
+					},
+				},
+				view = {
+					entries = { name = "wildmenu", separator = " " },
+				},
+				formatting = {
+					format = function(_, vim_item)
+						vim_item.abbr = ""
+						return vim_item
+					end,
+				},
+			},
+		})
+	end)
+	cmp.event:on("menu_closed", function()
+		require("grimoire-ls").enable_completion(false)
+	end)
 
 	-- Completion for search and command line
 	cmp.setup.cmdline({ "/", "?" }, {
@@ -145,7 +176,7 @@ end
 
 return {
 	{
-		dir = "/Users/logan/Projects/nvim-cmp",
+		"LoganWalls/nvim-cmp",
 		dependencies = {
 			"saadparwaiz1/cmp_luasnip",
 			"hrsh7th/cmp-nvim-lsp",
