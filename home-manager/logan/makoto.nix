@@ -112,6 +112,8 @@
 
       ### Fonts: TODO: move to system config?
       ibm-plex
+      fira-sans
+      noto-fonts
     ];
   };
 

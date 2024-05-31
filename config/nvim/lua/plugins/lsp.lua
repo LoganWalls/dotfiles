@@ -14,7 +14,6 @@ local config = function()
 		"ocamllsp",
 		"pyright",
 		"taplo",
-		"tinymist",
 		"uiua",
 	}
 	for _, lsp in ipairs(servers) do
@@ -22,6 +21,13 @@ local config = function()
 			capabilities = capabilities,
 		})
 	end
+
+	lspconfig.tinymist.setup({
+		capabilities = capabilities,
+		settings = {
+			formatterMode = "typstyle",
+		},
+	})
 
 	lspconfig.nil_ls.setup({
 		settings = {

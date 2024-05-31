@@ -7,7 +7,6 @@ return {
 				lua = { "stylua" },
 				nix = { "alejandra" },
 				sh = { "shfmt" },
-				typst = { "typstfmt" },
 			},
 			format_on_save = { timeout_ms = 400, lsp_fallback = true },
 			formatters = {
