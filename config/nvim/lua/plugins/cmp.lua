@@ -58,11 +58,8 @@ local config = function()
 			}),
 		},
 		formatting = {
-			format = function(entry, vim_item)
+			format = function(_, vim_item)
 				vim_item.kind = kind_icons[vim_item.kind]
-				if entry.source.name == "nvim_lsp" and entry.source.source.client.name == "grimoire-ls" then
-					vim_item.kind = kind_icons["Copilot"]
-				end
 				-- Uncomment to see which sources provide each completion (useful for debugging)
 				-- vim_item.menu = entry.source.name
 				return vim_item
@@ -103,35 +100,6 @@ local config = function()
 			}),
 		},
 	})
-
-	-- Manual completion for AI
-	vim.keymap.set("i", "<C-space>", function()
-		require("grimoire-ls").enable_completion(true)
-		cmp.complete({
-			config = {
-				sources = {
-					{
-						name = "nvim_lsp",
-						entry_filter = function(entry)
-							return entry.source.source.client.name == "grimoire-ls"
-						end,
-					},
-				},
-				view = {
-					entries = { name = "wildmenu", separator = " " },
-				},
-				formatting = {
-					format = function(_, vim_item)
-						vim_item.abbr = ""
-						return vim_item
-					end,
-				},
-			},
-		})
-	end)
-	cmp.event:on("complete_done", function()
-		require("grimoire-ls").enable_completion(false)
-	end)
 
 	-- Completion for search and command line
 	cmp.setup.cmdline({ "/", "?" }, {

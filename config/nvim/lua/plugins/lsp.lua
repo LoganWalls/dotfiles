@@ -91,13 +91,6 @@ local config = function()
 		return orig_util_open_floating_preview(contents, syntax, opts, ...)
 	end
 
-	-- Keymaps
-	vim.keymap.set("n", "<leader>ls", function()
-		require("grimoire-ls").start()
-	end)
-	vim.keymap.set("n", "<leader>lr", function()
-		require("grimoire-ls").restart()
-	end)
 	vim.keymap.set("n", "<leader>ll", function()
 		vim.cmd("LspLog")
 	end)
