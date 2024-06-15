@@ -99,24 +99,9 @@ local config = function()
 	end)
 end
 
-local null_ls_config = function()
-	local null_ls = require("null-ls")
-
-	null_ls.setup({
-		sources = {
-			--shell
-			null_ls.builtins.diagnostics.shellcheck,
-			null_ls.builtins.code_actions.shellcheck,
-		},
-	})
-end
-
 return {
 	{
 		"neovim/nvim-lspconfig",
 		config = config,
-		dependencies = {
-			{ "jose-elias-alvarez/null-ls.nvim", dependencies = { "nvim-lua/plenary.nvim" }, config = null_ls_config },
-		},
 	},
 }
