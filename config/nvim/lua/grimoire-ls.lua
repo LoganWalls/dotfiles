@@ -3,7 +3,7 @@ local M = {}
 M.start = function()
 	vim.lsp.start({
 		name = "grimoire-ls",
-		cmd = { "python", "-m", "grimoire_ls.run" },
+		cmd = { "/Users/logan/Projects/grimoire-ls/.venv/bin/python", "-m", "grimoire_ls.run" },
 		root_dir = vim.fn.getcwd(),
 	})
 end

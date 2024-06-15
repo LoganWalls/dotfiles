@@ -129,7 +129,7 @@ local config = function()
 			},
 		})
 	end)
-	cmp.event:on("menu_closed", function()
+	cmp.event:on("complete_done", function()
 		require("grimoire-ls").enable_completion(false)
 	end)
 
@@ -148,7 +148,6 @@ local config = function()
 	})
 
 	-- Separate settings for writing
-
 	local writing_sources = {
 		{ name = "nvim_lsp" },
 		{ name = "luasnip" },
