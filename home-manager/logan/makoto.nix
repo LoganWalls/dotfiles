@@ -75,7 +75,7 @@
       # poetry # environment management (poetry2nix)
       (python311.withPackages (ps: with ps; [ipython])) # base interpreter
       basedpyright-ls # improved fork of pyright
-      nodePackages.pyright # language server for static type analysis
+      pyright # language server for static type analysis
       ruff-lsp # language server for everything else
 
       ### TOML
