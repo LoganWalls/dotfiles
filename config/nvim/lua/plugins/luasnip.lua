@@ -7,24 +7,30 @@ local config = function()
 
 	-- Keybindings for jump navigation
 	for _, m in pairs({ "i", "s" }) do
-		require("which-key").register({
-			["<c-n>"] = {
-				function()
-					if ls.expand_or_jumpable() then
-						ls.expand_or_jump()
-					end
-				end,
-				"Next LuaSnip position",
+		require("which-key").add({
+			{
+				mode = m,
+				silent = true,
+				{
+					"<c-n>",
+					function()
+						if ls.expand_or_jumpable() then
+							ls.expand_or_jump()
+						end
+					end,
+					desc = "Next LuaSnip position",
+				},
+				{
+					"<c-p>",
+					function()
+						if ls.jumpable(-1) then
+							ls.jump(-1)
+						end
+					end,
+					desc = "Previous LuaSnip position",
+				},
 			},
-			["<c-p>"] = {
-				function()
-					if ls.jumpable(-1) then
-						ls.jump(-1)
-					end
-				end,
-				"Previous LuaSnip position",
-			},
-		}, { mode = m, silent = true })
+		})
 	end
 	require("luasnip.loaders.from_vscode").lazy_load()
 end

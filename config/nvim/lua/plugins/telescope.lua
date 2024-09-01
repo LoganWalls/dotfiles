@@ -68,21 +68,18 @@ local config = function()
 	telescope.load_extension("fzf")
 
 	-- Keybindings
-	require("which-key").register({
-		g = {
-			d = { builtin.lsp_definitions, "Go to definition" },
-			r = { builtin.lsp_references, "Find references" },
-		},
-		["<leader>"] = {
-			b = { builtin.buffers, "Find buffers" },
-			D = { builtin.diagnostics, "Workspace diagnostics" },
-			f = { builtin.find_files, "Find files" },
-			h = { builtin.help_tags, "Find help" },
-			Q = { builtin.quickfix, "Find quickfix" },
-			["/"] = { builtin.live_grep, "Live GREP" },
-			["?"] = { builtin.commands, "Find commands" },
-		},
-	}, { mode = "n", noremap = true })
+	require("which-key").add({
+		noremap = true,
+		{ "gd", builtin.lsp_definitions, desc = "Go to definition" },
+		{ "gr", builtin.lsp_references, desc = "Find references" },
+		{ "<leader>b", builtin.buffers, desc = "Find buffers" },
+		{ "<leader>D", builtin.diagnostics, desc = "Workspace diagnostics" },
+		{ "<leader>f", builtin.find_files, desc = "Find files" },
+		{ "<leader>h", builtin.help_tags, desc = "Find help" },
+		{ "<leader>Q", builtin.quickfix, desc = "Find quickfix" },
+		{ "<leader>/", builtin.live_grep, desc = "Live GREP" },
+		{ "<leader>?", builtin.commands, desc = "Find commands" },
+	})
 
 	-- Theme
 	vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })
