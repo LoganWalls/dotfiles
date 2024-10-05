@@ -1,6 +1,7 @@
 local set = vim.opt_local
 vim.bo.commentstring = "// %s"
 set.spell = true -- Enable spellchecking
+set.textwidth = 80
 
 require("snippets.common").enable_ft("typst")
 
