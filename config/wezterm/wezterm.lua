@@ -1,56 +1,57 @@
-local wezterm = require "wezterm"
+local wezterm = require("wezterm")
 local act = wezterm.action
 local config = {}
 
 -- General
 config.scrollback_lines = 1000000
+config.front_end = "WebGpu" -- See https://github.com/wez/wezterm/issues/5990
 
 -- Keybinds
 config.keys = {
-  -- Change tabs easily
-  {
-    key = "[",
-    mods = "ALT",
-    action = wezterm.action.ActivateTabRelative(-1)
-  },
-  {
-    key = "]",
-    mods = "ALT",
-    action = wezterm.action.ActivateTabRelative(1)
-  },
-  -- Navigate text quickly with alt and cmd
-  {
-    key = "LeftArrow",
-    mods = "ALT",
-    action = act.SendKey {
-      key = "b",
-      mods = "ALT",
-    }
-  },
-  {
-    key = "RightArrow",
-    mods = "ALT",
-    action = act.SendKey {
-      key = "f",
-      mods = "ALT",
-    }
-  },
-  {
-    key = "LeftArrow",
-    mods = "SUPER",
-    action = act.SendKey {
-      key = "a",
-      mods = "CTRL",
-    }
-  },
-  {
-    key = "RightArrow",
-    mods = "SUPER",
-    action = act.SendKey {
-      key = "e",
-      mods = "CTRL",
-    }
-  },
+	-- Change tabs easily
+	{
+		key = "[",
+		mods = "ALT",
+		action = wezterm.action.ActivateTabRelative(-1),
+	},
+	{
+		key = "]",
+		mods = "ALT",
+		action = wezterm.action.ActivateTabRelative(1),
+	},
+	-- Navigate text quickly with alt and cmd
+	{
+		key = "LeftArrow",
+		mods = "ALT",
+		action = act.SendKey({
+			key = "b",
+			mods = "ALT",
+		}),
+	},
+	{
+		key = "RightArrow",
+		mods = "ALT",
+		action = act.SendKey({
+			key = "f",
+			mods = "ALT",
+		}),
+	},
+	{
+		key = "LeftArrow",
+		mods = "SUPER",
+		action = act.SendKey({
+			key = "a",
+			mods = "CTRL",
+		}),
+	},
+	{
+		key = "RightArrow",
+		mods = "SUPER",
+		action = act.SendKey({
+			key = "e",
+			mods = "CTRL",
+		}),
+	},
 }
 
 -- Window
@@ -62,10 +63,10 @@ config.cursor_blink_rate = 900
 config.default_cursor_style = "BlinkingBar"
 
 -- Font
-config.font = wezterm.font_with_fallback {
-  "Liga SFMono Nerd Font",
-  "Symbols Nerd Font"
-}
+config.font = wezterm.font_with_fallback({
+	"Liga SFMono Nerd Font",
+	"Symbols Nerd Font",
+})
 config.font_size = 20
 config.adjust_window_size_when_changing_font_size = false
 
@@ -87,64 +88,60 @@ local tab_bar_background = "rgba(0,0,0,0)"
 local tab_active_fg = color_scheme.ansi[4]
 local tab_inactive_fg = color_scheme.ansi[1]
 config.window_frame = {
-  active_titlebar_bg = tab_bar_background,
-  inactive_titlebar_bg = tab_bar_background,
+	active_titlebar_bg = tab_bar_background,
+	inactive_titlebar_bg = tab_bar_background,
 }
 config.colors = {
-  tab_bar = {
-    background = tab_bar_background,
-    inactive_tab_edge = tab_bar_background,
-    active_tab = {
-      bg_color = tab_bar_background,
-      fg_color = tab_active_fg,
-      intensity = "Bold",
-    },
-    inactive_tab = {
-      bg_color = tab_bar_background,
-      fg_color = tab_inactive_fg,
-      intensity = "Half",
-    },
-  },
+	tab_bar = {
+		background = tab_bar_background,
+		inactive_tab_edge = tab_bar_background,
+		active_tab = {
+			bg_color = tab_bar_background,
+			fg_color = tab_active_fg,
+			intensity = "Bold",
+		},
+		inactive_tab = {
+			bg_color = tab_bar_background,
+			fg_color = tab_inactive_fg,
+			intensity = "Half",
+		},
+	},
 }
 -- Add padding around the tab titles
 local function tab_title(tab_info)
-  local title = tab_info.tab_title
-  if title and #title > 0 then
-    return title
-  end
-  return tab_info.active_pane.title
+	local title = tab_info.tab_title
+	if title and #title > 0 then
+		return title
+	end
+	return tab_info.active_pane.title
 end
-wezterm.on(
-  "format-tab-title",
-  function(tab, tabs, panes, config, hover, max_width)
-    local title = tab_title(tab)
-    return { { Text = "  " .. title .. "  " } }
-  end
-)
-
--- Enable zen-mode to change the font size
-wezterm.on('user-var-changed', function(window, pane, name, value)
-  local overrides = window:get_config_overrides() or {}
-  if name == "ZEN_MODE" then
-    local incremental = value:find("+")
-    local number_value = tonumber(value)
-    if incremental ~= nil then
-      while (number_value > 0) do
-        window:perform_action(wezterm.action.IncreaseFontSize, pane)
-        number_value = number_value - 1
-      end
-      overrides.enable_tab_bar = false
-    elseif number_value < 0 then
-      window:perform_action(wezterm.action.ResetFontSize, pane)
-      overrides.font_size = nil
-      overrides.enable_tab_bar = true
-    else
-      overrides.font_size = number_value
-      overrides.enable_tab_bar = false
-    end
-  end
-  window:set_config_overrides(overrides)
+wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+	local title = tab_title(tab)
+	return { { Text = "  " .. title .. "  " } }
 end)
 
+-- Enable zen-mode to change the font size
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	local overrides = window:get_config_overrides() or {}
+	if name == "ZEN_MODE" then
+		local incremental = value:find("+")
+		local number_value = tonumber(value)
+		if incremental ~= nil then
+			while number_value > 0 do
+				window:perform_action(wezterm.action.IncreaseFontSize, pane)
+				number_value = number_value - 1
+			end
+			overrides.enable_tab_bar = false
+		elseif number_value < 0 then
+			window:perform_action(wezterm.action.ResetFontSize, pane)
+			overrides.font_size = nil
+			overrides.enable_tab_bar = true
+		else
+			overrides.font_size = number_value
+			overrides.enable_tab_bar = false
+		end
+	end
+	window:set_config_overrides(overrides)
+end)
 
 return config
