@@ -52,7 +52,7 @@ local config = function()
 		end,
 	})
 
-	lspconfig.tsserver.setup({
+	lspconfig.ts_ls.setup({
 		capabilities = capabilities,
 		root_dir = lspconfig.util.root_pattern("package.json"),
 	})
