@@ -22,12 +22,6 @@
     emacs-overlay.url = "github:nix-community/emacs-overlay";
     emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-    basedpyright.url = "github:LoganWalls/basedpyright-nix";
-    basedpyright.inputs.nixpkgs.follows = "nixpkgs";
-
-    yazi.url = "github:sxyazi/yazi";
-    yazi.inputs.nixpkgs.follows = "nixpkgs";
-
     # SFMono font with NerdFont and Ligatures
     sf-mono-liga = {
       url = "github:shaunsingh/SFMono-Nerd-Font-Ligaturized";
@@ -118,12 +112,10 @@
     in {
       "logan@makoto" = let
         pkgs = legacyPackages.aarch64-darwin;
-        basedpyright-ls = inputs.basedpyright.packages.aarch64-darwin.default;
-        yazi = inputs.yazi.packages.${pkgs.system}.default;
       in
         home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = {inherit inputs basedpyright-ls yazi;};
+          extraSpecialArgs = {inherit inputs;};
           modules =
             (builtins.attrValues homeManagerModules)
             ++ [

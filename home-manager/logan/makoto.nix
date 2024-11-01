@@ -3,8 +3,6 @@
   lib,
   stdenv,
   pkgs,
-  basedpyright-ls,
-  yazi,
   ...
 }: {
   home = {
@@ -43,12 +41,11 @@
       ugrep # faster grep with backward-compatible interface
       tealdeer # tldr for manpages
       macchina # more performant neofetch alternative
-      mosh # nice ssh sessions
+      # mosh # nice ssh sessions
       zoxide # jump to frequently used directories
       direnv # perform env setup when entering a directory
       gitui # a nice git TUI
       xclip # work with the system clipboards
-      yazi # file manager
       zsh-history-substring-search # Search command history automatically
 
       ### File format-specific tools
@@ -74,7 +71,6 @@
       ### Python
       # poetry # environment management (poetry2nix)
       (python311.withPackages (ps: with ps; [ipython])) # base interpreter
-      basedpyright-ls # improved fork of pyright
       pyright # language server for static type analysis
       ruff-lsp # language server for everything else
 
@@ -102,7 +98,7 @@
       typst
       tinymist # language server
       typstfmt
-      sioyek # pdf viewer
+      zathura # pdf viewer
 
       ### Other
       buf-language-server # protobuf
@@ -160,11 +156,6 @@
       fileWidgetCommand = "fd --type f";
     };
     starship.enable = true;
-    yazi = {
-      enable = true;
-      enableZshIntegration = true;
-      package = yazi;
-    };
     zoxide = {
       enable = true;
       enableZshIntegration = true;
@@ -194,7 +185,6 @@
         ll = "exa --all --icons";
         lll = "exa --all --long --icons";
         tree = "exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'";
-        yz = "yazi";
 
         # emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
 
