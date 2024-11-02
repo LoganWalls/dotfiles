@@ -14,6 +14,7 @@ local config = function()
 			"json",
 			"julia",
 			"lua",
+			"nu",
 			"ocaml",
 			"python",
 			"query",
@@ -85,6 +86,7 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		dependencies = {
+			"nushell/tree-sitter-nu",
 			"nvim-treesitter/nvim-treesitter-context",
 			"RRethy/nvim-treesitter-textsubjects",
 		},
