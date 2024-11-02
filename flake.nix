@@ -69,6 +69,7 @@
           # Instead, set nixpkgs configs here
           # (https://nixos.org/manual/nixpkgs/stable/#idm140737322551056)
           config.allowUnfree = true;
+          config.xdg.enable = true;
         }
     );
 

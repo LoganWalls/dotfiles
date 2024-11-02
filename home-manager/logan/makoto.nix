@@ -12,6 +12,29 @@
       DOTFILES = "$HOME/.dotfiles/";
       NIX_PATH = "nixpkgs=flake:nixpkgs";
     };
+    shellAliases = {
+      cat = "bat";
+      man = "batman";
+      fda = "fd -IH";
+      gu = "gitui";
+      ls = "exa --icons";
+      l = "ls";
+      ll = "exa --all --icons";
+      lll = "exa --all --long --icons";
+      tree = "exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'";
+
+      # emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
+      icat = "wezterm imgcat";
+      isvg = "rsvg-convert | wezterm imgcat";
+
+      grep = "ugrep --sort -G -U -Y -. -Dread -dread";
+      egrep = "ugrep --sort -E -U -Y -. -Dread -dread";
+      fgrep = "ugrep --sort -F -U -Y -. -Dread -dread";
+
+      zgrep = "ugrep --sort -G -U -Y -z -. -Dread -dread";
+      zegrep = "ugrep --sort -E -U -Y -z -. -Dread -dread";
+      zfgrep = "ugrep --sort -F -U -Y -z -. -Dread -dread";
+    };
 
     # This value determines the Home Manager release that your
     # configuration is compatible with. This helps avoid breakage
@@ -23,12 +46,8 @@
       ### GUI Apps
       wezterm
 
-      ### Editors
-      nodejs-slim # for AI code completion in neovim
-
       ### Shell tools
       age # encryption
-      bat # modern cat
       btop # system activity monitor
       coreutils-prefixed # for compat with emacs
       eza # modern ls
@@ -42,11 +61,8 @@
       tealdeer # tldr for manpages
       macchina # more performant neofetch alternative
       # mosh # nice ssh sessions
-      zoxide # jump to frequently used directories
-      direnv # perform env setup when entering a directory
       gitui # a nice git TUI
       xclip # work with the system clipboards
-      zsh-history-substring-search # Search command history automatically
 
       ### File format-specific tools
       jq # work with json files
@@ -69,7 +85,7 @@
       cmake
 
       ### Python
-      # poetry # environment management (poetry2nix)
+      uv # python package / env manager
       (python311.withPackages (ps: with ps; [ipython])) # base interpreter
       pyright # language server for static type analysis
       ruff-lsp # language server for everything else
@@ -91,8 +107,8 @@
       nodePackages.prettier # formatter
 
       ### Tex
-      texlive.combined.scheme-full # tex distribution
-      texlab # language server for tex
+      # texlive.combined.scheme-full # tex distribution
+      # texlab # language server for tex
 
       ### Typst
       typst
@@ -106,10 +122,17 @@
       ### Prose / writing
       vale # "linter" for prose
 
-      ### Fonts: TODO: move to system config?
-      ibm-plex
+      ### Fonts
+      (nerdfonts.override {fonts = ["FiraCode" "JetBrainsMono" "Overpass" "NerdFontsSymbolsOnly"];})
+      apple-fonts
+      comic-mono
+      crimson-pro
+      fira-go
       fira-sans
-      noto-fonts
+      ibm-plex
+      iosevka-comfy.comfy
+      noto-fonts-emoji
+      sf-mono-liga
     ];
   };
 
@@ -122,6 +145,7 @@
     git = {
       enable = true;
       lfs.enable = true;
+      delta.enable = true;
       userEmail = "2934282+LoganWalls@users.noreply.github.com";
       userName = "Logan Walls";
       ignores = ["*~" ".DS_Store"];
@@ -132,10 +156,6 @@
         br = "branch";
         wip = "commit -m 'WIP'";
       };
-      attributes = [
-        "*.org   diff=org"
-      ];
-      delta.enable = true;
       extraConfig = {
         url = {"git@github.com:" = {insteadOf = "https://github.com/";};};
         init.defaultBranch = "main";
@@ -144,22 +164,34 @@
         };
       };
     };
+    bat = {
+      enable = true;
+      extraPackages = with pkgs.bat-extras; [batman];
+    };
+    carapace.enable = true;
     direnv = {
       enable = true;
       nix-direnv.enable = true;
     };
     fzf = {
       enable = true;
-      enableZshIntegration = true;
       defaultCommand = "fd --type f";
       changeDirWidgetCommand = "fd --type d";
       fileWidgetCommand = "fd --type f";
     };
     starship.enable = true;
-    zoxide = {
+    zoxide.enable = true;
+    nushell = {
       enable = true;
-      enableZshIntegration = true;
+      # configFile.text = ''
+      #   source ~/.config/nushell/config.nu
+      #   source ~/.config/nushell/env.nu
+      # '';
+      # envFile.text = ''
+      #   $env.XDG_CONFIG_HOME = $"($env.HOME)/.config"
+      # '';
     };
+
     zsh = {
       enable = true;
       enableCompletion = true;
@@ -173,31 +205,6 @@
         ignoreDups = true;
         expireDuplicatesFirst = true;
         share = true;
-      };
-      shellAliases = {
-        dots = "gitui --directory $DOTFILES --workdir $HOME";
-        gdots = "git --git-dir=$DOTFILES --work-tree=$HOME";
-        cat = "bat";
-        fda = "fd -IH";
-        gu = "gitui";
-        ls = "exa --icons";
-        l = "ls";
-        ll = "exa --all --icons";
-        lll = "exa --all --long --icons";
-        tree = "exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'";
-
-        # emacs = "${pkgs.my-emacs}/Applications/Emacs.app/Contents/MacOS/Emacs";
-
-        icat = "wezterm imgcat";
-        isvg = "rsvg-convert | wezterm imgcat";
-
-        grep = "ugrep --sort -G -U -Y -. -Dread -dread";
-        egrep = "ugrep --sort -E -U -Y -. -Dread -dread";
-        fgrep = "ugrep --sort -F -U -Y -. -Dread -dread";
-
-        zgrep = "ugrep --sort -G -U -Y -z -. -Dread -dread";
-        zegrep = "ugrep --sort -E -U -Y -z -. -Dread -dread";
-        zfgrep = "ugrep --sort -F -U -Y -z -. -Dread -dread";
       };
       initExtra = ''
         bindkey '^[[A' history-substring-search-up
