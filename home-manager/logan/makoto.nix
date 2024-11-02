@@ -5,6 +5,7 @@
   pkgs,
   ...
 }: rec {
+  xdg.enable = true;
   home = {
     username = "logan";
     homeDirectory = "/Users/logan";
@@ -45,7 +46,16 @@
     packages = with pkgs; [
       ### GUI Apps
       wezterm
-
+      (nushell.overrideAttrs (old: {
+        # Override forces nushell to use XDG paths (defaults to Application Support on macOS)
+        buildInputs = old.buildInputs ++ [makeWrapper];
+        postInstall =
+          old.postInstall
+          or ""
+          + ''
+            wrapProgram "$out/bin/nu" --set XDG_CONFIG_HOME "${home.homeDirectory}/.config"
+          '';
+      }))
       ### Shell tools
       age # encryption
       btop # system activity monitor
@@ -69,6 +79,7 @@
       xsv # work with (c/t)sv files
       imagemagick # work with images
       ffmpeg # work images, audio, and video
+      librsvg # allows rasterizing SVGs
 
       ##### Language-specific
       ### Shell
@@ -181,26 +192,6 @@
     };
     starship.enable = true;
     zoxide.enable = true;
-    nushell = {
-      enable = true;
-      package = pkgs.nushell.overrideAttrs (old: {
-        buildInputs = old.buildInputs ++ [pkgs.makeWrapper];
-        postInstall =
-          old.postInstall
-          or ""
-          + ''
-            wrapProgram "$out/bin/nu" --set XDG_CONFIG_HOME "${home.homeDirectory}/.config"
-          '';
-      });
-      # configFile.text = ''
-      #   source ~/.config/nushell/config.nu
-      #   source ~/.config/nushell/env.nu
-      # '';
-      # envFile.text = ''
-      #   $env.XDG_CONFIG_HOME = $"($env.HOME)/.config"
-      # '';
-    };
-
     zsh = {
       enable = true;
       enableCompletion = true;
