@@ -1,7 +1,29 @@
-source hooks/zoxide.nu
-use hooks/starship.nu
-source hooks/carapace.nu
+$env.config = {
+  keybindings: [
+    {
+        name: menu_next
+        modifier: control
+        keycode: char_j
+        mode: [emacs vi_insert]
+        event: {
+            until: [
+                { send: menunext }
+            ]
+        }
+    }
+    {
+        name: menu_prev
+        modifier: control
+        keycode: char_k
+        mode: [emacs vi_insert]
+        event: {
+            until: [
+                { send: menuprevious }
+            ]
+        }
+    }
+  ]
+}
 
-$env.config.hooks.pre_prompt = (
-    $env.config.hooks.pre_prompt | append (source hooks/direnv/config.nu)
-)
+source load-hooks.nu
+source aliases.nu

@@ -3,4 +3,5 @@ config/direnv/
 config/git/
 config/github-copilot/
 config/nix/registry.json
+config/nushell/history.txt
 result/
