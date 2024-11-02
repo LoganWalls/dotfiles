@@ -4,7 +4,7 @@
   stdenv,
   pkgs,
   ...
-}: {
+}: rec {
   home = {
     username = "logan";
     homeDirectory = "/Users/logan";
@@ -183,6 +183,15 @@
     zoxide.enable = true;
     nushell = {
       enable = true;
+      package = pkgs.nushell.overrideAttrs (old: {
+        buildInputs = old.buildInputs ++ [pkgs.makeWrapper];
+        postInstall =
+          old.postInstall
+          or ""
+          + ''
+            wrapProgram "$out/bin/nu" --set XDG_CONFIG_HOME "${home.homeDirectory}/.config"
+          '';
+      });
       # configFile.text = ''
       #   source ~/.config/nushell/config.nu
       #   source ~/.config/nushell/env.nu
