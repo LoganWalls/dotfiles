@@ -69,7 +69,6 @@
           # Instead, set nixpkgs configs here
           # (https://nixos.org/manual/nixpkgs/stable/#idm140737322551056)
           config.allowUnfree = true;
-          config.xdg.enable = true;
         }
     );
 
@@ -90,18 +89,6 @@
           (builtins.attrValues nixosModules)
           ++ [
             ./host/sebastian/configuration.nix
-          ];
-      };
-    };
-
-    darwinConfigurations = {
-      makoto = inputs.darwin.lib.darwinSystem {
-        pkgs = legacyPackages.aarch64-darwin;
-        specialArgs = {inherit inputs;};
-        modules =
-          (builtins.attrValues darwinModules)
-          ++ [
-            ./host/makoto/configuration.nix
           ];
       };
     };
