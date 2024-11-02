@@ -97,7 +97,7 @@
 
       ### Python
       uv # python package / env manager
-      (python311.withPackages (ps: with ps; [ipython])) # base interpreter
+      (python3.withPackages (ps: with ps; [ipython])) # base interpreter
       pyright # language server for static type analysis
       ruff-lsp # language server for everything else
 
