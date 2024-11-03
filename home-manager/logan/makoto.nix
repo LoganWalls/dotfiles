@@ -56,6 +56,7 @@
             wrapProgram "$out/bin/nu" --set XDG_CONFIG_HOME "${home.homeDirectory}/.config"
           '';
       }))
+      nushellPlugins.skim
       ### Shell tools
       age # encryption
       btop # system activity monitor

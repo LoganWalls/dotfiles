@@ -22,6 +22,50 @@ $env.config = {
             ]
         }
     }
+    {
+        name: fuzzy_dir
+        modifier: control
+        keycode: char_f
+        mode: [emacs, vi_normal, vi_insert]
+        event: [
+          {
+              send: executehostcommand
+              cmd: "commandline edit --insert (
+                  ls **/*
+                  | where type == dir
+                  | sk 
+                      --format {get name}
+                      --prompt ' Select directory: '
+                      --height 20
+                      --layout reverse
+                      --color=border:#1e1e2e
+                  | get name
+              )"
+          }
+      ]
+    }
+    {
+        name: fuzzy_file
+        modifier: control
+        keycode: char_t
+        mode: [emacs, vi_normal, vi_insert]
+        event: [
+          {
+              send: executehostcommand
+              cmd: "commandline edit --insert (
+                  ls **/*
+                  | where type == file
+                  | sk 
+                      --format {get name}
+                      --preview {bat --force-colorization ($in | get name)}
+                      --prompt '󰈞 Select file: '
+                      --height 20
+                      --layout reverse
+                  | get name
+              )"
+          }
+      ]
+    }
   ]
 }
 
