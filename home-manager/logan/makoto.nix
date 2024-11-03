@@ -57,6 +57,7 @@
           '';
       }))
       nushellPlugins.skim
+
       ### Shell tools
       age # encryption
       btop # system activity monitor
@@ -73,6 +74,7 @@
       macchina # more performant neofetch alternative
       # mosh # nice ssh sessions
       gitui # a nice git TUI
+      vivid # ls_colors
       xclip # work with the system clipboards
 
       ### File format-specific tools
