@@ -4,4 +4,5 @@ config/git/
 config/github-copilot/
 config/nix/registry.json
 config/nushell/history.txt
+config/carapace/bridge
 result/
