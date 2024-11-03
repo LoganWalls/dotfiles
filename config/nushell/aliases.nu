@@ -2,9 +2,18 @@ alias cat = bat
 alias man = batman
 alias fda = fd -IH
 alias gu = gitui
-alias l = exa --icons
-alias ll = exa --all --icons
-alias lll = exa --all --long --icons
+alias lsa = ls --all
+
+def icon-grid [] {
+  sort-by type name -i | grid --color --icons -w 100
+}
+def l [] {
+  ls | icon-grid
+}
+def ll [] {
+  ls --all | icon-grid
+}
+alias lll = ls --all --long
 alias tree = exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'
 
 alias icat = wezterm imgcat
