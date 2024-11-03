@@ -2,9 +2,7 @@ alias cat = bat
 alias man = batman
 alias fda = fd -IH
 alias gu = gitui
-alias nls = ls
-alias ls = exa --icons
-alias l = ls
+alias l = exa --icons
 alias ll = exa --all --icons
 alias lll = exa --all --long --icons
 alias tree = exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'
