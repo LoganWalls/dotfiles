@@ -3,6 +3,7 @@ local act = wezterm.action
 local config = {}
 
 -- General
+config.default_prog = { "/Users/logan/.nix-profile/bin/nu", "--login" }
 config.scrollback_lines = 1000000
 config.front_end = "WebGpu" -- See https://github.com/wez/wezterm/issues/5990
 
