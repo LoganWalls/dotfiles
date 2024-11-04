@@ -1,3 +1,4 @@
+alias vi = nvim
 alias cat = bat
 alias man = batman
 alias fda = fd -IH
