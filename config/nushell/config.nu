@@ -1,3 +1,17 @@
+def filtered-dirs [] {
+  fd --type dir --print0
+  | split row (char -u '0000')
+  | compact --empty
+  | ls -D ...$in
+}
+
+def filtered-files [] {
+  fd --type file --print0
+  | split row (char -u '0000')
+  | compact --empty
+  | ls ...$in
+}
+
 const menu_style = {
   text: green
   selected_text: green_reverse
@@ -74,8 +88,7 @@ $env.config = {
           {
               send: executehostcommand
               cmd: "commandline edit --insert (
-                  ls **/*
-                  | where type == dir
+                  filtered-dirs
                   | sk 
                       --format {get name}
                       --prompt '  '
@@ -96,8 +109,7 @@ $env.config = {
           {
               send: executehostcommand
               cmd: "commandline edit --insert (
-                  ls **/*
-                  | where type == file
+                  filtered-files
                   | sk 
                       --format {get name}
                       --preview {bat --force-colorization ($in | get name)}
