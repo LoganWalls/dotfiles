@@ -1,0 +1,31 @@
+[alias]
+	br = "branch"
+	cm = "commit"
+	co = "checkout"
+	st = "status"
+	wip = "commit -m 'WIP'"
+
+[core]
+	pager = "delta"
+
+[diff "org"]
+	xfuncname = "^(\\*+ +.*)$"
+
+[filter "lfs"]
+	clean = "git-lfs clean -- %f"
+	process = "git-lfs filter-process"
+	required = true
+	smudge = "git-lfs smudge -- %f"
+
+[init]
+	defaultBranch = "main"
+
+[interactive]
+	diffFilter = "delta --color-only"
+
+[url "git@github.com:"]
+	insteadOf = "https://github.com/"
+
+[user]
+	email = "2934282+LoganWalls@users.noreply.github.com"
+	name = "Logan Walls"
