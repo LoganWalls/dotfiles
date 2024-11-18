@@ -24,7 +24,7 @@ with pkgs; [
   uv # python package / env manager
   (python3.withPackages (ps: with ps; [ipython])) # base interpreter
   pyright # language server for static type analysis
-  ruff-lsp # language server for everything else
+  ruff # language server for everything else
 
   # TOML
   taplo

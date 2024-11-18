@@ -4,7 +4,7 @@ local config = function()
 
 	-- Enable some language servers with the additional completion capabilities offered by nvim-cmp
 	local servers = {
-		"bufls",
+		"buf_ls",
 		"cssls",
 		"dockerls",
 		"eslint",
@@ -44,7 +44,7 @@ local config = function()
 		cmd = { "lexical" },
 	})
 
-	lspconfig.ruff_lsp.setup({
+	lspconfig.ruff.setup({
 		capabilities = capabilities,
 		on_attach = function(client, bufnr)
 			-- Disable hover in favor of Pyright
