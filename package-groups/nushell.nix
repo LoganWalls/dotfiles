@@ -40,7 +40,7 @@ in
     git
     gitui # a nice git TUI
     just # command runner
-    # mosh # nice ssh sessions
+    mosh # nice ssh sessions
     ripgrep # modern grep
     sd # modern sed
     tealdeer # tldr for manpages
