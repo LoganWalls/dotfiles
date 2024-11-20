@@ -31,7 +31,6 @@ in
 
     # Tools
     bat # cat with highlighting
-    bat-extras.batman # use bat to highlight manpages
     btop # system activity monitor
     delta # modern diff
     eza # modern ls
