@@ -1,0 +1,14 @@
+  {
+    "# type: ignore": {
+      "prefix": [
+        "#ti"
+      ],
+      "body": " type: ignore"
+    },
+    "Altair chart": {
+      "prefix": [
+        "achart"
+      ],
+      "body": "(alt.Chart(${1:df})\n    .encode(\n        x=alt.X(${2:\"x:Q\"}),\n        y=alt.Y(${3:\"y:Q\"}),\n    )\n    .mark_${4|bar,line,circle|}()\n)$0"
+    }
+  }

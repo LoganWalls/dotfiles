@@ -1,0 +1,8 @@
+{
+  "Prose Citation": {
+    "prefix": [
+      "pcite"
+    ],
+    "body": "#cite(<${1:key}>, form: \"prose\")$0"
+  }
+}
