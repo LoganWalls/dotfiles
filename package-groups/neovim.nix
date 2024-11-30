@@ -41,6 +41,7 @@ with pkgs; [
   nodePackages.typescript
   nodePackages.typescript-language-server
   nodePackages.prettier # formatter
+  tailwindcss-language-server
 
   # Typst
   typst
@@ -53,5 +54,5 @@ with pkgs; [
   # texlab # language server for tex
 
   # Other
-  buf-language-server # protobuf
+  buf # protobuf
 ]
