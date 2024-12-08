@@ -10,6 +10,7 @@ with pkgs;
     iosevka-comfy.comfy
     noto-fonts-emoji
     sf-mono-liga
+    ligalex-mono
   ]
   ++ (with pkgs.nerd-fonts; [
     fira-code
