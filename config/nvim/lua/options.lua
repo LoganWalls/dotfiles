@@ -24,6 +24,7 @@ set.grepprg = "rg --vimgrep  --no-heading --smart-case" -- Use ripgrep for grep-
 set.grepformat = "%f:%l:%c:%m" -- ^
 
 -- Indentation
+set.autoindent = true -- Follow previous line's indent when wrapping
 set.tabstop = 2 -- Tabs are 2 spaces wide
 set.shiftwidth = 0 -- Use tabstop value
 set.softtabstop = 0 -- Use tabstop value
