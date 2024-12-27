@@ -1,0 +1,69 @@
+layout {
+  default_tab_template {
+    pane size=2 borderless=true {
+      plugin location="file:$HOME/.nix-profile/bin/zjstatus.wasm" {
+        color_bg "#1e1e2e" 
+        color_fg "#cdd6f4"
+        color_red "#f38ba8"
+        color_green "#a6e3a1"
+        color_blue "#89b4fa"
+        color_yellow "#f9e2af"
+        color_magenta "#f5c2e7"
+        color_orange "#fab387"
+        color_cyan "#89dceb"
+        color_black "#181825"
+        color_white "#cdd6f4"
+
+        format_left   "#[bg=$bg,fg=$fg] {session} {mode}"
+        format_right   "{tabs}"
+        format_hide_on_overlength "true"
+        format_precedence "crl"
+
+        border_enabled  "false"
+
+        mode_normal        "#[bg=$green,fg=$bg,bold] NORMAL "
+        mode_locked        "#[bg=$red,fg=$bg,bold] LOCKED  "
+        mode_resize        "#[bg=$blue,fg=$bg,bold] RESIZE "
+        mode_pane          "#[bg=$blue,fg=$bg,bold] PANE "
+        mode_tab           "#[bg=$yellow,fg=$bg,bold] TAB "
+        mode_scroll        "#[bg=$blue,fg=$bg,bold] SCROLL "
+        mode_enter_search  "#[bg=$orange,fg=$bg,bold] ENT-SEARCH "
+        mode_search        "#[bg=$orange,fg=$bg,bold] SEARCHARCH "
+        mode_rename_tab    "#[bg=$yellow,fg=$bg,bold] RENAME-TAB "
+        mode_rename_pane   "#[bg=$blue,fg=$bg,bold] RENAME-PANE "
+        mode_session       "#[bg=$blue,fg=$bg,bold] SESSION "
+        mode_move          "#[bg=$blue,fg=$bg,bold] MOVE "
+        mode_prompt        "#[bg=$blue,fg=$bg,bold] PROMPT "
+        mode_tmux          "#[bg=$magenta,fg=$bg,bold] TMUX "
+
+        // formatting for inactive tabs
+        tab_normal              "#[bg=$cyan,fg=$bg,bold] {index} #[bg=$bg,fg=$cyan,bold] {name}{floating_indicator} "
+        tab_normal_fullscreen   "#[bg=$cyan,fg=$bg,bold] {index} #[bg=$bg,fg=$cyan,bold] {name}{fullscreen_indicator} "
+        tab_normal_sync         "#[bg=$cyan,fg=$bg,bold] {index} #[bg=$bg,fg=$cyan,bold] {name}{sync_indicator} "
+
+        // formatting for the current active tab
+        tab_active              "#[bg=$yellow,fg=$bg,bold] {index} #[bg=$bg,fg=$yellow,bold] {name}{floating_indicator} "
+        tab_active_fullscreen   "#[bg=$yellow,fg=$bg,bold] {index} #[bg=$bg,fg=$yellow,bold] {name}{fullscreen_indicator} "
+        tab_active_sync         "#[bg=$yellow,fg=$bg,bold] {index} #[bg=$bg,fg=$yellow,bold] {name}{sync_indicator} "
+
+        // separator between the tabs
+        tab_separator           " "
+
+        // indicators
+        tab_sync_indicator       " "
+        tab_fullscreen_indicator " 󰊓"
+        tab_floating_indicator   " 󰹙"
+
+        command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+        command_git_branch_format      "#[fg=$blue] {stdout} "
+        command_git_branch_interval    "10"
+        command_git_branch_rendermode  "static"
+
+        datetime        "#[fg=$fg] {format} "
+        datetime_format "%Y-%m-%d %H:%M"
+        datetime_timezone "America/New York"
+      }
+    }
+    children
+  }
+}

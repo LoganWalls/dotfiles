@@ -1,6 +1,8 @@
 {
+  inputs,
   pkgs,
   homeDirectory,
+  ...
 }: let
   nushellWrapped =
     if pkgs.stdenv.isDarwin
@@ -16,10 +18,13 @@
           '';
       }))
     else pkgs.nushell;
+  zjstatus = inputs.zjstatus.packages."${pkgs.stdenv.system}".default;
 in
   with pkgs; [
     nushellWrapped
     nushellPlugins.skim
+    zellij
+    zjstatus
 
     # REPL / UI
     carapace

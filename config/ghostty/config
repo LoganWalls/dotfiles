@@ -1,0 +1,12 @@
+background-opacity = 0.90
+command = /Users/logan/.nix-profile/bin/nu --login -e zellij
+cursor-style = bar
+font-family = Liga SFMono Nerd Font
+font-family = Symbols Nerd Font Mono
+font-size = 20
+macos-non-native-fullscreen = true
+macos-titlebar-style = hidden
+theme = catppuccin-mocha
+window-padding-x = 8
+keybind = alt+enter=toggle_fullscreen
+keybind = super+t=unbind
