@@ -26,6 +26,16 @@ return {
 		},
 
 		completion = {
+			list = {
+				selection = {
+					preselect = function(ctx)
+						return ctx.mode ~= "cmdline"
+					end,
+					auto_insert = function(ctx)
+						return ctx.mode == "cmdline"
+					end,
+				},
+			},
 			menu = {
 				border = "rounded",
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
