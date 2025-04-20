@@ -2,7 +2,7 @@ return {
 	"saghen/blink.cmp",
 	lazy = false,
 	dependencies = "rafamadriz/friendly-snippets",
-	version = "v0.*",
+	version = "v1.*",
 	-- If you use nix, you can build from source using latest nightly rust with:
 	-- build = 'nix run .#build-plugin',
 
