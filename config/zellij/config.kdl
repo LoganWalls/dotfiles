@@ -1,4 +1,6 @@
 keybinds clear-defaults=true {
+    unbind "Super c"
+    unbind "Ctrl t"
     locked {
         bind "Alt g" { SwitchToMode "normal"; }
     }
@@ -254,6 +256,7 @@ load_plugins {
 }
 
 attach_to_session true
+mouse_mode false
 copy_on_select false
 default_layout "custom-default"
 default_mode "normal"
