@@ -1,7 +1,8 @@
 local set = vim.opt_local
 vim.bo.commentstring = "// %s"
-set.spell = true -- Enable spellchecking
 set.textwidth = 80
+set.spell = true
+set.breakindent = true
 
 vim.keymap.set("n", "<Leader>lp", function()
 	-- Pin `main.typ` as the main file if it exists
