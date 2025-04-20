@@ -10,7 +10,6 @@
       then "/home/logan"
       else "/Users/logan";
   };
-  ghostty = inputs.ghostty.packages."${pkgs.stdenv.system}".default;
 in
   inputs.flakey-profile.lib.mkProfile rec {
     inherit pkgs;
@@ -28,8 +27,6 @@ in
         imagemagick # work with images
         librsvg # allows rasterizing SVGs
         macchina # more performant neofetch alternative
-        # ghostty # new terminal
-        wezterm # terminal
         zathura # pdf viewer
       ]);
   }
