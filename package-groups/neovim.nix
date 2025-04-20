@@ -23,7 +23,7 @@ with pkgs; [
   # Python
   uv # python package / env manager
   (python3.withPackages (ps: with ps; [ipython])) # base interpreter
-  pyright # language server for static type analysis
+  basedpyright # language server for static type analysis
   ruff # language server for everything else
 
   # TOML
