@@ -132,7 +132,7 @@ return {
 				},
 			},
 			ocamllsp = {},
-			pyright = {},
+			basedpyright = {},
 			ruff = {},
 			tailwindcss = {
 				autostart = false, -- autostart handled by autocmd (defined above)
