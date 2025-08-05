@@ -134,11 +134,18 @@ return {
 			ocamllsp = {},
 			basedpyright = {},
 			ruff = {},
+			svelte = {},
 			tailwindcss = {
 				autostart = false, -- autostart handled by autocmd (defined above)
 				filetypes = tailwind_filetypes,
 				settings = {
 					tailwindCSS = {
+						experimental = {
+							classRegex = { {
+								"clsx\\(([^)]*)\\)",
+								"(?:'|\"|`)([^']*)(?:'|\"|`)",
+							} },
+						},
 						includeLanguages = {
 							eelixir = "html-eex",
 							eruby = "erb",
