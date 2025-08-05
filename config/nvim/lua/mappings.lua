@@ -22,6 +22,9 @@ map("i", "?", "?<c-g>u")
 map("v", ">", ">gv")
 map("v", "<", "<gv")
 
+-- Delete without saving to register
+vim.keymap.set({ "x" }, "D", '"_d')
+
 local wk = require("which-key")
 local qf = require("quickfix")
 
