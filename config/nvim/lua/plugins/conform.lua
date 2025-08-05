@@ -3,7 +3,7 @@ return {
 	config = function()
 		require("conform").setup({
 			formatters_by_ft = {
-				javascript = { { "prettier" } },
+				javascript = { "prettier" },
 				lua = { "stylua" },
 				nix = { "alejandra" },
 				sh = { "shfmt" },

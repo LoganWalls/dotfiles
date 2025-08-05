@@ -1,6 +1,7 @@
 return {
 	"lukas-reineke/headlines.nvim",
 	dependencies = "nvim-treesitter/nvim-treesitter",
+	opts = {},
 	-- config = function()
 	--   require("headlines").setup({
 	--     typst = {
