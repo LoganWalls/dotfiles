@@ -5,15 +5,12 @@ return {
 		flavour = "mocha",
 		transparent_background = true,
 		integrations = {
-			cmp = true,
+			cmp = false,
 			fidget = true,
-			flash = true,
-			gitsigns = true,
 			mini = true,
 			native_lsp = { enabled = true },
 			telescope = true,
 			treesitter = true,
-			which_key = true,
 		},
 	},
 }

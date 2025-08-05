@@ -68,18 +68,15 @@ local config = function()
 	telescope.load_extension("fzf")
 
 	-- Keybindings
-	require("which-key").add({
-		noremap = true,
-		{ "gd", builtin.lsp_definitions, desc = "Go to definition" },
-		{ "gr", builtin.lsp_references, desc = "Find references" },
-		{ "<leader>b", builtin.buffers, desc = "Find buffers" },
-		{ "<leader>D", builtin.diagnostics, desc = "Workspace diagnostics" },
-		{ "<leader>f", builtin.find_files, desc = "Find files" },
-		{ "<leader>h", builtin.help_tags, desc = "Find help" },
-		{ "<leader>Q", builtin.quickfix, desc = "Find quickfix" },
-		{ "<leader>/", builtin.live_grep, desc = "Live GREP" },
-		{ "<leader>?", builtin.commands, desc = "Find commands" },
-	})
+	vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
+	vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Find references" })
+	vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "Find buffers" })
+	vim.keymap.set("n", "<leader>D", builtin.diagnostics, { desc = "Workspace diagnostics" })
+	vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Find files" })
+	vim.keymap.set("n", "<leader>h", builtin.help_tags, { desc = "Find help" })
+	vim.keymap.set("n", "<leader>Q", builtin.quickfix, { desc = "Find quickfix" })
+	vim.keymap.set("n", "<leader>/", builtin.live_grep, { desc = "Live GREP" })
+	vim.keymap.set("n", "<leader>?", builtin.commands, { desc = "Find commands" })
 
 	-- Theme
 	vim.api.nvim_set_hl(0, "TelescopeNormal", { link = "NormalFloat" })

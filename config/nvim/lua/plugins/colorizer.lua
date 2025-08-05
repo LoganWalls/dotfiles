@@ -1,4 +1,4 @@
 return {
-	"Akianonymus/nvim-colorizer.lua",
-	ft = { "css", "sass", "scss", "html" },
+	"norcalli/nvim-colorizer.lua",
+	ft = { "css", "sass", "scss", "html", "svelte", "typst" },
 }
