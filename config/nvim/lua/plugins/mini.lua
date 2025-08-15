@@ -87,17 +87,53 @@ return {
 				},
 			})
 
+			require("mini.diff").setup({})
+			require("mini.git").setup({})
+
 			require("mini.statusline").setup({
 				content = {
 					active = function()
+						local Icons = require("mini.icons")
 						local MiniStatusline = require("mini.statusline")
 						local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-						local git = MiniStatusline.section_git({ trunc_width = 40 })
-						local diff = MiniStatusline.section_diff({ trunc_width = 75 })
-						local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-						local lsp = MiniStatusline.section_lsp({ trunc_width = 75 })
-						local filename = MiniStatusline.section_filename({ trunc_width = 140 })
-						local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+
+						local git = ""
+						if vim.b.minigit_summary ~= nil then
+							git = " " .. (vim.b.minigit_summary.head_name or "")
+						end
+
+						local diff = " "
+						if vim.b.minidiff_summary ~= nil and (vim.b.minidiff_summary.n_ranges or 0) > 0 then
+							diff = " "
+						end
+
+						local diagnostics = MiniStatusline.section_diagnostics({
+							icon = " ",
+							signs = {
+								ERROR = " ",
+								WARN = " ",
+								INFO = " ",
+								HINT = "󰋗 ",
+							},
+							trunc_width = 75,
+						})
+						local buf_id = vim.api.nvim_win_get_buf(0)
+						local readonly = " "
+						if vim.api.nvim_get_option_value("readonly", { buf = buf_id }) then
+							readonly = " "
+						end
+						local modified = " "
+						if vim.api.nvim_get_option_value("modified", { buf = buf_id }) then
+							modified = " "
+						end
+						local fname = "%f"
+						if vim.bo.buftype == "terminal" then
+							fname = "%t"
+						end
+						local filename = string.format("%s%s%s", fname, modified, readonly)
+
+						local filetype = vim.bo.filetype
+						local fileinfo = filetype .. " " .. Icons.get("filetype", filetype)
 						local search = MiniStatusline.section_searchcount({ trunc_width = 75 })
 
 						return MiniStatusline.combine_groups({
@@ -105,19 +141,16 @@ return {
 							"%=", -- End left alignment
 							"%[", -- Begin center alignment
 							{ hl = "MiniStatuslineFilename", strings = { filename } },
-							{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
-							"%]", -- End center alignment
 							{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
+							"%]", -- End center alignment
 							"%=", -- Begin right alignment
-							{ hl = "MiniStatuslineDevinfo", strings = { diagnostics, lsp } },
+							{ hl = "MiniStatuslineDevinfo", strings = { diagnostics } },
+							{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
 							{ hl = mode_hl, strings = { search } },
 						})
 					end,
 				},
 			})
-
-			require("mini.diff").setup({})
-			require("mini.git").setup({})
 
 			local miniclue = require("mini.clue")
 			miniclue.setup({
