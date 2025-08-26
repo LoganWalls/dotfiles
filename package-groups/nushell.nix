@@ -43,6 +43,7 @@ in
     flavours # base24 colorscheme management
     git
     gitui # a nice git TUI
+    glow # pretty highlighting for markdown on CLI
     just # command runner
     mosh # nice ssh sessions
     ripgrep # modern grep
