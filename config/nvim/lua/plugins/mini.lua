@@ -124,13 +124,13 @@ return {
 						end
 						local modified = " "
 						if vim.api.nvim_get_option_value("modified", { buf = buf_id }) then
-							modified = " "
+							modified = ""
 						end
 						local fname = "%f"
 						if vim.bo.buftype == "terminal" then
 							fname = "%t"
 						end
-						local filename = string.format("%s%s%s", fname, modified, readonly)
+						local filename = string.format("%s%s%s", modified, readonly, fname)
 
 						local filetype = vim.bo.filetype
 						local fileinfo = filetype .. " " .. Icons.get("filetype", filetype)
@@ -139,10 +139,8 @@ return {
 						return MiniStatusline.combine_groups({
 							{ hl = mode_hl, strings = { mode } },
 							"%=", -- End left alignment
-							"%[", -- Begin center alignment
 							{ hl = "MiniStatuslineFilename", strings = { filename } },
 							{ hl = "MiniStatuslineDevinfo", strings = { git, diff } },
-							"%]", -- End center alignment
 							"%=", -- Begin right alignment
 							{ hl = "MiniStatuslineDevinfo", strings = { diagnostics } },
 							{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
