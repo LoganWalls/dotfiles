@@ -14,7 +14,7 @@ def ll [] {
   ls --all | icon-grid
 }
 alias lll = ls --all --long
-alias tree = exa --tree --level=3 --ignore-glob='__pycache__/*|node_modules/*'
+alias tree = exa --tree --level=3 --git-ignore
 
 alias icat = wezterm imgcat
 alias isvg = rsvg-convert | wezterm imgcat
