@@ -1,6 +1,6 @@
 local config = function()
 	require("nvim-treesitter.install").compilers = { "gcc-12", "gcc" }
-	require("nvim-treesitter.configs").setup({
+	require("nvim-treesitter").setup({
 		auto_install = true,
 		ensure_installed = {
 			"bash",
@@ -34,6 +34,9 @@ local config = function()
 		highlight = {
 			enable = true,
 		},
+		indent = {
+			enable = true,
+		},
 		incremental_selection = {
 			enable = true,
 			keymaps = {
@@ -42,9 +45,6 @@ local config = function()
 				scope_incremental = "grc",
 				node_decremental = "grm",
 			},
-		},
-		indent = {
-			enable = true,
 		},
 		playground = {
 			enable = true,
@@ -64,15 +64,6 @@ local config = function()
 				show_help = "?",
 			},
 		},
-		textsubjects = {
-			enable = true,
-			prev_selection = ",",
-			keymaps = {
-				["."] = "textsubjects-smart",
-				[";"] = "textsubjects-container-outer",
-				["i;"] = "textsubjects-container-inner",
-			},
-		},
 	})
 	require("treesitter-context").setup({
 		separator = nil,
@@ -85,11 +76,12 @@ end
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
 		dependencies = {
-			"nushell/tree-sitter-nu",
 			"nvim-treesitter/nvim-treesitter-context",
-			"RRethy/nvim-treesitter-textsubjects",
 		},
+		lazy = false,
+		build = ":TSUpdate",
 		config = config,
 	},
 }
