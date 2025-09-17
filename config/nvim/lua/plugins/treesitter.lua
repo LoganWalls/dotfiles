@@ -11,6 +11,7 @@ local config = function()
 			"elixir",
 			"html",
 			"javascript",
+			"jinja",
 			"json",
 			"julia",
 			"lua",

@@ -1,10 +1,19 @@
-{pkgs, ...}:
+{
+  pkgs,
+  inputs,
+  ...
+}:
 with pkgs; [
   # Give neovim access to a C compiler for tree-sitter grammars
   (neovim.overrideAttrs (old: {
-    propagatedBuildInputs = (old.propagatedBuildInputs or []) ++ [stdenv.cc.cc];
+    propagatedBuildInputs =
+      (old.propagatedBuildInputs or []) ++ [stdenv.cc.cc];
   }))
   xclip # work with the system clipboards
+
+  # Tree Sitter + Node for installing Treesitter Grammars
+  nodejs
+  inputs.neovim-nightly-overlay.packages.${pkgs.system}.tree-sitter
 
   ### Lanugage Servers / Tools
   # Shell
@@ -13,7 +22,6 @@ with pkgs; [
 
   # Nix
   nil # language server
-  nix-direnv # nix intergration for direnv
   alejandra # black-inspired formatting
   statix # linter
 
@@ -34,7 +42,7 @@ with pkgs; [
   stylua # formatter
 
   # Docker
-  nodePackages.dockerfile-language-server-nodejs
+  dockerfile-language-server
 
   # Web
   nodePackages.vscode-langservers-extracted
