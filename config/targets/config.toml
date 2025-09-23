@@ -1,0 +1,12 @@
+[targets.ghostty]
+out = "$XDG_CONFIG_HOME/ghostty/themes/base24"
+template = "$XDG_CONFIG_HOME/targets/templates/ghostty.mustache"
+hook = [
+  "osascript",
+  "-se",
+  "$XDG_CONFIG_HOME/targets/hooks/reload_ghostty.applescript",
+]
+
+[targets.neovim]
+out = "$XDG_CONFIG_HOME/nvim/lua/colorscheme.lua"
+template = "$XDG_CONFIG_HOME/targets/templates/neovim.lua.mustache"

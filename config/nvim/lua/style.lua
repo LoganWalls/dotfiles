@@ -59,3 +59,5 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo", { link = "Normal" })
 	end,
 })
+
+vim.cmd.colorscheme("catppuccin")

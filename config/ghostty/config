@@ -5,7 +5,7 @@ font-family = Liga SFMono Nerd Font
 font-family = Symbols Nerd Font Mono
 font-size = 20
 macos-titlebar-style = tabs
-theme = Catppuccin Mocha
+theme = base24
 window-padding-x = 8
 
 keybind = alt+enter=toggle_fullscreen
