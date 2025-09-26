@@ -6,7 +6,7 @@ $env.PATH ++= [$"($nix_profile)/bin", '/nix/var/nix/profiles/default/bin', $"($n
 path add '/opt/homebrew/bin'
 
 $env.XDG_DATA_DIRS = (
-  ($env | get XDG_DATA_DIRS | default '/usr/local/share:/usr/share') 
+  ($env | get -o XDG_DATA_DIRS | default '/usr/local/share:/usr/share') 
   | split row (char esep)
   | append $"($nix_profile)/share" 
   | append '/nix/var/nix/profiles/default/share'
