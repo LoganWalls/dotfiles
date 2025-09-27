@@ -11,6 +11,7 @@ with pkgs;
     noto-fonts-emoji
     sf-mono-liga
     ligalex-mono
+    maple-mono
   ]
   ++ (with pkgs.nerd-fonts; [
     fira-code

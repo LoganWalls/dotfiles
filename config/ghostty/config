@@ -1,7 +1,7 @@
 background-opacity = 0.90
 command = /Users/logan/.nix-profile/bin/nu --login
 cursor-style = bar
-font-family = Liga SFMono Nerd Font
+font-family = Maple Mono
 font-family = Symbols Nerd Font Mono
 font-size = 20
 macos-titlebar-style = tabs
