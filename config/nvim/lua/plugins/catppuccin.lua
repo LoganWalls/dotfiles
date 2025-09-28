@@ -1,11 +1,21 @@
 local colorscheme_path = vim.fs.joinpath(vim.fn.stdpath("config"), "lua/colorscheme.lua")
 
 local function reload_colorscheme()
-	package.loaded["colorscheme"] = nil -- Prevent caching
-	local colorscheme = require("colorscheme")
-	if colorscheme == nil then
+	if vim.fn.filereadable(colorscheme_path) == 0 then
 		error("No colorscheme lua file found at:" .. colorscheme_path)
 	end
+
+	package.loaded["colorscheme"] = nil -- Prevent caching
+	local ok, colorscheme = xpcall(require, function(err)
+		-- Ignore errors from partially written files, but propagate all other errors
+		if not vim.endswith(err, "unfinished string near '<eof>'") then
+			error(err)
+		end
+	end, "colorscheme")
+	if not ok then
+		return
+	end
+
 	package.loaded["catppuccin"] = nil -- Prevent caching
 	require("catppuccin").setup({
 		flavour = "mocha",
