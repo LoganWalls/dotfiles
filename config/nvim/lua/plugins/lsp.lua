@@ -90,10 +90,38 @@ return {
 		-- Keymaps
 		vim.keymap.set("n", "<leader>ll", function()
 			vim.cmd("LspLog")
-		end)
+		end, { desc = "LSP Log" })
 		vim.keymap.set("n", "<leader>li", function()
 			vim.cmd("LspInfo")
-		end)
+		end, { desc = "LSP Info" })
+		vim.keymap.set("n", "<leader>lr", function()
+			vim.cmd("LspRestart")
+		end, { desc = "LSP Restart" })
+
+		vim.lsp.enable("grimoire-ls")
+
+		local inline_completion_key = "<tab>"
+		vim.api.nvim_create_autocmd("LspAttach", {
+			group = vim.api.nvim_create_augroup("MyLspOnAttach", {}),
+			callback = function(args)
+				local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+				if client:supports_method("textDocument/inlineCompletion") then
+					vim.keymap.set("n", "<leader>ct", function()
+						if vim.lsp.inline_completion.is_enabled() then
+							vim.lsp.inline_completion.enable(false, { bufnr = args.buf })
+							vim.keymap.del("i", inline_completion_key)
+						else
+							vim.lsp.inline_completion.enable(true, { bufnr = args.buf })
+							vim.keymap.set("i", inline_completion_key, function()
+								if not vim.lsp.inline_completion.get() then
+									return inline_completion_key
+								end
+							end, { expr = true, desc = "Accept current inline completion candidate" })
+						end
+					end, { desc = "Toggle AI completion" })
+				end
+			end,
+		})
 	end,
 	opts = {
 		servers = {
@@ -141,10 +169,12 @@ return {
 				settings = {
 					tailwindCSS = {
 						experimental = {
-							classRegex = { {
-								"clsx\\(([^)]*)\\)",
-								"(?:'|\"|`)([^']*)(?:'|\"|`)",
-							} },
+							classRegex = {
+								{
+									"clsx\\(([^)]*)\\)",
+									"(?:'|\"|`)([^']*)(?:'|\"|`)",
+								},
+							},
 						},
 						includeLanguages = {
 							eelixir = "html-eex",
