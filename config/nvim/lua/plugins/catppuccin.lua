@@ -1,55 +1,17 @@
-local colorscheme_path = vim.fs.joinpath(vim.fn.stdpath("config"), "lua/colorscheme.lua")
-
-local function reload_colorscheme()
-	if vim.fn.filereadable(colorscheme_path) == 0 then
-		error("No colorscheme lua file found at:" .. colorscheme_path)
-	end
-
-	package.loaded["colorscheme"] = nil -- Prevent caching
-	local ok, colorscheme = xpcall(require, function(err)
-		-- Ignore errors from partially written files, but propagate all other errors
-		if not vim.endswith(err, "unfinished string near '<eof>'") then
-			error(err)
-		end
-	end, "colorscheme")
-	if not ok then
-		return
-	end
-
-	package.loaded["catppuccin"] = nil -- Prevent caching
-	require("catppuccin").setup({
-		flavour = "mocha",
+return {
+	"catppuccin/nvim",
+	name = "catppuccin",
+	priority = 1000,
+	opts = {
+		flavour = "auto",
+		background = {
+			light = "latte",
+			dark = "mocha",
+		},
 		transparent_background = true,
 		integrations = {
 			cmp = false,
 			fidget = true,
 		},
-		color_overrides = {
-			all = colorscheme.colors,
-		},
-	})
-end
-
-local function config()
-	reload_colorscheme()
-	-- Do not set colorscheme here, it is set for the first time at the end of `style.lua`
-	local watcher = require("file_watcher").new(colorscheme_path, {}, function(err, _filename, _events)
-		if err then
-			error("failed to watch for colorscheme changes: " .. err)
-		end
-		reload_colorscheme()
-		vim.cmd.colorscheme("catppuccin")
-	end)
-
-	vim.api.nvim_create_user_command("DeleteWatcher", function()
-		watcher:stop()
-		vim.notify("stopped watcher")
-	end, {})
-end
-
-return {
-	"catppuccin/nvim",
-	name = "catppuccin",
-	priority = 1000,
-	config = config,
+	},
 }

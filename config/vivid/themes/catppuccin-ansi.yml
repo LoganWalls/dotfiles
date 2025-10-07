@@ -1,0 +1,136 @@
+colors:
+  # Original "catppuccin" theme
+  # https://github.com/catppuccin/catppuccin
+
+  rosewater: 'ansi:bright_white'
+  flamingo: 'ansi:bright_red'
+  pink: 'ansi:bright_magenta'
+  mauve: 'ansi:magenta'
+  red: 'ansi:bright_red'
+  maroon: 'ansi:red'
+  peach: 'ansi:bright_yellow'
+  yellow: 'ansi:bright_yellow'
+  green: 'ansi:bright_green'
+  teal: 'ansi:bright_cyan'
+  sky: 'ansi:bright_cyan'
+  sapphire: 'ansi:bright_blue'
+  blue: 'ansi:bright_blue'
+  lavender: 'ansi:bright_magenta'
+
+  text: 'ansi:bright_white'
+  subtext1: 'ansi:white'
+  subtext0: 'ansi:bright_black'
+  overlay2: 'ansi:bright_black'
+  overlay1: 'ansi:black'
+  overlay0: 'ansi:black'
+  surface2: 'ansi:black'
+  surface1: 'ansi:black'
+  surface0: 'ansi:black'
+
+  base: 'ansi:black'
+  mantle: 'ansi:black'
+  crust: 'ansi:black'
+
+core:
+  normal_text: {}
+  regular_file: {}
+  reset_to_normal: {}
+
+  directory:
+    foreground: blue
+
+  symlink:
+    foreground: pink
+
+  multi_hard_link: {}
+
+  fifo:
+    foreground: crust
+    background: blue
+
+  socket:
+    foreground: crust
+    background: pink
+
+  door:
+    foreground: crust
+    background: pink
+
+  block_device:
+    foreground: sapphire
+    background: surface0
+
+  character_device:
+    foreground: pink
+    background: surface0
+
+  broken_symlink:
+    foreground: crust
+    background: red
+
+  missing_symlink_target:
+    foreground: crust
+    background: red
+
+  setuid: {}
+
+  setgid: {}
+
+  file_with_capability: {}
+
+  sticky_other_writable: {}
+
+  other_writable: {}
+
+  sticky: {}
+
+  executable_file:
+    foreground: red
+    font-style: bold
+
+text:
+  special:
+    foreground: base
+    background: yellow
+
+  todo:
+    font-style: bold
+
+  licenses:
+    foreground: overlay2
+
+  configuration:
+    foreground: yellow
+
+  other:
+    foreground: yellow
+
+markup:
+  foreground: yellow
+
+programming:
+  source:
+    foreground: green
+
+  tooling:
+    foreground: teal
+
+    continuous-integration:
+      foreground: green
+
+media:
+  foreground: flamingo
+
+office:
+  foreground: red
+
+archives:
+  foreground: sapphire
+  font-style: underline
+
+executable:
+  foreground: red
+  font-style: bold
+
+unimportant:
+  foreground: surface2
