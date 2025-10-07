@@ -1,5 +1,6 @@
+# vim: ft=ghostty
 background-opacity = 0.90
-command = /Users/logan/.nix-profile/bin/nu --login
+command = $HOME/.nix-profile/bin/nu --login
 cursor-style = bar
 font-family = Maple Mono
 font-family = Symbols Nerd Font Mono
