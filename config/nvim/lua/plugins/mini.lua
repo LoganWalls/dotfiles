@@ -120,7 +120,7 @@ return {
 						local buf_id = vim.api.nvim_win_get_buf(0)
 						local readonly = " "
 						if vim.api.nvim_get_option_value("readonly", { buf = buf_id }) then
-							readonly = " "
+							readonly = " "
 						end
 						local modified = " "
 						if vim.api.nvim_get_option_value("modified", { buf = buf_id }) then
