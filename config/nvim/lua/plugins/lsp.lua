@@ -107,13 +107,14 @@ return {
 				local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 				if client:supports_method("textDocument/inlineCompletion") then
 					vim.keymap.set("n", "<leader>ct", function()
-						if vim.lsp.inline_completion.is_enabled() then
-							vim.lsp.inline_completion.enable(false, { bufnr = args.buf })
+						local filter = { bufnr = 0 }
+						if vim.lsp.inline_completion.is_enabled(filter) then
+							vim.lsp.inline_completion.enable(false, filter)
 							vim.keymap.del("i", inline_completion_key)
 						else
-							vim.lsp.inline_completion.enable(true, { bufnr = args.buf })
+							vim.lsp.inline_completion.enable(true, filter)
 							vim.keymap.set("i", inline_completion_key, function()
-								if not vim.lsp.inline_completion.get() then
+								if not vim.lsp.inline_completion.get(filter) then
 									return inline_completion_key
 								end
 							end, { expr = true, desc = "Accept current inline completion candidate" })
