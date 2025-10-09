@@ -21,8 +21,8 @@ vim.keymap.set("x", ">", ">gv")
 vim.keymap.set("x", "<", "<gv")
 
 -- Substitution
-vim.keymap.set("n", "<leader>s", [[<esc>:%s/\v]], { desc = "Substitute buffer-wide" })
-vim.keymap.set("x", "<leader>s", [[<esc>:'<,'>s/\v]], { desc = "Substitute in selection" })
+vim.keymap.set("n", "<c-s>", [[<esc>:%s/\v]], { desc = "Substitute buffer-wide" })
+vim.keymap.set("x", "<c-s>", [[<esc>:'<,'>s/\v]], { desc = "Substitute in selection" })
 
 -- Delete without saving to register
 vim.keymap.set("x", "D", '"_d')

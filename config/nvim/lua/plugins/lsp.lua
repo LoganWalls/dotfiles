@@ -100,10 +100,11 @@ return {
 
 		vim.lsp.enable("grimoire-ls")
 
-		local inline_completion_key = "<tab>"
+		-- Setup inline completion for supported servers
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("MyLspOnAttach", {}),
 			callback = function(args)
+				local inline_completion_key = "<Tab>"
 				local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
 				if client:supports_method("textDocument/inlineCompletion") then
 					vim.keymap.set("n", "<leader>ct", function()

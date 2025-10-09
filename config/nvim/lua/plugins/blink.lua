@@ -11,6 +11,10 @@ return {
 			preset = "enter",
 			["<C-j>"] = { "select_next", "fallback" },
 			["<C-k>"] = { "select_prev", "fallback" },
+			["<Tab>"] = false,
+			["<S-Tab>"] = false,
+			["<C-p>"] = { "snippet_backward", "fallback_to_mappings" },
+			["<C-n>"] = { "snippet_forward", "fallback_to_mappings" },
 		},
 		appearance = {
 			use_nvim_cmp_as_default = true,

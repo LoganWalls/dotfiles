@@ -75,15 +75,10 @@ return {
 			})
 			require("mini.surround").setup({
 				mappings = {
-					add = "ysa", -- Add surrounding in Normal and Visual modes
+					add = "<leader>s", -- Insert surrounding in Normal and Visual modes
 					delete = "ds", -- Delete surrounding
-					find = "ysf", -- Find surrounding (to the right)
-					find_left = "ysF", -- Find surrounding (to the left)
-					highlight = "ysH", -- Highlight surrounding
 					replace = "cs", -- Replace surrounding
-					update_n_lines = "ysn", -- Update `n_lines`
-					suffix_last = "l", -- Suffix to search with "prev" method
-					suffix_next = "n", -- Suffix to search with "next" method
+					highlight = "<leader>S", -- Highlight surrounding
 				},
 			})
 
