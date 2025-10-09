@@ -9,7 +9,6 @@ from openai import OpenAI
 from result import Err, Ok, Result
 
 from grimoire_ls import completion as cmp
-from grimoire_ls.logging import log
 from grimoire_ls.server import GrimoireServer
 
 
@@ -33,9 +32,6 @@ async def inline_completion(
         server, params, include_workspace_context=False
     )
     prompt = f"<|fim_prefix|>{before_cursor}<|fim_suffix|>{after_cursor}<|fim_middle|>"
-    # The log function will write to an external log file for debugging
-    # You can control the location of the file with the `GRIMOIRE_LS_LOG` environment variable
-    log(f"Prompt:\n{prompt}")
     response = oai_client.completions.create(
         top_p=0.9,
         best_of=3,
@@ -48,7 +44,6 @@ async def inline_completion(
     if not response.choices:
         return Err("Could not generate completions.")
     completion = response.choices[0].text
-    log(f"Completion:{completion}")
 
     return Ok(
         [
