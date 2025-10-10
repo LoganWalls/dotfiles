@@ -8,3 +8,4 @@ end
 
 vim.keymap.set("n", "dd", delete_qf_under_cursor, { buffer = 0 })
 vim.keymap.set("n", "q", ":bd<cr>", { buffer = 0 })
+vim.keymap.set("n", "<c-s>", [[:cdo s/\v/gc<left><left><left>]], { buffer = 0 })
