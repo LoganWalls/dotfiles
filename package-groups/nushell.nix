@@ -45,9 +45,11 @@ in
     gitui # a nice git TUI
     glow # pretty highlighting for markdown on CLI
     just # command runner
+    librsvg # allows rasterizing SVGs
     mosh # nice ssh sessions
     ripgrep # modern grep
     sd # modern sed
     tealdeer # tldr for manpages
     ugrep # faster grep with backward-compatible interface
+    viu # view images using kitty image protocol
   ]

@@ -25,7 +25,6 @@ in
         age # encryption
         ffmpeg # work images, audio, and video
         imagemagick # work with images
-        librsvg # allows rasterizing SVGs
         macchina # more performant neofetch alternative
         zathura # pdf viewer
       ]);
