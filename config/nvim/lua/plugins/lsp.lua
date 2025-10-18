@@ -60,10 +60,10 @@ return {
 	"neovim/nvim-lspconfig",
 	dependencies = { "saghen/blink.cmp" },
 	config = function(_, opts)
-		local lspconfig = require("lspconfig")
 		for server, config in pairs(opts.servers or {}) do
 			config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
-			lspconfig[server].setup(config)
+			vim.lsp.config(server, config)
+			vim.lsp.enable(server)
 		end
 
 		vim.api.nvim_create_autocmd("FileType", {
@@ -81,6 +81,7 @@ return {
 
 		-- Styling
 		local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+		---@diagnostic disable-next-line: duplicate-set-field, redefined-local
 		function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
 			opts = opts or {}
 			opts.border = opts.border or "rounded"
@@ -98,9 +99,8 @@ return {
 			vim.cmd("LspRestart")
 		end, { desc = "LSP Restart" })
 
-		vim.lsp.enable("grimoire-ls")
-
 		-- Setup inline completion for supported servers
+		vim.lsp.enable("grimoire-ls")
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("MyLspOnAttach", {}),
 			callback = function(args)
@@ -161,6 +161,7 @@ return {
 					},
 				},
 			},
+			nushell = {},
 			ocamllsp = {},
 			basedpyright = {},
 			ruff = {},
