@@ -42,7 +42,7 @@ in
     fd # modern find
     flavours # base24 colorscheme management
     git
-    gitui # a nice git TUI
+    (import inputs.nixpkgs-old {inherit (pkgs) system;}).gitui # a nice git TUI
     glow # pretty highlighting for markdown on CLI
     just # command runner
     librsvg # allows rasterizing SVGs
