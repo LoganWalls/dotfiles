@@ -11,7 +11,7 @@ $env.XDG_DATA_DIRS = (
   | append $"($nix_profile)/share" 
   | append '/nix/var/nix/profiles/default/share'
 )
-$env.MANPATH = ($env.MANPATH | split row (char esep) | where {|x| $x | is-not-empty} | append $"($nix_profile)/share/man")
+$env.MANPATH = ($env.MANPATH? | default "" | split row (char esep) | where {|x| $x | is-not-empty} | append $"($nix_profile)/share/man")
 
 if ($env | get -o NIX_SSL_CERT_FILE | is-empty) {
   let user_nix_ssl = $"($nix_profile)/etc/ssl/certs/ca-bundle.crt"
