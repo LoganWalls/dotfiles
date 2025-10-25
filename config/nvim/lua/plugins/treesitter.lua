@@ -1,37 +1,8 @@
-local config = function()
+local config = function(_, opts)
 	require("nvim-treesitter.install").compilers = { "gcc-12", "gcc" }
 	require("nvim-treesitter").setup({
 		auto_install = true,
-		ensure_installed = {
-			"bash",
-			"bibtex",
-			"c",
-			"css",
-			"csv",
-			"elixir",
-			"html",
-			"javascript",
-			"jinja",
-			"json",
-			"julia",
-			"lua",
-			"nu",
-			"ocaml",
-			"python",
-			"query",
-			"r",
-			"rust",
-			"scss",
-			"scheme",
-			"sql",
-			"toml",
-			"tsx",
-			"typescript",
-			"typst",
-			"vim",
-			"vimdoc",
-			"yaml",
-		},
+		ensure_installed = opts.filetypes,
 		highlight = {
 			enable = true,
 		},
@@ -72,6 +43,13 @@ local config = function()
 	-- Use treesitter for folding
 	vim.opt.foldmethod = "expr"
 	vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
+	vim.api.nvim_create_autocmd("FileType", {
+		pattern = opts.filetypes,
+		callback = function()
+			vim.treesitter.start()
+		end,
+	})
 end
 
 return {
@@ -83,6 +61,39 @@ return {
 		},
 		lazy = false,
 		build = ":TSUpdate",
+		opts = {
+			filetypes = {
+				"bash",
+				"bibtex",
+				"c",
+				"css",
+				"csv",
+				"elixir",
+				"html",
+				"javascript",
+				"jinja",
+				"json",
+				"julia",
+				"lua",
+				"nu",
+				"ocaml",
+				"python",
+				"query",
+				"r",
+				"rust",
+				"scss",
+				"scheme",
+				"sql",
+				"svelte",
+				"toml",
+				"tsx",
+				"typescript",
+				"typst",
+				"vim",
+				"vimdoc",
+				"yaml",
+			},
+		},
 		config = config,
 	},
 }
