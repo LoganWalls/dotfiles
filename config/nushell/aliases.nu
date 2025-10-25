@@ -14,7 +14,7 @@ def ll [] {
   ls --all | icon-grid
 }
 alias lll = ls --all --long
-alias tree = exa --tree --level=3 --git-ignore
+alias tree = exa --tree --level=3 --git-ignore --icons=auto
 
 alias viu = viu --transparent
 
