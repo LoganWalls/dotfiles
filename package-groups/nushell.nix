@@ -36,7 +36,7 @@ in
 
     # Tools
     bat # cat with highlighting
-    btop # system activity monitor
+    bottom # system activity monitor
     delta # modern diff
     eza # modern ls
     fd # modern find
