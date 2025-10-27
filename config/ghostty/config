@@ -9,18 +9,6 @@ macos-titlebar-style = tabs
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 window-padding-x = 8
 
-keybind = alt+enter=toggle_fullscreen
-keybind = alt+[=previous_tab
-keybind = alt+]=next_tab
-
-keybind = alt+f=toggle_split_zoom
-
-keybind = alt+h=goto_split:left
-keybind = alt+j=goto_split:bottom
-keybind = alt+k=goto_split:top
-keybind = alt+l=goto_split:right
-
-keybind = alt+shift+h=new_split:left
-keybind = alt+shift+j=new_split:down
-keybind = alt+shift+k=new_split:up
-keybind = alt+shift+l=new_split:right
+keybind = alt+shift+[=previous_tab
+keybind = alt+shift+]=next_tab
+keybind = alt+shift+enter=toggle_fullscreen

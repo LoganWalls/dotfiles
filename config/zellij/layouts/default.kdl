@@ -1,0 +1,58 @@
+layout {
+  default_tab_template {
+    pane size=1 borderless=true {
+      plugin location="file:$HOME/.nix-profile/bin/zjstatus.wasm" {
+        border_enabled  "false"
+
+        color_bg "16" 
+        color_fg "15"
+        color_red "1"
+        color_green "2"
+        color_blue "4"
+        color_yellow "3"
+        color_magenta "5"
+        color_orange "202"
+        color_cyan "14"
+        color_black "232"
+        color_white "255"
+
+        format_left   "{tabs}"
+        format_right  "#[italic] {session}"
+        format_center  "{mode}"
+        format_hide_on_overlength "true"
+        format_precedence "crl"
+
+        mode_locked        "󰤇 "
+        mode_normal        "#[fg=$green,bold]󰰓 Normal"
+        mode_resize        "#[fg=$blue,bold]󰩨 Resize"
+        mode_pane          "#[fg=$blue,bold] Pane"
+        mode_tab           "#[fg=$yellow,bold]󰓩 Tab"
+        mode_scroll        "#[fg=$blue,bold] Scroll"
+        mode_enter_search  "#[fg=$orange,bold] Search"
+        mode_search        "#[fg=$orange,bold]󱎸 Search"
+        mode_rename_tab    "#[fg=$yellow,bold] Rename Tab"
+        mode_rename_pane   "#[fg=$blue,bold]  Rename Pane"
+        mode_session       "#[fg=$blue,bold] Session"
+        mode_move          "#[fg=$blue,bold]󰆾 Move"
+        mode_prompt        "#[fg=$blue,bold] Prompt"
+        mode_tmux          "#[fg=$magenta,bold] TMUX"
+
+        tab_normal              " {index}  {name}{floating_indicator}"
+        tab_normal_fullscreen   " {index}  {name}{fullscreen_indicator}"
+        tab_normal_sync         " {index}  {name}{sync_indicator}"
+
+        tab_active              "#[bold]({index}) #[bold,underscore]{name}{floating_indicator}"
+        tab_active_fullscreen   "#[bold]({index}) #[bold,underscore]{name}{fullscreen_indicator}"
+        tab_active_sync         "#[bold]({index}) #[bold,underscore]{name}{sync_indicator}"
+
+        tab_separator            "  "
+        tab_sync_indicator       "  "
+        tab_fullscreen_indicator " 󰊓 "
+        tab_floating_indicator   " 󰹙 "
+      }
+    }
+    children
+  }
+  tab name="Main" split_direction="vertical"
+  tab name="Dev" split_direction="horizontal"
+}
