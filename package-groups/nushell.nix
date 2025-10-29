@@ -19,12 +19,14 @@
       }))
     else pkgs.nushell;
   zjstatus = inputs.zjstatus.packages."${pkgs.stdenv.system}".default;
+  zellij-switch = inputs.zellij-switch.packages."${pkgs.stdenv.system}".default;
 in
   with pkgs; [
     nushellWrapped
     nushellPlugins.skim
     zellij
     zjstatus
+    zellij-switch
 
     # REPL / UI
     carapace

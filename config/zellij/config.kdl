@@ -10,8 +10,8 @@ keybinds clear-defaults=true {
         bind "Alt Shift j" { NewPane "down"; }
         bind "Alt Shift k" { NewPane "up"; }
         bind "Alt Shift l" { NewPane "right"; }
-        bind "Alt shift f" { ToggleFloatingPanes; }
-        bind "Alt t" { ToggleFocusFullscreen; }
+        bind "Alt shift f" { ToggleFocusFullscreen; }
+        bind "Alt t" { ToggleFloatingPanes; }
         bind "Alt shift t" { NewTab; }
         bind "Alt n" { NewPane; }
         bind "Alt p" { TogglePaneInGroup; }
@@ -201,22 +201,26 @@ keybinds clear-defaults=true {
 
 plugins {
     about location="zellij:about"
-    compact-bar location="zellij:compact-bar"
+    compact-bar location="zellij:compact-bar" {
+      tooltip "F1"
+    }
     configuration location="zellij:configuration"
     filepicker location="zellij:strider" {
         cwd "/"
     }
     plugin-manager location="zellij:plugin-manager"
     session-manager location="zellij:session-manager"
-    status-bar location="zellij:status-bar"
     strider location="zellij:strider"
+    status-bar location="zellij:status-bar"
     tab-bar location="zellij:tab-bar"
     welcome-screen location="zellij:session-manager" {
         welcome_screen true
     }
+    zstatus location="file:$HOME/.nix-profile/bin/zjstatus.wasm"
+    switch location="file:$HOME/.nix-profile/bin/zellij-switch.wasm"
 }
 
-theme "ansi"
+theme "custom-ansi"
 default_mode "locked"
 copy_command "/usr/bin/pbcopy"
 default_shell "nu"
@@ -224,8 +228,6 @@ default_layout "default"
  
 pane_frames false
 scroll_buffer_size 100000
-// mouse_mode false
-copy_command "pbcopy"
 copy_on_select false 
 attach_to_session true
 serialize_pane_viewport true

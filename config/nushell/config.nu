@@ -1,16 +1,5 @@
-def filtered-dirs [] {
-  fd --type dir --print0
-  | split row (char -u '0000')
-  | compact --empty
-  | ls -D ...$in
-}
-
-def filtered-files [] {
-  fd --type file --print0
-  | split row (char -u '0000')
-  | compact --empty
-  | ls ...$in
-}
+use lib.nu [pick-dirs pick-files filtered-files]
+use zellij.nu [zellij-sessionizer, zellij-sessions]
 
 const menu_style = {
   text: green
@@ -18,7 +7,6 @@ const menu_style = {
   description_text: white
 }
 
-const sk_theme = "bg:empty,bg+:empty,cursor:5,info:7,prompt:12,fg+:12,current:12,matched:0,current_match:12,matched_bg:157,current_match_bg:153,spinner:12"
 
 $env.config = {
   show_banner: false
@@ -83,23 +71,13 @@ $env.config = {
     }
     {
         name: fuzzy_dir
-        modifier: shift_control
-        keycode: char_f
+        modifier: control
+        keycode: char_e
         mode: [emacs, vi_normal, vi_insert]
         event: [
           {
               send: executehostcommand
-              cmd: $"commandline edit --insert \(
-                  filtered-dirs
-                  | sk 
-                      --format {get name}
-                      --preview {tree --icons=always --color=always \($in | get name\)}
-                      --prompt '󰥨 '
-                      --layout reverse
-                      --color=($sk_theme)
-                  | default { name: "" } 
-                  | get name
-              \)"
+              cmd: $"commandline edit --insert \(pick-dirs\)"
           }
       ]
     }
@@ -111,17 +89,7 @@ $env.config = {
         event: [
           {
               send: executehostcommand
-              cmd: $"commandline edit --insert \(
-                  filtered-files
-                  | sk 
-                      --format {get name}
-                      --preview {bat --force-colorization \($in | get name\)}
-                      --prompt '󰈞 '
-                      --layout reverse
-                      --color=($sk_theme)
-                  | default { name: "" } 
-                  | get name
-              \)"
+              cmd: $"commandline edit --insert \(pick-files\)"
           }
       ]
     }

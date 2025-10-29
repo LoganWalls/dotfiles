@@ -5,9 +5,10 @@ cursor-style = bar
 font-family = Maple Mono
 font-family = Symbols Nerd Font Mono
 font-size = 20
-macos-titlebar-style = tabs
+macos-titlebar-style = hidden
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 window-padding-x = 8
+window-padding-y = 8
 
 keybind = alt+shift+[=previous_tab
 keybind = alt+shift+]=next_tab

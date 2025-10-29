@@ -30,3 +30,11 @@ hooks zoxide init
 $env.EDITOR = "nvim"
 $env.LS_COLORS = (vivid generate catppuccin-ansi)
 $env.MANPAGER = "nvim +Man!";
+
+
+# My ANSI theme for sk (should be passed to `sk` with `--color`)
+export const sk_theme = "bg:empty,bg+:empty,cursor:5,info:7,prompt:12,fg+:12,current:12,matched:0,current_match:12,matched_bg:157,current_match_bg:153,spinner:12"
+$env.SKIM_DEFAULT_OPTIONS = [
+  "--color", $sk_theme, 
+  "--layout", "reverse"] 
+  | str join " "
