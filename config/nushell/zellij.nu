@@ -38,7 +38,6 @@ export def zellij-sessionizer [] {
   | sk --format {get session}
 
   if ($picked | is-not-empty) {
-    $picked | get name | path expand | print
     (
       zellij pipe 
         --plugin switch 

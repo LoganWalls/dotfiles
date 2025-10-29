@@ -1,4 +1,5 @@
 use lib.nu [filtered-files, filtered-dirs]
+use zellij.nu zellij-sessionizer
 use images.nu icat
 
 alias vi = nvim
@@ -6,6 +7,7 @@ alias cat = bat
 alias fda = fd -IH
 alias gu = gitui
 alias lsa = ls --all
+alias zs = zellij-sessionizer
 
 def icon-grid [] {
   sort-by type name -i | grid --color --icons -w 100
