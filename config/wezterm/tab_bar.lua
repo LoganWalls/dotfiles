@@ -7,7 +7,6 @@ function M.config(config)
 	local tab_active_fg = color_scheme.foreground
 	local tab_inactive_fg = color_scheme.ansi[1]
 
-	config.hide_tab_bar_if_only_one_tab = true
 	config.show_new_tab_button_in_tab_bar = false
 	config.show_tab_index_in_tab_bar = false
 	config.use_fancy_tab_bar = false
@@ -27,13 +26,23 @@ function M.config(config)
 			},
 		},
 	}
-	-- Add padding around the tab titles
 	local function tab_title(tab_info)
 		local title = tab_info.tab_title
 		if title and #title > 0 then
 			return title
 		end
-		return tab_info.active_pane.title
+		local proc = tab_info.active_pane.foreground_process_name
+		local path = proc:match("^[^ ]*") or ""
+		local basename = path:match("([^/]+)$")
+		local aliases = {
+			[".nu-wrapped"] = "nu",
+		}
+		for key, value in pairs(aliases) do
+			if basename == key then
+				basename = value
+			end
+		end
+		return basename
 	end
 	wezterm.on("format-tab-title", function(tab)
 		local title = tab_title(tab)

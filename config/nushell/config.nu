@@ -1,5 +1,4 @@
 use lib.nu [pick-dirs pick-files filtered-files]
-use zellij.nu [zellij-sessionizer, zellij-sessions]
 
 const menu_style = {
   text: green
