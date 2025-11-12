@@ -18,15 +18,11 @@
           '';
       }))
     else pkgs.nushell;
-  zjstatus = inputs.zjstatus.packages."${pkgs.stdenv.system}".default;
-  zellij-switch = inputs.zellij-switch.packages."${pkgs.stdenv.system}".default;
 in
   with pkgs; [
     nushellWrapped
     nushellPlugins.skim
-    zellij
-    zjstatus
-    zellij-switch
+    tmux
 
     # REPL / UI
     carapace
@@ -44,7 +40,7 @@ in
     fd # modern find
     flavours # base24 colorscheme management
     git
-    (import inputs.nixpkgs-old {inherit (pkgs) system;}).gitui # a nice git TUI
+    (import inputs.nixpkgs-old {system = pkgs.stdenv.hostPlatform.system;}).gitui # a nice git TUI
     glow # pretty highlighting for markdown on CLI
     just # command runner
     librsvg # allows rasterizing SVGs

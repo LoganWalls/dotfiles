@@ -8,7 +8,7 @@ with pkgs;
     fira-sans
     ibm-plex
     iosevka-comfy.comfy
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     sf-mono-liga
     ligalex-mono
     maple-mono
