@@ -1,48 +1,61 @@
-# Returns the name of the command closest to `position` in `script`
-export def command-at-position [script: string, position: int] {
-    let ast = (ast $script --flatten | enumerate | flatten)
-    if ($ast | is-empty) {
-        return null
-    }
+# Returns a flattened AST for `pipeline` with an index column
+def flat-ast [pipeline: string] {
+    ast $pipeline --flatten | enumerate | flatten
+}
+
+# Returns the index of the (flattened) AST token containing the character at
+# index `char_index` in the AST's source code
+def char-to-token-index [ast: table, char_index: int] {
+    # Clip the position to make sure that it is in bounds
+    let char_index = (
+      [0 $char_index]
+        | math max 
+        | [$in ($ast | get span.end | math max)] 
+        | math min
+    )
 
     # Find the index of the token that contains the character at `position`
-    let cursor_token = (
+    let token_index = (
       $ast
-      | where ($it.span.start <= $position) and ($position <= $it.span.end)
-    )
-    if ($cursor_token | is-empty) {
-      return ""
-    }
-    let cursor_token = (
-      $cursor_token
-      | first
-      | get "index"
+      | where ($it.span.start <= $char_index) and ($char_index <= $it.span.end)
     )
 
+    if ($token_index | is-empty) {
+      null
+    } else {
+      $token_index
+        | first
+        | get "index"
+    }
+}
+
+# Returns the name of the command closest to `position` in `pipeline`
+export def command-at-position [pipeline: string, position: int] {
+    let ast = (flat-ast $pipeline)
+    if ($ast | is-empty) {
+      return null
+    }
+
     # Get the pipe segment that contains the token
+    let cursor_token = (char-to-token-index $ast $position)
     let segment = (
       $ast
       | where "index" <= $cursor_token
       | sort-by index -r
-      | take until {|row| $row.shape == 'shape_pipe'}
+      | take until {|row| $row.shape in ["shape_pipe" "shape_closure"]}
       | sort-by index
     )
 
     # The command name is the first internal or external call in the segment
     $segment
-      | where shape in ['shape_internalcall' 'shape_external']
+      | where shape in ["shape_internalcall" "shape_external"]
       | first
       | get -o content
 }
 
 # Returns the name of the command closest to the cursor in the current buffer
 export def current-command [] {
-    let buf = (commandline)
-    # When the cursor is at the end of the line, it is past the end of the string
-    # returned by `commandline`, so we just set it to the last character 
-    let cursor = ([(commandline get-cursor) (($buf | str length) - 1)] | math min)
-
-    command-at-position $buf $cursor
+    command-at-position (commandline) (commandline get-cursor)
 }
 
 # Splits the long and short versions of each flag into separate entries
@@ -64,6 +77,7 @@ def format-flags []: [table -> table] {
     )
 }
 
+# TODO: finish this; should unify names between this and carapace so both work with format-flags
 export def builtin-command-flags [name: string] {
   let info = (scope commands | where name == $name)
   if ($info | is-empty) {
@@ -127,7 +141,7 @@ export def fuzzy-complete-flag [command_name?: string] {
   $flags 
     | (sk 
       --multi
-      --prompt $"($command) flags: "
+      --prompt "  "
       --height "30%"
       --format {
         $"($in.name | fill -w $flag_length)($in.type | fill -w $type_length)($in.usage)"
@@ -139,31 +153,39 @@ export def fuzzy-complete-flag [command_name?: string] {
 
 
 export def fuzzy-complete-dwim [] {
-# TODO: implement based on the following flow:
-# Preceding character is:
-# command then space: subcommmand -> positional arguments 
-# flag then space: 
-#   does flag take args?
-#   yes: complete over appropriate arg values
-#   no: same as command then space
-# -: flag
-# start-of-line or ( or |: available commands
-
-# 0. Custom-completion
-# 1. Subcommand
-# 2. Flag
-# 3. Path (maybe file vs dir?)
-
-
-    let script = (commandline)
-    # When the cursor is at the end of the line, it is past the end of the string
-    # returned by `commandline`, so we just set it to the last character 
-    let cursor = ([(commandline get-cursor) (($script | str length) - 1)] | math min)
-
-    let ast = (ast $script --flatten | enumerate | flatten)
-    if ($ast | is-empty) {
-        return null
+    let pipeline = (commandline)
+    if ($pipeline | str trim | is-empty) {
+      return "COMMAND"
     }
 
+    let cursor = (commandline get-cursor) 
+    let command = command-at-position $pipeline $cursor
 
+    let prev_char_index = ([($cursor - 1) 0] | math max)
+    let prev_char = ($pipeline | str substring $prev_char_index..$prev_char_index)
+    if $prev_char == "-" {
+      return "FLAG"
+    } 
+
+    let ast = (flat-ast $pipeline)
+    let cursor_token_index = (char-to-token-index $ast $cursor)
+    let prev_token_shape = if ($cursor_token_index == 0) {
+      null
+    } else {
+      $ast | select ($cursor_token_index - 1) | get shape
+    }
+    let flag_takes_arguments = false # TODO: infer the real value by getting the info for $command
+    match $prev_token_shape { 
+      "shape_internalcall" | "shape_external" | "shape_flag" => {
+        if $flag_takes_arguments {
+          "FLAG_ARG"
+        } else {
+          "SUBCOMMAND_OR_POSITIONAL"
+        }
+      }
+      _ => {
+        # TODO: `rg ^` has a `null` previous token because of the postition clipping we use
+        $prev_token_shape
+      }
+    }
 }

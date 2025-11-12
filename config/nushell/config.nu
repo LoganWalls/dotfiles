@@ -1,5 +1,5 @@
 use lib.nu [pick-dirs pick-files filtered-files]
-use completion.nu [current-command, fuzzy-complete-flag]
+use completion.nu [current-command, fuzzy-complete-flag, fuzzy-complete-dwim]
 
 const menu_style = {
   text: green
@@ -65,7 +65,7 @@ $env.config = {
         event: [
           {
             send: executehostcommand
-            cmd: "commandline edit --insert (current-command | fuzzy-complete-flag)"
+            cmd: "commandline edit --insert (fuzzy-complete-dwim)"
           }
         ]
     }
