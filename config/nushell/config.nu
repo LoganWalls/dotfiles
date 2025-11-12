@@ -1,4 +1,5 @@
 use lib.nu [pick-dirs pick-files filtered-files]
+use completion.nu [current-command, fuzzy-complete-flag]
 
 const menu_style = {
   text: green
@@ -57,6 +58,18 @@ $env.config = {
         }
     }
     {
+        name: echo_line
+        modifier: control
+        keycode: char_i
+        mode: [emacs vi_insert]
+        event: [
+          {
+            send: executehostcommand
+            cmd: "commandline edit --insert (current-command | fuzzy-complete-flag)"
+          }
+        ]
+    }
+    {
         name: help_menu
         modifier: control
         keycode: char_h
@@ -94,5 +107,6 @@ $env.config = {
     }
   ]
 }
+
 source load-hooks.nu
 source aliases.nu
