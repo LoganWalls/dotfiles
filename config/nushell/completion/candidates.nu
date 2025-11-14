@@ -12,6 +12,7 @@ export def all-commands []: nothing -> table {
           | insert description ""
           # TODO: this info is nice to have, but this is too slow. Need to cache.
           # | insert description (carapace $in.name export | from json | default {Short: ""} | get Short | default "")
+          # TODO: Can also get usage from tldr  
       } 
       | where type == file 
       | select name description

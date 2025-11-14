@@ -23,33 +23,6 @@ export def char-to-token-index [ast: table, char_index: int] {
     }
 }
 
-# Returns the name of the command closest to `position` in `pipeline`
-export def command-at-position [pipeline: string, position: int]: nothing -> record {
-    let ast = (flat-ast $pipeline)
-    if ($ast | is-empty) {
-      return null
-    }
-
-    # Get the pipe segment that contains the token
-    let cursor_token = (char-to-token-index $ast $position) | default inf
-    let segment = (
-      $ast
-      | where "index" <= $cursor_token
-      | sort-by index -r
-      | take until {|row| $row.shape in ["shape_pipe" "shape_closure"]}
-      | where {|row| $row.shape in ["shape_internalcall" "shape_external"]}
-    )
-
-    if ($segment | is-empty) {
-      null
-    } else {
-      # The command name is the first internal or external call in the segment
-      $segment
-        | first
-        | {name: $in.content, type: (if $in.shape == "shape_internalcall" { "internal" } else {"external"})}
-    }
-}
-
 # Expands a command if it is an alias (otherwise returns the command as-is)
 export def expand-alias [command?: string]: [nothing -> string, string -> string] {
     let command = if ($command | is-not-empty) { $command } else { $in }
@@ -65,61 +38,112 @@ export def expand-alias [command?: string]: [nothing -> string, string -> string
       | get content 
 }
 
-# Returns the name of the command closest to the cursor in the current buffer
-export def current-command [] {
-    command-at-position (commandline) (commandline get-cursor)
-}
+# Returns the name of the command closest to `position` in `pipeline`
+export def command-at-position [pipeline: string, position: int, --expand-alias]: nothing -> record {
+    let ast = (flat-ast $pipeline)
+    let cursor_token = (char-to-token-index $ast $position)
 
-
-export def current-candidates [] {
-    let pipeline = (commandline)
-    if ($pipeline | str trim | is-empty) {
-      return "COMMAND"
+    # Trailing `|` is not parsed as a pipe by `ast` at the time of writing, so we special-case it here:
+    if ($ast | is-empty) or (($cursor_token | is-empty) and ($pipeline | str trim | str ends-with "|")) {
+      return null
     }
 
-    let cursor = (commandline get-cursor) 
-    let command = command-at-position $pipeline $cursor
-
-    let prev_char_index = ([($cursor - 1) 0] | math max)
-    let prev_char = ($pipeline | str substring $prev_char_index..$prev_char_index)
-    if $prev_char == "-" {
-      return "FLAG"
-    } 
-
-    let ast = (flat-ast $pipeline)
-    let cursor_token_index = (char-to-token-index $ast $cursor)
-    let prev_token_shape = (
-      if ($cursor_token_index == 0) {
-        null
-      } else if $cursor_token_index == null {
-        $ast | last | get shape
+    # Get the pipe segment that contains the token
+    let segment = (
+      if ($cursor_token | is-empty) {
+        $ast 
+          | last 1
       } else {
-        $ast | get ($cursor_token_index - 1) | get shape
+        $ast
+          | where "index" <= $cursor_token
+          | sort-by index -r
+          | take until {|row| $row.shape in ["shape_pipe" "shape_closure"]}
+      }
+      | where {|row| $row.shape in ["shape_internalcall" "shape_external"]}
+    ) 
+
+    if ($segment | is-empty) {
+      null
+    } else {
+      let s = ($segment | first)
+      {
+        name: (if $expand_alias { expand-alias $s.content } else { $s.content }), 
+        type: (if $s.shape == "shape_internalcall" { "internal" } else { "external" })
+      }
+    }
+}
+
+# Returns a list of possible completion types for a cursor at index `cursor` in
+# of `pipeline`. The return structure is a list of lists, each list corresponds
+# to a set of completion candidate types that should be generated in order until
+# at least one candidate is generated.
+#
+# For example: `[["SUBCOMMAND"], ["PATH", "SHORT_FLAG"]]`
+# This means the completion provider should first generate a list of only subcommands,
+# and if there are no subcommand candidates, then try to generate a list that contains
+# both path and short flag candidates.
+export def completion-context [pipeline: string, cursor: int]: nothing -> record {
+    let pipeline = (commandline)
+    let ast = (flat-ast $pipeline)
+    let cursor_index = (commandline get-cursor) 
+    let token_index = (char-to-token-index $ast $cursor_index)
+
+    mut token = null
+    mut prev_token = null
+    if ($ast | is-empty) {
+      # (both stay null)
+    } else if ($token_index | is-empty) {
+      $prev_token = $ast | last
+    } else if ($token_index == 0) {
+      $token = $ast | first
+    } else {
+      $token = $ast | get $token_index 
+      $prev_token = $ast | get ($token_index - 1)
+    }
+
+    # If the current token starts with any of these special characters,
+    # then we use the corresponding completion types, regardless of what
+    # the rest of the context
+    let t_or_empty = $token | default {content: ""} | get content
+    let prefix_matched_types = (
+      match ($t_or_empty | str substring ..0) {
+        "/" | "~" => [["PATH"]]
+        "." => [["PATH", "COMMAND"]]
+        "$" => [["VAR"]]
+        "-" if ($t_or_empty | str starts-with "--") => [["LONG_FLAG"]]
+        "-" => [["SHORT_FLAG", "LONG_FLAG"]]
+        ("(" | "|") if ($t_or_empty | str length) == 1 => [["COMMAND"]] # new block / pipeline segment
+        "{" if ($t_or_empty | str ends-with "|") => [["COMMAND"]] # closure
+        _ => null
       }
     )
 
-    # TODO: PATH is a safe default for positional args unless they have pre-defined completion values
-    match $prev_token_shape { 
-      "shape_internalcall" | "shape_external" => {
-        "SUBCOMMAND_OR_ARG_OR_FLAG"
-      }
-      "shape_flag" => {
-        # TODO: infer the real value by getting the info for $command and using the `role` column
-        let flag_takes_arguments = false 
-        if $flag_takes_arguments {
-          # TODO: handle case where arg takes fixed set of values (builtin completion now handles this; can look at implementation)
-          #  scope commands | where name == "table" | get signatures | first | values | first | where parameter_name == "theme" | first | get completion  
-          "FLAG_ARG"
-        } else {
-          "ARG_OR_FLAG"
+    let default_types = ["ARG", "SHORT_FLAG", "LONG_FLAG"]
+    let completion_types = match [$prev_token, $token, $prefix_matched_types] {
+      [null, null, _] => [["COMMAND"]]
+      [$p, $t, null] => {
+        match ($p | get shape) {
+          "shape_internalcall" | "shape_external" => [["SUBCOMMAND"], $default_types]
+          ("shape_flag" | "shape_externalarg") if ($p | get content | str starts-with "-") => {
+            [["FLAG_ARG"], $default_types]
+          }
+          _ => [$default_types]
         }
       }
-      null | "shape_pipe" | "shape_closure" => {
-        "COMMAND"
-      }
-      _ => {
-        $prev_token_shape
-        # "ARG_OR_FLAG"
-      }
+      [_, _, $pm] => ($pm | default [["COMMAND"]])
+    }
+
+    {
+      ast: $ast,
+      cursor_index: $cursor_index,
+      token: $token,
+      prev_token: $prev_token,
+      command: (command-at-position $pipeline $cursor_index),
+      completion_types: $completion_types
     }
 }
+
+export def current-completion-context []: nothing -> record {
+  completion-context (commandline) (commandline get-cursor)
+}
+
