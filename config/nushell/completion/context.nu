@@ -43,7 +43,7 @@ export def command-at-position [pipeline: string, position: int, --expand-alias]
     let ast = (flat-ast $pipeline)
     let cursor_token = (char-to-token-index $ast $position)
 
-    # Trailing `|` is not parsed as a pipe by `ast` at the time of writing, so we special-case it here:
+    # Trailing `|` is discarded by `ast` at the time of writing, so we special-case it here:
     if ($ast | is-empty) or (($cursor_token | is-empty) and ($pipeline | str trim | str ends-with "|")) {
       return null
     }
@@ -52,14 +52,15 @@ export def command-at-position [pipeline: string, position: int, --expand-alias]
     let segment = (
       if ($cursor_token | is-empty) {
         $ast 
+          | where {|row| $row.shape in ["shape_internalcall" "shape_external"]}
           | last 1
       } else {
         $ast
           | where "index" <= $cursor_token
           | sort-by index -r
           | take until {|row| $row.shape in ["shape_pipe" "shape_closure"]}
+          | where {|row| $row.shape in ["shape_internalcall" "shape_external"]}
       }
-      | where {|row| $row.shape in ["shape_internalcall" "shape_external"]}
     ) 
 
     if ($segment | is-empty) {
@@ -107,26 +108,27 @@ export def completion-context [pipeline: string, cursor: int]: nothing -> record
     let t_or_empty = $token | default {content: ""} | get content
     let prefix_matched_types = (
       match ($t_or_empty | str substring ..0) {
+        _ if ($t_or_empty | str starts-with "./") or ($t_or_empty | str ends-with "/") => [["PATH"]]
+        _ if ($t_or_empty | str starts-with "./") or ($t_or_empty | str ends-with "/") => [["PATH"]]
         "/" | "~" => [["PATH"]]
-        "." => [["PATH", "COMMAND"]]
-        "$" => [["VAR"]]
+        "." => [["COMMAND", "PATH"]]
+        "$" => [["VAR", "ENV"]]
         "-" if ($t_or_empty | str starts-with "--") => [["LONG_FLAG"]]
-        "-" => [["SHORT_FLAG", "LONG_FLAG"]]
-        ("(" | "|") if ($t_or_empty | str length) == 1 => [["COMMAND"]] # new block / pipeline segment
+        "-" => [["FLAG"]]
         "{" if ($t_or_empty | str ends-with "|") => [["COMMAND"]] # closure
         _ => null
       }
     )
 
-    let default_types = ["ARG", "SHORT_FLAG", "LONG_FLAG"]
+    let default_types = ["FLAG", "PATH"]
     let completion_types = match [$prev_token, $token, $prefix_matched_types] {
-      [null, null, _] => [["COMMAND"]]
+      [null, null, _] | [null, $t, null] => [["COMMAND"]]
       [$p, $t, null] => {
         match ($p | get shape) {
           "shape_internalcall" | "shape_external" => [["SUBCOMMAND"], $default_types]
-          ("shape_flag" | "shape_externalarg") if ($p | get content | str starts-with "-") => {
-            [["FLAG_ARG"], $default_types]
-          }
+          "shape_flag" => [["FLAG_ARG"], $default_types] 
+          "shape_externalarg" if ($p | get content | str starts-with "-") => [["FLAG_ARG"], $default_types] 
+          "shape_variable" if (($pipeline | str substring ($cursor_index - 1)..($cursor_index - 1)) == ".") => [["ATTR"]] 
           _ => [$default_types]
         }
       }
@@ -134,6 +136,7 @@ export def completion-context [pipeline: string, cursor: int]: nothing -> record
     }
 
     {
+      pipeline: $pipeline,
       ast: $ast,
       cursor_index: $cursor_index,
       token: $token,

@@ -11,12 +11,13 @@ export def all-commands []: nothing -> table {
           }
           | insert description ""
           # TODO: this info is nice to have, but this is too slow. Need to cache.
+          # could use tldr instead or in addition? tldr would show usage
           # | insert description (carapace $in.name export | from json | default {Short: ""} | get Short | default "")
-          # TODO: Can also get usage from tldr  
       } 
       | where type == file 
       | select name description
       | update name {|it| $it.name | path basename } 
+      | append (scope aliases | select name description)
       | uniq
   )
   let internal_commands = (
@@ -41,6 +42,7 @@ export def "subcommands internal" [command: string]: nothing -> table {
   scope commands 
     | where is_sub and ($it.name | str starts-with $command)
     | select name description extra_description search_terms
+    | update name {split words | last}
 }
 
 export def "subcommands external" [command: string]: nothing -> table {
@@ -69,6 +71,7 @@ export def "parameter-values external" [command: string, parameter: string]: not
   # TODO: check if carapace or other completion libraries offer this
   [] 
   | wrap name
+  | insert description ""
 }
 
 export def "parameter-values internal" [command: string, parameter: string]: nothing -> table {
@@ -91,12 +94,13 @@ export def "parameter-values internal" [command: string, parameter: string]: not
       }
    }
    | wrap name
+   | insert description ""
 }
 
 # Splits the long and short versions of each flag into separate entries
 # and formats them nicely for fuzzy finding
 def format-flags [--short, --long]: table -> table {
-  # If neither flag is passed, return all flags
+  # If neither is passed, return all flags
   let both = not ($short or $long)
 
   let flags = $in
@@ -156,6 +160,7 @@ export def "flags internal" [command: string, --short, --long]: nothing -> table
     scope commands 
       | where name == $command 
       | get signatures 
+      | first
       | values 
       | reduce { |it, acc | $acc | append $it } 
       | where parameter_type in [switch named]
@@ -181,7 +186,112 @@ export def "flags internal" [command: string, --short, --long]: nothing -> table
   }
 }
 
+export def paths [prefix: path = "."] {
+  let prefix = ($prefix | str replace "~" $nu.home-path)
+  let args = (
+    if ($prefix | str ends-with "/") {
+      { dir: $prefix, pattern: "." }
+    } else {
+      { dir: ($prefix | path dirname), pattern: ($prefix | path basename) }
+    }
+  )
+  (fd 
+    --print0
+    --follow
+    --hidden
+    --exclude ".git/"
+    --max-depth 5
+    $args.pattern 
+    ($args.dir)
+  )
+    | split row (char -u '0000')
+    | wrap name
+    | insert description ""
+}
+
+export def vars [] {
+  scope variables
+    | select name type
+    | rename --column { type: description }
+}
+
+export def describe-simple []: any -> string {
+    $in | describe | str replace --regex "<.*" "" 
+}
+
+export def value-description []: any -> string {
+  let value = $in
+  let type = $value | describe-simple 
+  match ($type) {
+    "list" | "table" | "record" => $type
+    "string" => $value
+    _ => ($value | to json --serialize)
+  }
+}
+
+export def env [] {
+  $env
+    | transpose name description
+    | update name {|it| $"$env.($it.name)"}
+    | update description {|it| $it.description | value-description } 
+}
+
+export def attrs [var_name: string]: nothing -> table {
+  # $env and $nu are special-cased because they don't appear in `scope variables`
+  if ($var_name == "$env") {
+    return (env | str replace "$env." "" name) 
+  }
+  let values = (
+    if ($var_name == "$nu") {
+        [$nu]
+    }  else {
+      (
+        scope variables 
+        | where name == $var_name
+        | get value
+      )
+    }
+  )
+  if ($values | is-empty) {
+    return null
+  }
+
+  let v = $values | first
+  match ($v | describe-simple) {
+    "record" => (
+      $v
+        | transpose name description
+        | update description {|it| $it.description | value-description }
+      )
+    "table" => (
+      $v 
+        | columns 
+        | wrap name 
+        | insert description ""
+        | update description {|it| $it.description | value-description }
+    )
+    _ => null
+  }
+}
+
+# Lists all supported types of completion candidates
+export def types [] {
+  {
+      COMMAND: "Internal commands, custom commands, aliases, and binaries from $env.PATH",
+      SUBCOMMAND: "Subcommands of the current context's command",
+      SHORT_FLAG: "Short form flags, like `-f`",
+      LONG_FLAG: "Long form flags, like `--flag`",
+      FLAG: "Any flag (long or short)",
+      FLAG_ARG: "Valid values for a flag that takes an argument: `table --theme FLAG_ARG`",
+      PATH: "Filesystem paths",
+      ENV: "Environment variables",
+      VAR: "Nushell variables in the current scope",
+      ATTR: "Attributes of a variable",
+  } | transpose name description
+}
+
 export def for-context [context?: record] {
+  # TODO: Also return completion types so that caller can filter as desired.
   let context = if ($context | is-not-empty) { $context } else { $in }
   for types in $context.completion_types { 
     let result = ($types | reduce --fold null {|type, acc|
@@ -211,10 +321,6 @@ export def for-context [context?: record] {
             "external" => (flags external $context.command.name)
           }
         }
-        "ARG" => {
-          # TODO: arg (should default to path if nothing smarter)
-          null
-        }
         "FLAG_ARG" => {
           let flag_name = ($context.prev_token | default {content: ""} | get content | str trim --left --char '-')
           match $context.command.type {
@@ -223,14 +329,10 @@ export def for-context [context?: record] {
             null => null
           }
         }
-        "PATH" => {
-          # TODO: paths
-          null
-        }
-        "VAR" => {
-          # TODO: vars
-          null
-        }
+        "PATH" => (paths ($context.token | default {content: "."} | get content))
+        "ENV" => (env)
+        "VAR" => (vars)
+        "ATTR" => (attrs ($context.prev_token | default {content: ""} | get content))
         _ => (error make {msg: $"Unknown completion candidate type: ($type)"})
       }
 

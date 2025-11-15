@@ -1,7 +1,5 @@
 use lib.nu [pick-dirs pick-files filtered-files]
-use completion/main.nu [fuzzy-complete-dwim]
-use completion/context.nu [current-completion-context, command-at-position, char-to-token-index, flat-ast]
-use completion/candidates.nu [for-context]
+use completion/main.nu [commandline-fuzzy-complete-dwim]
 
 const menu_style = {
   text: green
@@ -67,7 +65,7 @@ $env.config = {
         event: [
           {
             send: executehostcommand
-            cmd: "commandline edit --insert (fuzzy-complete-dwim (current-completion-context))"
+            cmd: "commandline-fuzzy-complete-dwim"
           }
         ]
     }
