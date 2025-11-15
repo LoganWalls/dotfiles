@@ -89,7 +89,7 @@ $env.config = {
         event: [
           {
               send: executehostcommand
-              cmd: $"commandline edit --insert \(pick-dirs\)"
+              cmd: "commandline edit --insert (pick-dirs)"
           }
       ]
     }
@@ -101,7 +101,7 @@ $env.config = {
         event: [
           {
               send: executehostcommand
-              cmd: $"commandline edit --insert \(pick-files\)"
+              cmd: "commandline edit --insert (pick-files)"
           }
       ]
     }
