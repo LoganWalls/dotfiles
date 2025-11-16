@@ -327,12 +327,15 @@ export def for-context [context?: record] {
           }
         }
         "FLAG" => {
-          match $command_type {
+          let flags = match $command_type {
             "internal" => (flags internal $context.command.name)
             "external" => (flags external $context.command.name)
             null => null
           }
-          | upsert type {|$it| if ($it.name | str starts-with "--") { "LONG_FLAG" } else { "SHORT_FLAG" }}
+          if ($flags | is-empty) {
+            return null
+          }
+          $flags | upsert type {|$it| if ($it.name | str starts-with "--") { "LONG_FLAG" } else { "SHORT_FLAG" }}
         }
         "FLAG_ARG" => {
           let flag_name = ($context.prev_token? | default {content: ""} | get content | str trim --left --char '-')
