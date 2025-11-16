@@ -58,9 +58,9 @@ $env.config = {
         }
     }
     {
-        name: echo_line
-        modifier: control
-        keycode: char_i
+        name: fuzzy_complete_dwim
+        modifier: none
+        keycode: tab
         mode: [emacs vi_insert]
         event: [
           {
