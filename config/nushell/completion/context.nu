@@ -101,6 +101,7 @@ export def completion-context [pipeline: string, cursor: int]: nothing -> record
       $token = $ast | get $token_index 
       $prev_token = $ast | get ($token_index - 1)
     }
+    let prev_char = $pipeline | str substring ($cursor_index - 1)..($cursor_index - 1)
 
     # If the current token starts with any of these special characters,
     # then we use the corresponding completion types, regardless of what
@@ -110,6 +111,7 @@ export def completion-context [pipeline: string, cursor: int]: nothing -> record
       match ($t_or_empty | str substring ..0) {
         _ if ($t_or_empty | str starts-with "./") or ($t_or_empty | str ends-with "/") => [["PATH"]]
         _ if ($t_or_empty | str starts-with "./") or ($t_or_empty | str ends-with "/") => [["PATH"]]
+        "" if ($prev_char == "^") => [["EXTERNAL_COMMAND"]]
         "/" | "~" => [["PATH"]]
         "." => [["COMMAND", "PATH"]]
         "$" => [["VAR", "ENV"]]
@@ -128,7 +130,7 @@ export def completion-context [pipeline: string, cursor: int]: nothing -> record
           "shape_internalcall" | "shape_external" => [["SUBCOMMAND"], $default_types]
           "shape_flag" => [["FLAG_ARG"], $default_types] 
           "shape_externalarg" if ($p | get content | str starts-with "-") => [["FLAG_ARG"], $default_types] 
-          "shape_variable" if (($pipeline | str substring ($cursor_index - 1)..($cursor_index - 1)) == ".") => [["ATTR"]] 
+          "shape_variable" if ($prev_char  == ".") => [["ATTR"]] 
           _ => [$default_types]
         }
       }

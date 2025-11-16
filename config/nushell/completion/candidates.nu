@@ -1,6 +1,13 @@
-# Gets all available (internal and external) commands
-export def all-commands []: nothing -> table {
-  let external_commands = (
+
+
+export def "commands internal" []: nothing -> table {
+    scope commands
+      | where {|it| not $it.is_sub}
+      | update description {|it| [$it.description, $it.search_terms] | str join " "}
+      | select name description
+}
+
+export def "commands external" []: nothing -> table {
     $env.PATH 
       | each --flatten {|it | try { ls --threads $it } } 
       | par-each {|it | 
@@ -9,6 +16,7 @@ export def all-commands []: nothing -> table {
           } else { 
             $it 
           }
+          | update name {|it| $it.name | path basename } 
           | insert description ""
           # TODO: this info is nice to have, but this is too slow. Need to cache.
           # could use tldr instead or in addition? tldr would show usage
@@ -16,33 +24,19 @@ export def all-commands []: nothing -> table {
       } 
       | where type == file 
       | select name description
-      | update name {|it| $it.name | path basename } 
-      | append (scope aliases | select name description)
-      | uniq
-  )
-  let internal_commands = (
-    scope commands
-      | where {|it| not $it.is_sub}
-      | select name description extra_description search_terms
-  )
+}
 
-  $internal_commands 
-    | insert type "internal"
-    | append (
-      $external_commands 
-        | insert extra_description  "" 
-        | insert search_terms ""
-        | where {|it| not ($it.name in $internal_commands.name)}
-        | insert type "external"
-    )
-    | sort-by name
+export def "commands aliases" [] : nothing -> table {
+      scope aliases 
+        | select name description
 }
 
 export def "subcommands internal" [command: string]: nothing -> table {
   scope commands 
     | where is_sub and ($it.name | str starts-with $command)
-    | select name description extra_description search_terms
     | update name {split words | last}
+    | update description {|it| [$it.description, $it.search_terms] | str join " "}
+    | select name description
 }
 
 export def "subcommands external" [command: string]: nothing -> table {
@@ -277,7 +271,10 @@ export def attrs [var_name: string]: nothing -> table {
 # Lists all supported types of completion candidates
 export def types [] {
   {
-      COMMAND: "Internal commands, custom commands, aliases, and binaries from $env.PATH",
+      INTERNAL_COMMAND: "Internal commands and custom commands",
+      EXTERNAL_COMMAND: "Binaries from `$env.PATH`",
+      ALIAS: "Aliases",
+      COMMAND: "`INTERNAL_COMMAND`, `EXTERNAL_COMMAND`, and `ALIAS` combined and deduplicated",
       SUBCOMMAND: "Subcommands of the current context's command",
       SHORT_FLAG: "Short form flags, like `-f`",
       LONG_FLAG: "Long form flags, like `--flag`",
@@ -296,7 +293,15 @@ export def for-context [context?: record] {
   for types in $context.completion_types { 
     let result = ($types | reduce --fold null {|type, acc|
       let candidates = match $type {
-        "COMMAND" => (all-commands)
+        "INTERNAL_COMMAND" => (commands internal)
+        "EXTERNAL_COMMAND" => (commands external)
+        "ALIAS" => (commands aliases)
+        "COMMAND" =>  {
+          (commands internal)
+            | append (commands external) 
+            | append (commands aliases)
+            | uniq-by name
+        }
         "SUBCOMMAND" => {
           match $context.command.type {
             "internal" => (subcommands internal $context.command.name)
