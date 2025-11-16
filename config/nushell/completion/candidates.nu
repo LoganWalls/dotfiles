@@ -82,7 +82,7 @@ export def "parameter-values internal" [command: string, parameter: string]: not
       | default []
    } catch { |err|
       if ($err.msg | str starts-with "Row number too large") {
-        []
+        null
       } else {
         error make $err
       }
@@ -180,27 +180,30 @@ export def "flags internal" [command: string, --short, --long]: nothing -> table
   }
 }
 
-export def paths [prefix: path = "."] {
+export def paths [prefix: path] {
   let prefix = ($prefix | str replace "~" $nu.home-path)
   let args = (
-    if ($prefix | str ends-with "/") {
+    if ($prefix | is-empty) or ($prefix == ".") {
+      { dir: ".", pattern: "." }
+    } else if ($prefix | str ends-with "/") {
       { dir: $prefix, pattern: "." }
     } else {
       { dir: ($prefix | path dirname), pattern: ($prefix | path basename) }
     }
   )
-  (fd 
+  (
+    fd 
     --print0
     --follow
     --hidden
     --exclude ".git/"
     --max-depth 5
     $args.pattern 
-    ($args.dir)
+    $args.dir
   )
-    | split row (char -u '0000')
-    | wrap name
-    | insert description ""
+  | split row (char -u '0000')
+  | wrap name
+  | insert description ""
 }
 
 export def vars [] {
@@ -288,8 +291,8 @@ export def types [] {
 }
 
 export def for-context [context?: record] {
-  # TODO: Also return completion types so that caller can filter as desired.
   let context = if ($context | is-not-empty) { $context } else { $in }
+  let command_type = $context.command? | default { type: null } | get type
   for types in $context.completion_types { 
     let result = ($types | reduce --fold null {|type, acc|
       let candidates = match $type {
@@ -297,51 +300,61 @@ export def for-context [context?: record] {
         "EXTERNAL_COMMAND" => (commands external)
         "ALIAS" => (commands aliases)
         "COMMAND" =>  {
-          (commands internal)
-            | append (commands external) 
-            | append (commands aliases)
+          (commands internal | insert type "INTERNAL_COMMAND")
+            | append (commands external | insert type "EXTERNAL_COMMAND") 
+            | append (commands aliases | insert type "ALIAS")
             | uniq-by name
         }
         "SUBCOMMAND" => {
-          match $context.command.type {
+          match $command_type {
             "internal" => (subcommands internal $context.command.name)
             "external" => (subcommands external $context.command.name)
+            null => null
           }
         }
         "SHORT_FLAG" => {
-          match $context.command.type {
+          match $command_type {
             "internal" => (flags internal --short $context.command.name)
             "external" => (flags external --short $context.command.name)
+            null => null
           }
         }
         "LONG_FLAG" => {
-          match $context.command.type {
+          match $command_type {
             "internal" => (flags internal --long $context.command.name)
             "external" => (flags external --long $context.command.name)
+            null => null
           }
         }
         "FLAG" => {
-          match $context.command.type {
+          match $command_type {
             "internal" => (flags internal $context.command.name)
             "external" => (flags external $context.command.name)
+            null => null
           }
+          | upsert type {|$it| if ($it.name | str starts-with "--") { "LONG_FLAG" } else { "SHORT_FLAG" }}
         }
         "FLAG_ARG" => {
-          let flag_name = ($context.prev_token | default {content: ""} | get content | str trim --left --char '-')
-          match $context.command.type {
+          let flag_name = ($context.prev_token? | default {content: ""} | get content | str trim --left --char '-')
+          match $command_type {
             "internal" => (parameter-values internal $context.command.name $flag_name)
             "external" => (parameter-values external $context.command.name $flag_name)
             null => null
           }
         }
-        "PATH" => (paths ($context.token | default {content: "."} | get content))
+        "PATH" => (paths ($context.token? | default {content: "."} | get content))
         "ENV" => (env)
         "VAR" => (vars)
-        "ATTR" => (attrs ($context.prev_token | default {content: ""} | get content))
+        "ATTR" => (attrs ($context.prev_token? | default {content: ""} | get content))
         _ => (error make {msg: $"Unknown completion candidate type: ($type)"})
       }
-
-      $acc | append $candidates
+      if ($candidates | is-not-empty) {
+        $acc | append (
+          $candidates | upsert type {|it| if ($it.type? | is-empty) { $type } else { $it.type }}
+        )
+      } else {
+        $acc
+      }
     })
     if ($result | is-not-empty) {
       return $result
