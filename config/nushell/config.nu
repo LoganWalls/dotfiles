@@ -1,5 +1,5 @@
 use lib.nu [pick-dirs pick-files filtered-files]
-use completion/main.nu [commandline-fuzzy-complete-dwim]
+use completion [commandline-fuzzy-complete-dwim]
 
 const menu_style = {
   text: green
