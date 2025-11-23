@@ -1,7 +1,7 @@
 export alias viu = viu --transparent
 
 # View SVGs in the terminal
-export def svgcat [
+export def --wrapped svgcat [
   path?: path, # The SVG file to read (defaults to STDIN)
   --dpi: int = 96, # DPI to use when rasterizing the SVG
   --zoom: int = 6, # Zoom factor to use when rasterizing the SVG
@@ -12,7 +12,7 @@ export def svgcat [
 }
 
 # View images in the terminal
-export def icat [
+export def --wrapped icat [
     path?: path, # The file to read (defaults to STDIN)
     ...args # Remaining arguments are passed to `viu`
   ] {
