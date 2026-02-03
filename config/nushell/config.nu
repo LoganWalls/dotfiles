@@ -57,18 +57,18 @@ $env.config = {
             ]
         }
     }
-    {
-        name: fuzzy_complete_dwim
-        modifier: none
-        keycode: tab
-        mode: [emacs vi_insert]
-        event: [
-          {
-            send: executehostcommand
-            cmd: "commandline-fuzzy-complete-dwim"
-          }
-        ]
-    }
+    # {
+    #     name: fuzzy_complete_dwim
+    #     modifier: none
+    #     keycode: tab
+    #     mode: [emacs vi_insert]
+    #     event: [
+    #       {
+    #         send: executehostcommand
+    #         cmd: "commandline-fuzzy-complete-dwim"
+    #       }
+    #     ]
+    # }
     {
         name: help_menu
         modifier: control
