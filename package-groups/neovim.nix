@@ -34,13 +34,14 @@ in
     uv # python package / env manager
     (python3.withPackages (ps: with ps; [ipython])) # base interpreter
     basedpyright # language server for static type analysis
+    ty # new language server for static type analysis
     ruff # language server for everything else
 
     # TOML
     taplo
 
     # Lua
-    lua-language-server
+    emmylua-ls
     stylua # formatter
 
     # Docker

@@ -3,8 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # TODO: remove when https://github.com/NixOS/nixpkgs/issues/450861 is fixed
-    nixpkgs-old.url = "github:NixOS/nixpkgs/c9bd50a653957ee895ff8b6936864b7ece0a7fb6";
     hardware.url = "github:nixos/nixos-hardware";
 
     flakey-profile.url = "github:lf-/flakey-profile";
