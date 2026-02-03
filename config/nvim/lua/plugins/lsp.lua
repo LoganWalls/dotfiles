@@ -197,6 +197,13 @@ return {
 			},
 			ts_ls = {},
 			uiua = {},
+			zls = {
+				settings = {
+					zls = {
+						semantic_tokens = "partial",
+					},
+				},
+			},
 		},
 	},
 }
