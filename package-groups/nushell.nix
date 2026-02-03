@@ -24,6 +24,9 @@ in
     nushellPlugins.skim
     tmux
 
+    # AI agents
+    llm-agents.claude-code
+
     # REPL / UI
     carapace
     direnv

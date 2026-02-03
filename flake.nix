@@ -6,6 +6,7 @@
     hardware.url = "github:nixos/nixos-hardware";
 
     flakey-profile.url = "github:lf-/flakey-profile";
+    llm-agents.url = "github:numtide/llm-agents.nix";
 
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     neovim-nightly-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -38,6 +39,7 @@
       default = import ./overlay {inherit inputs;};
       emacs = inputs.emacs-overlay.overlay;
       neovim = inputs.neovim-nightly-overlay.overlays.default;
+      llm-agents = inputs.llm-agents.overlays.default;
     };
 
     nixosModules = import ./modules/nixos;
