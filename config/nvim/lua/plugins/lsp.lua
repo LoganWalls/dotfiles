@@ -134,21 +134,19 @@ return {
 			html = {},
 			jsonls = {},
 			julials = {},
-			lua_ls = {
+			emmylua_ls = {
 				settings = {
 					Lua = {
-						runtime = { version = "LuaJIT" },
-						diagnostics = { globals = { "vim" } },
-						-- workspace = {
-						-- 	-- Make the server aware of Neovim runtime files
-						-- 	library = {
-						-- 		vim.api.nvim_get_runtime_file("", true),
-						-- 		vim.fn.stdpath("config") .. "/lua",
-						-- 	},
-						-- 	checkThirdParty = false,
-						-- },
-						telemetry = { enable = false },
-						format = { enable = false }, -- Disable formatting since we use stylua
+						diagnostics = {
+							globals = { "vim" },
+						},
+					},
+					workspace = {
+						library = {
+							"lua",
+							"$VIMRUNTIME",
+						},
+						checkThirdParty = false,
 					},
 				},
 			},
