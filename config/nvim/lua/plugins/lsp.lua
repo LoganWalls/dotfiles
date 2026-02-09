@@ -25,7 +25,6 @@ local tailwind_filetypes = {
 	"jade",
 	"leaf",
 	"liquid",
-	"markdown",
 	"mdx",
 	"mustache",
 	"njk",
@@ -74,7 +73,7 @@ return {
 				end
 
 				if vim.fn.filereadable("tailwind.config.js") then
-					vim.cmd("LspStart tailwindcss")
+					vim.lsp.enable("tailwindcss")
 				end
 			end,
 		})
@@ -90,13 +89,13 @@ return {
 
 		-- Keymaps
 		vim.keymap.set("n", "<leader>ll", function()
-			vim.cmd("LspLog")
+			vim.cmd("tabnew " .. vim.lsp.log.get_filename())
 		end, { desc = "LSP Log" })
 		vim.keymap.set("n", "<leader>li", function()
-			vim.cmd("LspInfo")
+			vim.cmd("checkhealth vim.lsp")
 		end, { desc = "LSP Info" })
 		vim.keymap.set("n", "<leader>lr", function()
-			vim.cmd("LspRestart")
+			vim.cmd("lsp restart")
 		end, { desc = "LSP Restart" })
 
 		-- Setup inline completion for supported servers
@@ -161,7 +160,8 @@ return {
 			},
 			nushell = {},
 			ocamllsp = {},
-			basedpyright = {},
+			-- basedpyright = {},
+			ty = {},
 			ruff = {},
 			svelte = {},
 			tailwindcss = {
