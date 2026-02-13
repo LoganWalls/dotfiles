@@ -3,6 +3,7 @@ __pycache__/
 config/github-copilot/
 config/nix/registry.json
 config/nushell/history.txt
+config/nushell/secrets.nu
 config/carapace/bridge
 config/StardewValley/
 result/

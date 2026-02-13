@@ -41,3 +41,5 @@ $env.SKIM_DEFAULT_OPTIONS = (
   ] 
   | str join " "
 )
+
+source secrets.nu
