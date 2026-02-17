@@ -2,7 +2,13 @@ use std/util "path add"
 
 let nix_profile = $"($nu.home-dir)/.nix-profile";
 
-$env.PATH ++= [$"($nix_profile)/bin", '/nix/var/nix/profiles/default/bin', $"($nu.home-dir)/.docker/bin/"]
+# TODO: use `path add` for these (and maybe make it OS dependent?)
+$env.PATH ++= [
+  $"($nix_profile)/bin",
+  '/nix/var/nix/profiles/default/bin',
+  $"($nu.home-dir)/.docker/bin/",
+  $"($nu.home-dir)/.local/bin/"
+]
 path add '/opt/homebrew/bin'
 
 $env.XDG_DATA_DIRS = (
