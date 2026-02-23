@@ -39,6 +39,7 @@ in
     bat # cat with highlighting
     bottom # system activity monitor
     delta # modern diff
+    less # (required to get mouse scrolling for delta)
     eza # modern ls
     fd # modern find
     flavours # base24 colorscheme management
