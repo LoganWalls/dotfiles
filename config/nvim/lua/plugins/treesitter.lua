@@ -38,7 +38,8 @@ local config = function(_, opts)
 		},
 	})
 	require("treesitter-context").setup({
-		separator = nil,
+		multiline_threshold = 1,
+		max_lines = "10%",
 	})
 	-- Use treesitter for folding
 	vim.opt.foldmethod = "expr"
