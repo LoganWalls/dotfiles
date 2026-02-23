@@ -29,3 +29,11 @@
 [user]
 	email = "2934282+LoganWalls@users.noreply.github.com"
 	name = "Logan Walls"
+[diff]
+	tool = nvimdiff
+[difftool]
+	prompt = false
+[merge]
+	tool = nvimdiff
+[mergetool]
+	prompt = false
