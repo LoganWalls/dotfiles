@@ -83,6 +83,10 @@ return {
 			})
 
 			require("mini.diff").setup({})
+			vim.keymap.set("n", "<leader>gd", function()
+				MiniDiff.toggle_overlay()
+			end, { desc = "Toggle git diff overlay" })
+
 			require("mini.git").setup({})
 
 			require("mini.statusline").setup({
