@@ -2,14 +2,19 @@ use std/util "path add"
 
 let nix_profile = $"($nu.home-dir)/.nix-profile";
 
-# TODO: use `path add` for these (and maybe make it OS dependent?)
-$env.PATH ++= [
+# Only add these paths if they exist because non-existent paths 
+# cause problems with some software like carapace
+for path in [
   $"($nix_profile)/bin",
   '/nix/var/nix/profiles/default/bin',
   $"($nu.home-dir)/.docker/bin/",
-  $"($nu.home-dir)/.local/bin/"
-]
-path add '/opt/homebrew/bin'
+  $"($nu.home-dir)/.local/bin/",
+  '/opt/homebrew/bin'
+] {
+  if ($path | path exists) {
+    path add $path
+  }
+}
 
 $env.XDG_DATA_DIRS = (
   ($env | get -o XDG_DATA_DIRS | default '/usr/local/share:/usr/share') 
