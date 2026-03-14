@@ -17,9 +17,6 @@
     kanata-tray.url = "github:rszyma/kanata-tray";
     kanata-tray.inputs.nixpkgs.follows = "nixpkgs";
 
-    emacs-overlay.url = "github:nix-community/emacs-overlay";
-    emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
-
     sf-mono-liga = {
       url = "github:shaunsingh/SFMono-Nerd-Font-Ligaturized";
       flake = false;
@@ -44,7 +41,6 @@
   in rec {
     overlays = {
       default = import ./overlay {inherit inputs;};
-      emacs = inputs.emacs-overlay.overlay;
       neovim = inputs.neovim-nightly-overlay.overlays.default;
       llm-agents = inputs.llm-agents.overlays.default;
     };
@@ -61,10 +57,6 @@
         import inputs.nixpkgs {
           inherit system;
           overlays = builtins.attrValues overlays;
-
-          # NOTE: Using `nixpkgs.config` in NixOS config won't work
-          # Instead, set nixpkgs configs here
-          # (https://nixos.org/manual/nixpkgs/stable/#idm140737322551056)
           config.allowUnfree = true;
         }
     );

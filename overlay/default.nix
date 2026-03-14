@@ -19,5 +19,4 @@ in
   inputs.nixpkgs.lib.composeManyExtensions [
     additions
     modifications
-    (import ./emacs.nix)
   ]
