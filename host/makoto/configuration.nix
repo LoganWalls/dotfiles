@@ -44,6 +44,7 @@ in {
       "orion"
       "slack"
       "steam"
+      "tailscale-app"
       "zed"
     ];
   };
