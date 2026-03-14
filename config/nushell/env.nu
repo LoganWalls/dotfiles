@@ -24,6 +24,7 @@ $env.XDG_DATA_DIRS = (
 )
 $env.MANPATH = ($env.MANPATH? | default "" | split row (char esep) | where {|x| $x | is-not-empty} | append $"($nix_profile)/share/man")
 $env.DELTA_PAGER = "less --mouse"
+$env.NH_DARWIN_FLAKE = $"($nu.home-dir)/Projects/dotfiles"
 
 if ($env | get -o NIX_SSL_CERT_FILE | is-empty) {
   let user_nix_ssl = $"($nix_profile)/etc/ssl/certs/ca-bundle.crt"

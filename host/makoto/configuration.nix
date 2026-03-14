@@ -20,9 +20,8 @@ in {
       age
       ffmpeg
       imagemagick
-      kanata
-      inputs.kanata-tray.packages.${platform}.default
       macchina
+      nh
     ]);
   fonts.packages = packageGroups.fonts;
 
