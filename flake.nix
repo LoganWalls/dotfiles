@@ -5,6 +5,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     hardware.url = "github:nixos/nixos-hardware";
 
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     flakey-profile.url = "github:lf-/flakey-profile";
     llm-agents.url = "github:numtide/llm-agents.nix";
 
@@ -27,6 +30,7 @@
     self,
     nixpkgs,
     flakey-profile,
+    nix-darwin,
     ...
   } @ inputs: let
     inherit (nixpkgs) lib;
@@ -71,6 +75,12 @@
       profile.logan =
         pkgs.callPackage ./profiles/logan.nix {inherit pkgs inputs;};
     });
+
+    darwinConfigurations.makoto = nix-darwin.lib.darwinSystem {
+      pkgs = legacyPackages.aarch64-darwin;
+      specialArgs = {inherit self inputs;};
+      modules = [./host/makoto/configuration.nix];
+    };
 
     nixosConfigurations = {
       orpheus = nixpkgs.lib.nixosSystem {

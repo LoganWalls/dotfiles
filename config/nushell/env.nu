@@ -1,6 +1,6 @@
 use std/util "path add"
 
-let nix_profile = $"($nu.home-dir)/.nix-profile";
+let nix_profile = "/run/current-system/sw"
 
 # Only add these paths if they exist because non-existent paths 
 # cause problems with some software like carapace
