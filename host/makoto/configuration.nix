@@ -65,10 +65,24 @@ in {
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
     settings.experimental-features = "nix-command flakes";
   };
+
+  system.defaults = {
+    dock = {
+      appswitcher-all-displays = true;
+      autohide = true;
+      mineffect = "scale";
+      showAppExposeGestureEnabled = true;
+    };
+    universalaccess.reduceMotion = true;
+  };
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToEscape = true;
+  };
   system.configurationRevision = self.rev or self.dirtyRev or null;
-  nixpkgs.hostPlatform = platform;
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
   system.stateVersion = 6;
+  nixpkgs.hostPlatform = platform;
 }
