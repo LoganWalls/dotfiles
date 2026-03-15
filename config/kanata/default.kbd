@@ -1,0 +1,24 @@
+(defcfg
+  process-unmapped-keys yes
+  macos-dev-names-include (
+    "Apple Internal Keyboard / Trackpad"
+    "kbd67mkiirgb v2"
+    "Karabiner DriverKit VirtualHIDKeyboard"
+  )
+)
+
+(defsrc
+  h j k l spc
+)
+
+(defalias
+  spc (tap-hold-press 200 200 spc (layer-toggle arrows))
+)
+
+(deflayer base
+  h j k l @spc
+)
+
+(deflayer arrows
+  left down up rght _
+)

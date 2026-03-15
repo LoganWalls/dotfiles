@@ -12,6 +12,13 @@
     homeDirectory = "/Users/logan";
   };
 in {
+  imports = [../../modules/kanata/module.nix];
+
+  services.kanata = {
+    enable = true;
+    configFile = "/Users/logan/.config/kanata/default.kbd";
+  };
+
   system.primaryUser = "logan";
   environment.systemPackages =
     packageGroups.neovim

@@ -14,9 +14,6 @@
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     neovim-nightly-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
-    kanata-tray.url = "github:rszyma/kanata-tray";
-    kanata-tray.inputs.nixpkgs.follows = "nixpkgs";
-
     sf-mono-liga = {
       url = "github:shaunsingh/SFMono-Nerd-Font-Ligaturized";
       flake = false;

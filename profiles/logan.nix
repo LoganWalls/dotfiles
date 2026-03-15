@@ -26,7 +26,6 @@ in
         ffmpeg # work images, audio, and video
         imagemagick # work with images
         kanata # keyboard remapper
-        inputs.kanata-tray.packages.${pkgs.stdenv.hostPlatform.system}.default
         macchina # more performant neofetch alternative
         zathura # pdf viewer
       ]);
