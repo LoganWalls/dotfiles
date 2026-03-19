@@ -131,6 +131,9 @@ in
           echo "Karabiner DriverKit not installed, running setup..."
           ${setupScript}/bin/setup-karabiner-driverkit
         fi
+
+        echo "Ad-hoc signing kanata binary for AMFI..."
+        /usr/bin/codesign --sign - --force -i kanata "${cfg.package}/bin/kanata" 2>/dev/null || true
       '';
 
       launchd.daemons.karabiner-vhid-manager = {
