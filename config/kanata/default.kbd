@@ -9,7 +9,7 @@
 )
 
 (defsrc
-  h j k l spc
+  esc caps h j k l spc
 )
 
 (defalias
@@ -17,9 +17,9 @@
 )
 
 (deflayer base
-  h j k l @spc
+  grv esc h j k l @spc
 )
 
 (deflayer arrows
-  left down up rght _
+  _ _ left down up rght _
 )
