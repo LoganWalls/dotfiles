@@ -8,6 +8,7 @@ font-size = 20
 macos-titlebar-style = tabs
 theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 window-padding-x = 8
+shell-integration-features = ssh-terminfo
 
 keybind = alt+enter=toggle_fullscreen
 keybind = alt+[=previous_tab
