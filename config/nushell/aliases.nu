@@ -8,6 +8,7 @@ alias fda = fd -IH
 alias gu = gitui
 alias lsa = ls --all
 alias se = sessionize
+alias o = ^open
 
 def icon-grid [] {
   sort-by type name -i | grid --color --icons -w 100
