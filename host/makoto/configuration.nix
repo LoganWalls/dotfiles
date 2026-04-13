@@ -47,11 +47,13 @@ in {
       "gimp"
       "google-chrome"
       "inkscape"
+      "obsidian"
       "orion"
       "slack"
       "steam"
       "tailscale-app"
       "zed"
+      "zotero"
     ];
   };
 
