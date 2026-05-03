@@ -19,4 +19,5 @@ case "$(uname -s)" in
         ;;
 esac
 
-nix --extra-experimental-features "nix-command flakes" run nixpkgs#nh -- "$subcommand" switch .
+export NIX_CONFIG="extra-experimental-features = nix-command flakes"
+nix run nixpkgs#nh -- "$subcommand" switch .
