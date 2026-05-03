@@ -90,6 +90,15 @@
             ./host/sebastian/configuration.nix
           ];
       };
+      tyranitar = nixpkgs.lib.nixosSystem {
+        pkgs = legacyPackages.x86_64-linux;
+        specialArgs = {inherit inputs;};
+        modules =
+          (builtins.attrValues nixosModules)
+          ++ [
+            ./host/tyranitar/configuration.nix
+          ];
+      };
     };
   };
 }
