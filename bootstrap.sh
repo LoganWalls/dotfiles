@@ -19,5 +19,11 @@ case "$(uname -s)" in
         ;;
 esac
 
+hostname="${1:-}"
+flake="."
+if [ -n "$hostname" ]; then
+    flake=".#$hostname"
+fi
+
 export NIX_CONFIG="extra-experimental-features = nix-command flakes"
-nix run nixpkgs#nh -- "$subcommand" switch .
+nix run nixpkgs#nh -- "$subcommand" switch "$flake"
