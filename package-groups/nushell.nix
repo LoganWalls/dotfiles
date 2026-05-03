@@ -29,7 +29,7 @@ in
 
     # REPL / UI
     carapace
-    direnv
+    (direnv.overrideAttrs { doCheck = false; })
     nix-direnv
     starship
     vivid # ls_colors

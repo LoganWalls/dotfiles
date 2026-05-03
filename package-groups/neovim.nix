@@ -48,10 +48,10 @@ in
     dockerfile-language-server
 
     # Web
-    nodePackages.vscode-langservers-extracted
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    nodePackages.prettier # formatter
+    vscode-langservers-extracted
+    typescript
+    typescript-language-server
+    prettier # formatter
     tailwindcss-language-server
 
     # Typst
