@@ -12,13 +12,6 @@
     homeDirectory = "/Users/logan";
   };
 in {
-  imports = [../../modules/kanata/module.nix];
-
-  services.kanata = {
-    enable = true;
-    configFile = "/Users/logan/.config/kanata/default.kbd";
-  };
-
   system.primaryUser = "logan";
   environment.systemPackages =
     packageGroups.neovim
@@ -40,6 +33,15 @@ in {
       upgrade = true;
       cleanup = "zap";
     };
+    taps = [
+      {
+        name = "jundot/omlx";
+        clone_target = "https://github.com/jundot/omlx";
+      }
+    ];
+    brews = [
+      "omlx"
+    ];
     casks = [
       "discord"
       "firefox"
@@ -47,6 +49,7 @@ in {
       "gimp"
       "google-chrome"
       "inkscape"
+      "karabiner-elements"
       "obsidian"
       "orion"
       "slack"
