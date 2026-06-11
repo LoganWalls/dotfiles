@@ -68,7 +68,6 @@ local config = function()
 	telescope.load_extension("fzf")
 
 	-- Keybindings
-	vim.keymap.set("n", "gd", builtin.lsp_definitions, { desc = "Go to definition" })
 	vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "Find references" })
 	vim.keymap.set("n", "<leader>b", builtin.buffers, { desc = "Find buffers" })
 	vim.keymap.set("n", "<leader>D", builtin.diagnostics, { desc = "Workspace diagnostics" })

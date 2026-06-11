@@ -88,6 +88,30 @@ return {
 		end
 
 		-- Keymaps
+		vim.keymap.set("n", "gd", function()
+			local cword = vim.fn.expand("<cword>")
+			vim.lsp.buf.definition({
+				on_list = function(result)
+					local items = result.items
+					if #items == 0 then
+						return
+					end
+					-- When the LSP returns several definitions (e.g. a class plus the
+					-- parent it inherits from), prefer the one whose line actually
+					-- defines the symbol under the cursor rather than opening a picker.
+					local target = items[1]
+					local pattern = "%f[%w_]" .. vim.pesc(cword) .. "%f[^%w_]"
+					for _, item in ipairs(items) do
+						if item.text and item.text:match(pattern) then
+							target = item
+							break
+						end
+					end
+					vim.cmd.edit(target.filename)
+					vim.api.nvim_win_set_cursor(0, { target.lnum, target.col - 1 })
+				end,
+			})
+		end, { desc = "Go to definition" })
 		vim.keymap.set("n", "<leader>ll", function()
 			vim.cmd("tabnew " .. vim.lsp.log.get_filename())
 		end, { desc = "LSP Log" })
@@ -188,11 +212,7 @@ return {
 				},
 			},
 			taplo = {},
-			tinymist = {
-				settings = {
-					formatterMode = "typstyle",
-				},
-			},
+			tinymist = {},
 			ts_ls = {},
 			uiua = {},
 			zls = {
