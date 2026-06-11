@@ -4,17 +4,21 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "Hold space + hjkl => arrow keys (tap space => space)",
+                        "description": "Hold caps + hjkl => arrow keys (tap caps => escape)",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "spacebar",
+                                    "key_code": "caps_lock",
                                     "modifiers": { "optional": ["any"] }
                                 },
-                                "to": [
+                                "parameters": {
+                                    "basic.to_if_held_down_threshold_milliseconds": 100,
+                                    "basic.to_if_alone_timeout_milliseconds": 200
+                                },
+                                "to_if_held_down": [
                                     {
                                         "set_variable": {
-                                            "name": "space_layer",
+                                            "name": "arrow_layer",
                                             "value": 1
                                         }
                                     }
@@ -22,18 +26,18 @@
                                 "to_after_key_up": [
                                     {
                                         "set_variable": {
-                                            "name": "space_layer",
+                                            "name": "arrow_layer",
                                             "value": 0
                                         }
                                     }
                                 ],
-                                "to_if_alone": [{ "key_code": "spacebar" }],
+                                "to_if_alone": [{ "key_code": "escape" }],
                                 "type": "basic"
                             },
                             {
                                 "conditions": [
                                     {
-                                        "name": "space_layer",
+                                        "name": "arrow_layer",
                                         "type": "variable_if",
                                         "value": 1
                                     }
@@ -48,7 +52,7 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "space_layer",
+                                        "name": "arrow_layer",
                                         "type": "variable_if",
                                         "value": 1
                                     }
@@ -63,7 +67,7 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "space_layer",
+                                        "name": "arrow_layer",
                                         "type": "variable_if",
                                         "value": 1
                                     }
@@ -78,7 +82,7 @@
                             {
                                 "conditions": [
                                     {
-                                        "name": "space_layer",
+                                        "name": "arrow_layer",
                                         "type": "variable_if",
                                         "value": 1
                                     }
@@ -97,10 +101,6 @@
             "name": "Default",
             "selected": true,
             "simple_modifications": [
-                {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "escape" }]
-                },
                 {
                     "from": { "key_code": "escape" },
                     "to": [{ "key_code": "grave_accent_and_tilde" }]
