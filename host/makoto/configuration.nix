@@ -23,6 +23,9 @@ in {
       macchina
       nh
     ]);
+  # Expose nix-direnv's direnvrc at /run/current-system/sw/share/nix-direnv
+  # (sourced by ~/.config/direnv/direnvrc)
+  environment.pathsToLink = ["/share/nix-direnv"];
   fonts.packages = packageGroups.fonts;
 
   homebrew = {

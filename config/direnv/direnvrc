@@ -1,9 +1,13 @@
 #!/bin/sh
 
-NIX_DIRENV_INIT="$HOME/.nix-profile/share/nix-direnv/direnvrc"
-if [ -f $NIX_DIRENV_INIT ]; then
-  source $NIX_DIRENV_INIT
-fi
+for NIX_DIRENV_INIT in \
+  "/run/current-system/sw/share/nix-direnv/direnvrc" \
+  "$HOME/.nix-profile/share/nix-direnv/direnvrc"; do
+  if [ -f "$NIX_DIRENV_INIT" ]; then
+    source "$NIX_DIRENV_INIT"
+    break
+  fi
+done
 
 layout_uv() {
   if [[ -d ".venv" ]]; then
