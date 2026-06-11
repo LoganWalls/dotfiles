@@ -30,6 +30,7 @@
     powerManagement.enable = false;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
+  hardware.nvidia-container-toolkit.enable = true;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -44,7 +45,7 @@
       allowedUDPPorts = [config.services.tailscale.port];
     };
   };
-  
+
   services = {
     openssh = {
       enable = true;
@@ -74,8 +75,8 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.xserver.xkb = {
     layout = "us";
     variant = "";
@@ -96,30 +97,38 @@
   users.users.logan = {
     isNormalUser = true;
     description = "logan";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm" "video" "render"];
+    extraGroups = ["networkmanager" "wheel" "libvirtd" "kvm" "video" "render" "podman"];
     openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKEVj2KaxvkBVVDcMxcdhESfE80L38xXZN42jb8XfhUI logan"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKEVj2KaxvkBVVDcMxcdhESfE80L38xXZN42jb8XfhUI logan"
     ];
     packages = with pkgs; [
-
     ];
   };
 
   virtualisation.libvirtd = {
-      enable = true;
-      qemu = {
-        runAsRoot = true;
-	    swtpm.enable = true;
-      };
+    enable = true;
+    qemu = {
+      runAsRoot = true;
+      swtpm.enable = true;
+    };
   };
   virtualisation.spiceUSBRedirection.enable = true;
   programs.virt-manager.enable = true;
-  
+
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+    dockerSocket.enable = true;
+    defaultNetwork.settings.dns_enabled = true;
+  };
+
   programs.firefox.enable = true;
 
   environment.systemPackages = with pkgs; [
+    nh
     neovim
     git
+    tmux
   ];
 
   system.stateVersion = "25.11";
