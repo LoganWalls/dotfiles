@@ -33,15 +33,6 @@ in {
       upgrade = true;
       cleanup = "zap";
     };
-    taps = [
-      {
-        name = "jundot/omlx";
-        clone_target = "https://github.com/jundot/omlx";
-      }
-    ];
-    brews = [
-      "omlx"
-    ];
     casks = [
       "discord"
       "firefox"
