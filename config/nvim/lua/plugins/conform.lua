@@ -8,7 +8,12 @@ return {
 				nix = { "alejandra" },
 				sh = { "shfmt" },
 			},
-			format_on_save = { timeout_ms = 400, lsp_fallback = true },
+			format_on_save = function(bufnr)
+				if vim.bo[bufnr].filetype == "typst" then
+					return nil
+				end
+				return { timeout_ms = 400, lsp_fallback = true }
+			end,
 			formatters = {
 				shfmt = {
 					prepend_args = { "--simplify", "--case-indent", "--binary-next-line", "--space-redirects" },
