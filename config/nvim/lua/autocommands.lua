@@ -1,7 +1,7 @@
 -- Highlight yanked text for 200ms using the "Visual" highlight group
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
-		vim.highlight.on_yank({ higroup = "Visual", timeout = 200 })
+		vim.hl.hl_op({ higroup = "Visual", timeout = 200 })
 	end,
 })
 
