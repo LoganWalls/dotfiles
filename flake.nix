@@ -39,7 +39,7 @@
     overlays = {
       default = import ./overlay {inherit inputs;};
       neovim = inputs.neovim-nightly-overlay.overlays.default;
-      llm-agents = inputs.llm-agents.overlays.default;
+      llm-agents = inputs.llm-agents.overlays.shared-nixpkgs;
     };
 
     nixosModules = import ./modules/nixos;

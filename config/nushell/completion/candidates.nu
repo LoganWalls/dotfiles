@@ -130,7 +130,7 @@ export def "flags external" [command: string, --short, --long]: nothing -> table
   }
 
   let flags = $flag_data
-    | rename --block {str downcase}
+    | rename --block {str lowercase}
     | select -o shorthand longhand type usage
     | rename --column {shorthand: short_name, longhand: long_name, usage: description}
     | insert role {|it| 

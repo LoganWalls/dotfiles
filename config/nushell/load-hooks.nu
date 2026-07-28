@@ -1,8 +1,8 @@
-use hooks.nu
+use hooks.nu *
 
 # Carapace
 $env.CARAPACE_BRIDGES = 'zsh,bash'
-source $hooks.carapace.path
+source $carapace.path
 
 # Direnv
 $env.config.hooks.pre_prompt = (
@@ -15,7 +15,7 @@ $env.config.hooks.pre_prompt = (
 )
 
 # Starship
-use $hooks.starship.path
+use $starship.path
 
 # Zoxide
-source $hooks.zoxide.path
+source $zoxide.path

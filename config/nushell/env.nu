@@ -35,10 +35,10 @@ if ($env | get -o NIX_SSL_CERT_FILE | is-empty) {
   }
 }
 
-use hooks.nu
-hooks carapace init
-hooks starship init
-hooks zoxide init
+use hooks.nu *
+carapace init
+starship init
+zoxide init
 
 $env.EDITOR = "nvim"
 $env.LS_COLORS = (vivid generate catppuccin-ansi)
