@@ -29,8 +29,22 @@
     nvidiaSettings = true;
     powerManagement.enable = false;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
+    nvidiaPersistenced = true;
   };
   hardware.nvidia-container-toolkit.enable = true;
+  systemd.services.nvidia-power-limit = {
+    description = "RTX 5090 power limit";
+    wantedBy = ["multi-user.target"];
+    after = ["nvidia-persistenced.service"];
+    wants = ["nvidia-persistenced.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi -pl 400";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
