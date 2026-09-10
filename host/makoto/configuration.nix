@@ -32,7 +32,7 @@ in {
     enable = true;
     global.autoUpdate = false;
     onActivation = {
-      autoUpdate = false;
+      autoUpdate = true;
       upgrade = true;
       cleanup = "zap";
     };
