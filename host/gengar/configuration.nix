@@ -144,6 +144,7 @@ in {
     jq
     tmux
     nh
+    uv
   ];
 
   # Repurposed orpheus install; keep its original state version.
