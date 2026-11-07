@@ -3,6 +3,7 @@
   stdenv,
   fetchurl,
   p7zip,
+  cpio,
 }:
 stdenv.mkDerivation rec {
   pname = "apple-fonts";
@@ -10,12 +11,12 @@ stdenv.mkDerivation rec {
 
   pro = fetchurl {
     url = "https://devimages-cdn.apple.com/design/resources/download/SF-Pro.dmg";
-    sha256 = "sha256-qQlPDem3idc1RO5Q/FKgiE1Kn3/PYt5Sl04yBPOnSmI=";
+    sha256 = "sha256-sn/mYi8fqWpwfHPcpmZtQ5w1sxLVsdR+DimA5hjrSyg=";
   };
 
   compact = fetchurl {
     url = "https://devimages-cdn.apple.com/design/resources/download/SF-Compact.dmg";
-    sha256 = "sha256-LIkAOWe+WaaGeqXeEgZjUtmmtEt4XPK5/4jvDXf/KPw=";
+    sha256 = "sha256-byQRcYdqhBdNS5m69Gm6+z+OJFTOoSPYULM/H7D3D18=";
   };
 
   mono = fetchurl {
@@ -28,47 +29,37 @@ stdenv.mkDerivation rec {
     sha256 = "sha256-HC7ttFJswPMm+Lfql49aQzdWR2osjFYHJTdgjtuI+PQ=";
   };
 
-  nativeBuildInputs = [p7zip];
+  nativeBuildInputs = [p7zip cpio];
 
   sourceRoot = ".";
 
   dontUnpack = true;
 
+  # Apple ships two DMG layouts: older ones contain a folder with an
+  # installer .pkg, newer (APFS) ones unpack straight to the cpio Payload.
   installPhase = ''
-    mkdir -p $out
-
-    7z x ${pro}
-    cd SFProFonts
-    7z x 'SF Pro Fonts.pkg'
-    7z x 'Payload~'
-    mkdir -p $out/fontfiles
-    mv Library/Fonts/* $out/fontfiles
-    cd ..
-
-    7z x ${mono}
-    cd SFMonoFonts
-    7z x 'SF Mono Fonts.pkg'
-    7z x 'Payload~'
-    mv Library/Fonts/* $out/fontfiles
-    cd ..
-
-    7z x ${compact}
-    cd SFCompactFonts
-    7z x 'SF Compact Fonts.pkg'
-    7z x 'Payload~'
-    mv Library/Fonts/* $out/fontfiles
-    cd ..
-
-    7z x ${ny}
-    cd NYFonts
-    7z x 'NY Fonts.pkg'
-    7z x 'Payload~'
-    mv Library/Fonts/* $out/fontfiles
+    extractFonts() {
+      local work
+      work=$(mktemp -d)
+      pushd "$work"
+      7z x -y "$1"
+      local pkg
+      pkg=$(find . -type f -name '*.pkg' | head -n1)
+      if [ -n "$pkg" ]; then
+        7z x -y "$pkg"
+      fi
+      cpio -idm < "$(find . -type f -name 'Payload~' | head -n1)"
+      find . -path '*/Library/Fonts/*' -type f -name '*.otf' -exec mv {} $out/share/fonts/opentype \;
+      find . -path '*/Library/Fonts/*' -type f -name '*.ttf' -exec mv {} $out/share/fonts/truetype \;
+      popd
+      rm -rf "$work"
+    }
 
     mkdir -p $out/share/fonts/opentype $out/share/fonts/truetype
-    mv $out/fontfiles/*.otf $out/share/fonts/opentype
-    mv $out/fontfiles/*.ttf $out/share/fonts/truetype
-    rm -rf $out/fontfiles
+    extractFonts ${pro}
+    extractFonts ${mono}
+    extractFonts ${compact}
+    extractFonts ${ny}
   '';
 
   meta = {
