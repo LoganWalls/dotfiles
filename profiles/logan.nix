@@ -6,7 +6,7 @@
   packageGroups = import ../package-groups/default.nix {
     inherit inputs pkgs;
     homeDirectory =
-      if pkgs.stdenv.isLinux
+      if pkgs.stdenv.hostPlatform.isLinux
       then "/home/logan"
       else "/Users/logan";
   };

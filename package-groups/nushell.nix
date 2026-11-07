@@ -5,7 +5,7 @@
   ...
 }: let
   nushellWrapped =
-    if pkgs.stdenv.isDarwin
+    if pkgs.stdenv.hostPlatform.isDarwin
     then
       (pkgs.nushell.overrideAttrs (old: {
         # Override forces nushell to use XDG paths (defaults to Application Support on macOS)
@@ -29,7 +29,7 @@ in
 
     # REPL / UI
     carapace
-    (direnv.overrideAttrs { doCheck = false; })
+    (direnv.overrideAttrs {doCheck = false;})
     nix-direnv
     starship
     vivid # ls_colors
