@@ -47,6 +47,7 @@ in {
       "obsidian"
       "orion"
       "slack"
+      "spotify"
       "steam"
       "tailscale-app"
       "zed"
