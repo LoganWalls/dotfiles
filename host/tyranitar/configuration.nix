@@ -164,6 +164,7 @@
     neovim
     git
     tmux
+    uv
     llm-agents.claude-code
   ];
 
