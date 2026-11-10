@@ -63,7 +63,7 @@ in {
     registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
     # Add inputs to the system's legacy channels
     nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
-    settings.experimental-features = "nix-command flakes";
+    settings.experimental-features = ["nix-command" "flakes"];
     gc.automatic = true;
     optimise.automatic = true;
   };
