@@ -32,15 +32,36 @@
     nvidiaPersistenced = true;
   };
   hardware.nvidia-container-toolkit.enable = true;
-  systemd.services.nvidia-power-limit = {
-    description = "RTX 5090 power limit";
+  # RTX 5090 undervolt. Linux can't edit individual V/F curve points, so: cap
+  # the core clock, then shift the whole curve up with a positive offset so the
+  # cap is reached at a lower voltage. The power limit stays as a backstop.
+  # `systemctl stop nvidia-undervolt` reverts the clock cap + offset.
+  systemd.services.nvidia-undervolt = let
+    smi = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi";
+    oc = lib.getExe pkgs.nvidia_oc;
+    powerLimitW = 400;
+    maxClockMHz = 2600;
+    coreOffsetMHz = 150;
+  in {
+    description = "RTX 5090 power limit and undervolt";
     wantedBy = ["multi-user.target"];
     after = ["nvidia-persistenced.service"];
     wants = ["nvidia-persistenced.service"];
+    startLimitIntervalSec = 120;
+    startLimitBurst = 5;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi -pl 400";
+      # Ordered so a failed offset still leaves the power limit and clock cap applied.
+      ExecStart = [
+        "${smi} -pl ${toString powerLimitW}"
+        "${smi} -lgc 200,${toString maxClockMHz}"
+        "${oc} set --index 0 --freq-offset ${toString coreOffsetMHz}"
+      ];
+      ExecStop = [
+        "${oc} set --index 0 --freq-offset 0"
+        "${smi} -rgc"
+      ];
       Restart = "on-failure";
       RestartSec = 5;
     };
@@ -143,6 +164,7 @@
     neovim
     git
     tmux
+    llm-agents.claude-code
   ];
 
   system.stateVersion = "25.11";
