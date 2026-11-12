@@ -9,6 +9,7 @@
     # Add CPU/GPU-specific modules from inputs.hardware.nixosModules.* once
     # the hardware is known (e.g. common-cpu-intel, common-cpu-amd, common-pc-ssd).
     ./hardware-configuration.nix
+    ../../modules/nixos/git.nix
   ];
 
   nix = {
@@ -162,7 +163,6 @@
   environment.systemPackages = with pkgs; [
     nh
     neovim
-    git
     tmux
     uv
     llm-agents.claude-code

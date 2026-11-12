@@ -17,6 +17,7 @@ in {
     inputs.hardware.nixosModules.common-cpu-intel
     inputs.hardware.nixosModules.common-pc-ssd
     ./hardware-configuration.nix
+    ../../modules/nixos/git.nix
   ];
 
   nix = {
@@ -137,7 +138,6 @@ in {
     playwright-mcp
     playwright-mcp-persistent
     nodejs
-    git
     gh
     ripgrep
     fd
